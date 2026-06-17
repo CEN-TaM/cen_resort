@@ -1,0 +1,1519 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EX Platform Proposal</title>
+  <style>
+    :root{
+      --bg:#020617;
+      --navy:#071225;
+      --navy2:#0b1f4d;
+      --blue:#1f7aff;
+      --cyan:#22d3ee;
+      --purple:#a855f7;
+      --pink:#ec4899;
+      --mint:#2dd4bf;
+      --white:#ffffff;
+      --soft:#f8fbff;
+      --line:#dbeafe;
+      --text:#0f172a;
+      --muted:#64748b;
+      --shadow:0 22px 70px rgba(15,23,42,.14);
+      --glow:0 0 34px rgba(34,211,238,.38);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif;
+      background:#f3f7ff;
+      color:var(--text);
+      word-break:keep-all;
+    }
+    a{text-decoration:none;color:inherit}
+    .top-nav{
+      position:fixed;
+      left:0;right:0;top:0;
+      z-index:50;
+      background:rgba(2,6,23,.48);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .nav-inner{
+      max-width:1440px;
+      margin:0 auto;
+      padding:18px 32px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color:#fff;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:950;
+      letter-spacing:-.8px;
+    }
+
+    .brand-logo{
+      height:26px;
+      width:auto;
+      object-fit:contain;
+      display:block;
+      background:transparent;
+      padding:0;
+      border-radius:0;
+      filter:
+        drop-shadow(0 2px 8px rgba(0,0,0,.25))
+        drop-shadow(0 0 10px rgba(255,255,255,.08));
+    }
+
+    .brand span{
+      color:#cbd5e1;
+      font-size:12px;
+      letter-spacing:.02em;
+      font-weight:700;
+    }
+    .nav-links{
+      display:flex;
+      gap:30px;
+      align-items:center;
+      font-size:14px;
+      color:#e5e7eb;
+      font-weight:700;
+    }
+    .nav-links a{opacity:.86}
+    .nav-links a:hover{opacity:1;color:#67e8f9}
+
+    .hero{
+      min-height:930px;
+      position:relative;
+      overflow:hidden;
+      padding:118px 0 0;
+      color:#fff;
+      background:
+        radial-gradient(circle at 70% 42%, rgba(37,99,235,.65), transparent 18%),
+        radial-gradient(circle at 55% 50%, rgba(168,85,247,.34), transparent 28%),
+        linear-gradient(135deg,#020617 0%,#061334 45%,#0a2b70 72%,#071225 100%);
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      right:-110px;
+      top:42px;
+      width:720px;
+      height:720px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 50%, rgba(255,255,255,.18), transparent 26%),
+        linear-gradient(120deg, rgba(34,211,238,.08), rgba(59,130,246,.5), rgba(167,139,250,.1));
+      border-left:18px solid rgba(255,255,255,.84);
+      box-shadow:
+        -45px 0 70px rgba(96,165,250,.5),
+        inset 30px 0 90px rgba(37,99,235,.42);
+      opacity:.92;
+      filter:saturate(1.2);
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.62) 1px, transparent 1.5px),
+        linear-gradient(115deg, transparent 0 48%, rgba(255,255,255,.1) 49%, transparent 51%),
+        linear-gradient(45deg, transparent 0 49%, rgba(34,211,238,.07) 50%, transparent 52%);
+      background-size:120px 120px, 430px 430px, 360px 360px;
+      opacity:.22;
+      pointer-events:none;
+    }
+    .hero-wrap{
+      position:relative;
+      z-index:2;
+      max-width:1440px;
+      margin:0 auto;
+      padding:0 48px;
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:58px;
+      align-items:center;
+    }
+    .hero-title{
+      margin:0;
+      font-size:92px;
+      line-height:.95;
+      letter-spacing:-5px;
+      font-weight:950;
+      text-shadow:0 18px 40px rgba(0,0,0,.42);
+    }
+    .hero-title .grad{
+      background:linear-gradient(90deg,#ffffff 0%,#5eead4 28%,#60a5fa 62%,#c084fc 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .ai-row{
+      display:flex;
+      align-items:flex-end;
+      gap:22px;
+      margin-top:32px;
+    }
+    .ai{
+      font-size:82px;
+      line-height:.85;
+      font-weight:950;
+      letter-spacing:-3px;
+      background:linear-gradient(180deg,#22d3ee 0%,#60a5fa 55%,#a855f7 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      filter:drop-shadow(0 0 28px rgba(34,211,238,.35));
+    }
+    .ai-desc{
+      padding-bottom:10px;
+    }
+    .ai-desc strong{
+      font-size:34px;
+      letter-spacing:-1.2px;
+    }
+    .ai-desc p{
+      margin:8px 0 0;
+      color:#e2e8f0;
+      font-size:24px;
+    }
+    .line{
+      width:44px;
+      height:2px;
+      background:rgba(255,255,255,.7);
+      margin:36px 0 24px;
+    }
+    .catch{
+      font-size:34px;
+      line-height:1.28;
+      font-weight:950;
+      letter-spacing:-1.4px;
+      margin:0;
+    }
+    .catch .highlight{
+      display:inline-block;
+      margin-top:8px;
+      font-size:58px;
+      background:linear-gradient(90deg,#22d3ee 0%,#60a5fa 44%,#c084fc 78%,#ffffff 100%);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      filter:drop-shadow(0 0 22px rgba(96,165,250,.38));
+    }
+    .hero-copy{
+      max-width:700px;
+      margin:26px 0 0;
+      color:#cbd5e1;
+      line-height:1.75;
+      font-size:17px;
+    }
+    .chips{
+      margin-top:28px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      height:48px;
+      padding:0 22px;
+      border-radius:999px;
+      border:1px solid rgba(34,211,238,.65);
+      color:#67e8f9;
+      background:rgba(15,23,42,.35);
+      font-weight:950;
+      box-shadow:0 0 26px rgba(34,211,238,.08);
+    }
+    .chip.purple{border-color:rgba(192,132,252,.72);color:#c084fc}
+    .chip.blue{border-color:rgba(96,165,250,.72);color:#60a5fa}
+    .hero-panel{
+      position:relative;
+      border:1px solid rgba(147,197,253,.35);
+      background:linear-gradient(180deg,rgba(15,23,42,.58),rgba(2,6,23,.38));
+      backdrop-filter:blur(20px);
+      border-radius:34px;
+      padding:34px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.12),
+        0 28px 80px rgba(0,0,0,.28);
+    }
+    .panel-title{
+      color:#fff;
+      font-size:22px;
+      line-height:1.5;
+      font-weight:900;
+      margin:0 0 24px;
+    }
+    .panel-title span{
+      color:#38bdf8;
+    }
+    .menu-list{
+      display:flex;
+      flex-direction:column;
+    }
+    .menu-item{
+      display:grid;
+      grid-template-columns:76px 1fr 20px;
+      gap:18px;
+      align-items:center;
+      padding:20px 0;
+      border-top:1px solid rgba(255,255,255,.11);
+    }
+    .menu-item:first-child{border-top:0}
+    .menu-icon{
+      width:72px;height:72px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(145deg,rgba(59,130,246,.2),rgba(15,23,42,.55));
+      border:1px solid rgba(96,165,250,.38);
+      font-size:34px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+    }
+    .menu-item strong{
+      display:block;
+      font-size:22px;
+      color:#67e8f9;
+      margin-bottom:7px;
+    }
+    .menu-item:nth-child(2) strong{color:#a78bfa}
+    .menu-item:nth-child(3) strong{color:#60a5fa}
+    .menu-item:nth-child(4) strong{color:#c4b5fd}
+    .menu-item p{
+      margin:0;
+      color:#cbd5e1;
+      font-size:15px;
+    }
+    .arrow{
+      color:#cbd5e1;
+      font-size:32px;
+      opacity:.75;
+    }
+    .scroll{
+      position:absolute;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      z-index:3;
+      color:#fff;
+      text-align:center;
+      font-size:12px;
+      opacity:.85;
+    }
+    .scroll div{
+      width:34px;height:34px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.75);
+      display:grid;
+      place-items:center;
+      margin:0 auto 6px;
+    }
+
+    main{
+      background:linear-gradient(180deg,#f7fbff 0%,#eef5ff 100%);
+    }
+    .container{
+      max-width:1440px;
+      margin:0 auto;
+      padding:44px 48px;
+    }
+    .section{
+      margin:34px 0;
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(219,234,254,.9);
+      border-radius:34px;
+      padding:38px;
+      box-shadow:var(--shadow);
+    }
+    .section.dark{
+      background:
+        radial-gradient(circle at 88% 10%,rgba(34,211,238,.14),transparent 28%),
+        linear-gradient(135deg,#071225,#0b1f4d 62%,#071225);
+      color:#fff;
+      border-color:rgba(147,197,253,.24);
+    }
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:28px;
+      margin-bottom:28px;
+    }
+    .num{
+      display:inline-flex;
+      color:#2563eb;
+      font-size:30px;
+      font-weight:950;
+      opacity:.78;
+      margin-bottom:10px;
+    }
+    .section.dark .num{color:#67e8f9}
+    .eyebrow{
+      color:#2563eb;
+      font-weight:950;
+      letter-spacing:.12em;
+      font-size:12px;
+      text-transform:uppercase;
+    }
+    .section.dark .eyebrow{color:#67e8f9}
+    h2{
+      margin:8px 0 0;
+      font-size:40px;
+      letter-spacing:-1.6px;
+      line-height:1.12;
+      color:#0f172a;
+    }
+    .section.dark h2{color:#fff}
+    .lead{
+      margin:12px 0 0;
+      max-width:840px;
+      color:#64748b;
+      font-size:16px;
+      line-height:1.8;
+    }
+    .section.dark .lead{color:#cbd5e1}
+    .grid4{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:26px;
+    }
+    .grid3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+    }
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:26px;
+    }
+    .card{
+      background:#fff;
+      border:1px solid #dbeafe;
+      border-radius:24px;
+      padding:26px;
+      min-height:210px;
+      box-shadow:0 14px 34px rgba(15,23,42,.06);
+    }
+    .section.dark .card{
+      background:rgba(15,23,42,.4);
+      border-color:rgba(147,197,253,.25);
+      box-shadow:none;
+    }
+    .icon{
+      width:74px;height:74px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      margin:0 0 20px auto;
+      background:linear-gradient(135deg,#dbeafe,#eef2ff);
+      color:#2563eb;
+      font-size:34px;
+    }
+    .card .index{
+      color:#2563eb;
+      font-size:24px;
+      font-weight:950;
+      margin-bottom:12px;
+    }
+    .card h3{
+      margin:0 0 12px;
+      font-size:22px;
+      color:#0f172a;
+      letter-spacing:-.6px;
+    }
+    .section.dark .card h3{color:#fff}
+    .card p,.card li{
+      color:#475569;
+      font-size:15px;
+      line-height:1.72;
+    }
+    .section.dark .card p,
+    .section.dark .card li{color:#cbd5e1}
+    ul{margin:12px 0 0;padding-left:18px}
+    .module-card{
+      position:relative;
+      overflow:hidden;
+      min-height:300px;
+      background:
+        radial-gradient(circle at 90% 10%,rgba(34,211,238,.18),transparent 28%),
+        linear-gradient(180deg,#fff,#f8fbff);
+    }
+    .module-card::after{
+      content:"";
+      position:absolute;
+      right:-42px;
+      top:-42px;
+      width:144px;height:144px;
+      border-radius:50%;
+      background:rgba(37,99,235,.08);
+    }
+    .module-icon{
+      width:66px;height:66px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,#0ea5e9,#2563eb);
+      color:#fff;
+      font-size:32px;
+      box-shadow:0 18px 34px rgba(37,99,235,.22);
+      margin-bottom:22px;
+    }
+    .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+    .tag{
+      border:1px solid #bfdbfe;
+      background:#eff6ff;
+      color:#2563eb;
+      font-size:12px;
+      font-weight:900;
+      border-radius:999px;
+      padding:7px 10px;
+    }
+
+    .phone-section{
+      display:grid;
+      grid-template-columns:.95fr 1.05fr;
+      gap:44px;
+      align-items:center;
+    }
+    .phone{
+      width:410px;
+      min-height:810px;
+      margin:0 auto;
+      background:#020617;
+      border-radius:46px;
+      padding:14px;
+      box-shadow:0 35px 90px rgba(15,23,42,.25);
+    }
+    .screen{
+      min-height:782px;
+      border-radius:34px;
+      overflow:hidden;
+      background:#f8fafc;
+      position:relative;
+    }
+    .app-hero{
+      padding:28px 24px 26px;
+      color:white;
+      background:
+        radial-gradient(circle at 90% 20%,rgba(255,255,255,.25),transparent 24%),
+        linear-gradient(135deg,#1e40af,#0ea5e9);
+    }
+    .app-hero small{
+      font-weight:950;
+      letter-spacing:.12em;
+      color:#bae6fd;
+    }
+    .app-hero h3{
+      margin:10px 0 0;
+      font-size:30px;
+      line-height:1.18;
+      letter-spacing:-1px;
+    }
+    .app-body{
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .search{
+      height:50px;
+      border-radius:16px;
+      border:1px solid #e2e8f0;
+      background:white;
+      display:flex;
+      align-items:center;
+      padding:0 16px;
+      color:#94a3b8;
+      font-size:14px;
+    }
+    .app-card{
+      background:white;
+      border:1px solid #e2e8f0;
+      border-radius:24px;
+      padding:18px;
+      box-shadow:0 8px 22px rgba(15,23,42,.04);
+    }
+    .app-card strong{
+      display:block;
+      font-size:18px;
+      margin-bottom:7px;
+      color:#0f172a;
+    }
+    .app-card p{
+      margin:0;
+      color:#64748b;
+      line-height:1.62;
+      font-size:14px;
+    }
+    .ai-box{
+      background:linear-gradient(135deg,#eff6ff,#eef2ff);
+      border-color:#bfdbfe;
+    }
+    .bmc-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+    }
+    .bmc-box{
+      background:rgba(255,255,255,.96);
+      border:1px solid #dbeafe;
+      border-radius:22px;
+      padding:22px;
+      min-height:170px;
+      transition:all .28s ease;
+      box-shadow:0 6px 18px rgba(15,23,42,.04);
+      cursor:default;
+    }
+    .bmc-box:hover{
+      transform:translateY(-8px) scale(1.02);
+      border-color:#2563eb;
+      box-shadow:
+        0 18px 40px rgba(37,99,235,.18),
+        0 10px 24px rgba(15,23,42,.10);
+    }
+    .bmc-box strong{
+      display:block;
+      margin-bottom:10px;
+      color:#2563eb;
+      font-size:17px;
+      font-weight:900;
+      transition:color .28s ease;
+    }
+    .bmc-box:hover strong{
+      color:#1d4ed8;
+    }
+    .bmc-box p,.bmc-box li{
+      color:#475569;
+      line-height:1.62;
+      font-size:13px;
+    }
+
+    .revenue-layout{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:24px;
+    }
+    .revenue-main{
+      border-radius:30px;
+      padding:34px;
+      background:
+        radial-gradient(circle at 90% 10%,rgba(34,211,238,.2),transparent 30%),
+        linear-gradient(135deg,#020617,#1e3a8a);
+      color:white;
+      min-height:390px;
+    }
+    .revenue-main h3{
+      margin:14px 0;
+      font-size:34px;
+      line-height:1.22;
+      letter-spacing:-1.2px;
+    }
+    .revenue-main p{
+      color:#cbd5e1;
+      line-height:1.8;
+    }
+    .revenue-stats{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+      margin-top:28px;
+    }
+    .rev-stat{
+      border-radius:20px;
+      padding:18px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.15);
+    }
+    .rev-stat small{
+      color:#bae6fd;
+      font-weight:900;
+    }
+    .rev-stat strong{
+      display:block;
+      margin-top:8px;
+      font-size:23px;
+    }
+    .money-list{
+      display:flex;
+      flex-direction:column;
+      gap:13px;
+    }
+    .money{
+      background:white;
+      border:1px solid #dbeafe;
+      border-radius:22px;
+      padding:18px;
+      display:grid;
+      grid-template-columns:54px 1fr;
+      gap:14px;
+      align-items:flex-start;
+    }
+    .money .mini-icon{
+      width:54px;height:54px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      background:#eff6ff;
+      font-size:25px;
+    }
+    .money strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:17px;
+    }
+    .money p{
+      margin:0;
+      color:#64748b;
+      line-height:1.55;
+      font-size:13px;
+    }
+
+    .roadmap{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+      position:relative;
+    }
+    .road{
+      background:white;
+      border:1px solid #bfdbfe;
+      border-radius:28px;
+      padding:28px;
+      min-height:360px;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 14px 34px rgba(37,99,235,.08);
+    }
+    .road::after{
+      content:"";
+      position:absolute;
+      right:-40px;bottom:-40px;
+      width:138px;height:138px;border-radius:50%;
+      background:rgba(37,99,235,.08);
+    }
+    .year{
+      display:inline-flex;
+      border-radius:999px;
+      background:#eff6ff;
+      color:#1d4ed8;
+      padding:8px 13px;
+      font-size:13px;
+      font-weight:950;
+    }
+    .road h3{
+      margin:18px 0 8px;
+      font-size:27px;
+      letter-spacing:-.9px;
+    }
+    .phase{
+      color:#2563eb;
+      font-weight:950;
+      margin-bottom:14px;
+    }
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+    .kpi{
+      background:white;
+      border:1px solid #dbeafe;
+      border-radius:24px;
+      padding:24px;
+      text-align:center;
+      box-shadow:0 12px 30px rgba(15,23,42,.05);
+    }
+    .kpi strong{
+      display:block;
+      font-size:34px;
+      color:#2563eb;
+      margin-bottom:10px;
+    }
+    .kpi span{
+      color:#475569;
+      font-weight:800;
+      font-size:14px;
+      line-height:1.5;
+    }
+    .closing{
+      margin:34px 0 50px;
+      background:white;
+      border:1px solid #dbeafe;
+      border-radius:30px;
+      padding:30px;
+      box-shadow:0 12px 34px rgba(15,23,42,.06);
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:26px;
+      align-items:center;
+    }
+    .closing h2{
+      font-size:34px;
+      margin-top:8px;
+    }
+    .closing .slogan{
+      color:#475569;
+      font-size:17px;
+      font-weight:800;
+      line-height:1.62;
+      margin:10px 0 0;
+    }
+    .team-card{
+      border:1px solid #dbeafe;
+      border-radius:24px;
+      padding:22px;
+      background:linear-gradient(180deg,#fff,#f8fbff);
+    }
+    .team-title{
+      color:#2563eb;
+      letter-spacing:.08em;
+      font-size:13px;
+      font-weight:950;
+      text-transform:uppercase;
+      margin-bottom:16px;
+    }
+    .leader{
+      color:#64748b;
+      font-size:14px;
+      font-weight:800;
+      margin-bottom:16px;
+    }
+    .leader b{
+      display:block;
+      color:#0f172a;
+      font-size:20px;
+      margin-top:5px;
+    }
+    .members{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+    .member{
+      border-radius:999px;
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      color:#1d4ed8;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    
+.prototype-box{
+    margin-top:36px;
+    padding:28px;
+    border-radius:24px;
+    background:linear-gradient(135deg,#eef6ff,#ffffff);
+    border:1px solid #bfdbfe;
+    box-shadow:0 12px 30px rgba(37,99,235,.08);
+}
+.prototype-title{font-size:22px;font-weight:900;color:#0f172a;margin-bottom:10px;}
+.prototype-desc{color:#64748b;line-height:1.8;margin-bottom:22px;}
+.prototype-btn{
+ display:inline-flex;align-items:center;gap:10px;
+ padding:15px 30px;border-radius:999px;
+ background:linear-gradient(90deg,#2563eb,#06b6d4);
+ color:#fff;text-decoration:none;font-weight:800;
+ box-shadow:0 12px 30px rgba(37,99,235,.28);
+ transition:.25s;
+}
+.prototype-btn:hover{transform:translateY(-3px);box-shadow:0 18px 45px rgba(37,99,235,.38);}
+
+
+    .impact-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+    .impact-card{
+      background:white;
+      border:1px solid #dbeafe;
+      border-radius:26px;
+      padding:24px;
+      min-height:300px;
+      box-shadow:0 12px 30px rgba(15,23,42,.05);
+      transition:all .28s ease;
+      overflow:hidden;
+      position:relative;
+    }
+    .impact-card:hover{
+      transform:translateY(-6px);
+      border-color:#2563eb;
+      box-shadow:0 18px 40px rgba(37,99,235,.16);
+    }
+    .impact-card strong{
+      display:block;
+      font-size:34px;
+      color:#2563eb;
+      margin-bottom:8px;
+      letter-spacing:-1px;
+    }
+    .impact-card h3{
+      margin:0 0 8px;
+      color:#0f172a;
+      font-size:20px;
+      letter-spacing:-.5px;
+    }
+    .impact-card p{
+      margin:0;
+      color:#64748b;
+      font-size:13px;
+      line-height:1.6;
+    }
+    .mini-chart{
+      margin-top:22px;
+      height:92px;
+      border-radius:20px;
+      background:linear-gradient(180deg,#f8fbff,#eff6ff);
+      border:1px solid #dbeafe;
+      padding:16px;
+      display:flex;
+      align-items:flex-end;
+      gap:9px;
+    }
+    .bar{
+      flex:1;
+      border-radius:999px 999px 8px 8px;
+      background:linear-gradient(180deg,#60a5fa,#2563eb);
+      box-shadow:0 8px 18px rgba(37,99,235,.16);
+      min-height:18px;
+    }
+    .bar.b1{height:34%}.bar.b2{height:48%}.bar.b3{height:62%}.bar.b4{height:78%}
+    .automation-graph{
+      margin-top:22px;
+      height:92px;
+      border-radius:20px;
+      background:linear-gradient(135deg,#f8fbff,#eff6ff);
+      border:1px solid #dbeafe;
+      display:grid;
+      place-items:center;
+      position:relative;
+    }
+    .automation-graph .ring{
+      width:68px;height:68px;border-radius:50%;
+      background:conic-gradient(#2563eb 0 72%,#dbeafe 72% 100%);
+      display:grid;place-items:center;
+      box-shadow:0 10px 24px rgba(37,99,235,.14);
+    }
+    .automation-graph .ring::after{
+      content:"72%";
+      width:46px;height:46px;border-radius:50%;
+      background:white;
+      display:grid;place-items:center;
+      color:#1d4ed8;
+      font-size:12px;font-weight:950;
+    }
+    .saas-graph{
+      margin-top:22px;
+      height:92px;
+      border-radius:20px;
+      background:linear-gradient(180deg,#f8fbff,#eff6ff);
+      border:1px solid #dbeafe;
+      padding:18px;
+    }
+    .line-graph{
+      width:100%;
+      height:56px;
+    }
+    .line-graph polyline{
+      fill:none;
+      stroke:#2563eb;
+      stroke-width:5;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      filter:drop-shadow(0 8px 8px rgba(37,99,235,.16));
+    }
+    .line-graph circle{fill:#2563eb}
+    .data-graph{
+      margin-top:22px;
+      height:92px;
+      border-radius:20px;
+      background:linear-gradient(135deg,#f8fbff,#eef2ff);
+      border:1px solid #dbeafe;
+      position:relative;
+      overflow:hidden;
+    }
+    .node{
+      position:absolute;
+      width:14px;height:14px;border-radius:50%;
+      background:#2563eb;
+      box-shadow:0 0 0 6px rgba(37,99,235,.12);
+    }
+    .node.n1{left:22px;top:26px}.node.n2{left:92px;top:50px}.node.n3{right:88px;top:24px}.node.n4{right:26px;bottom:24px}
+    .data-graph::before{
+      content:"";
+      position:absolute;left:32px;right:34px;top:45px;height:2px;
+      background:linear-gradient(90deg,#93c5fd,#2563eb,#93c5fd);
+      transform:rotate(7deg);
+      opacity:.75;
+    }
+    .impact-caption{
+      margin-top:14px;
+      display:flex;
+      justify-content:space-between;
+      color:#94a3b8;
+      font-size:12px;
+      font-weight:800;
+    }
+
+@media(max-width:1100px){
+      .hero{min-height:auto;padding-bottom:70px}
+      .hero-wrap,.phone-section,.revenue-layout,.closing{grid-template-columns:1fr}
+      .hero-title{font-size:68px}
+      .catch .highlight{font-size:44px}
+      .hero::before{opacity:.45;right:-300px}
+      .grid4,.grid3,.bmc-grid,.roadmap,.kpi-grid,.impact-grid{grid-template-columns:1fr 1fr}
+      .nav-links{display:none}
+    }
+    @media(max-width:720px){
+      .nav-inner{padding:14px 18px}
+      .brand span{display:none}
+      .hero-wrap,.container{padding-left:20px;padding-right:20px}
+      .hero-title{font-size:52px}
+      .ai{font-size:62px}
+      .ai-desc strong{font-size:26px}
+      .ai-desc p{font-size:18px}
+      .catch{font-size:25px}
+      .catch .highlight{font-size:34px}
+      .hero-panel{padding:24px}
+      .menu-item{grid-template-columns:58px 1fr 16px}
+      .menu-icon{width:58px;height:58px;font-size:27px}
+      .grid4,.grid3,.grid2,.bmc-grid,.roadmap,.kpi-grid,.impact-grid,.revenue-stats{grid-template-columns:1fr}
+      .section{padding:24px;border-radius:26px}
+      h2{font-size:31px}
+      .phone{width:100%;max-width:410px}
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <div class="brand">
+        <img class="brand-logo" src="https://itcenentec.com/resources/itcen/assets/images/family_entec_main/logo_entec.png" alt="ITCEN ENTEC">
+        <span>INNOVATION IDEA CONTEST 2026</span>
+      </div>
+      <div class="nav-links">
+        <a href="#intro">EX Platform</a>
+        <a href="#background">제안 배경</a>
+        <a href="#service">서비스 소개</a>
+        <a href="#business">비즈니스 모델</a>
+        <a href="#roadmap">로드맵</a>
+        <a href="#impact">기대효과</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="intro">
+    <div class="hero-wrap">
+      <div>
+        <h1 class="hero-title">EX <span class="grad">Platform</span></h1>
+
+        <div class="ai-row">
+          <div class="ai">AI</div>
+          <div class="ai-desc">
+            <strong>기반</strong>
+            <p>Employee Experience Platform</p>
+          </div>
+        </div>
+
+        <div class="line"></div>
+
+        <p class="catch">
+          복지를 관리하는 시대에서,<br>
+          <span class="highlight">경험을 설계하는 시대로</span>
+        </p>
+
+        <p class="hero-copy">
+          AI와 데이터를 기반으로 임직원 개개인에게 최적의 경험을 제공하고,
+          기업의 복지 문화를 혁신하는 새로운 Employee Experience 플랫폼입니다.
+        </p>
+
+        <div class="chips">
+          <span class="chip">🧠 AI</span>
+          <span class="chip">🏝 Travel</span>
+          <span class="chip purple">🎁 Benefit</span>
+          <span class="chip blue">☁ SaaS</span>
+        </div>
+      </div>
+
+      <aside class="hero-panel">
+        <p class="panel-title">AI로 완성되는<br><span>새로운 Employee Experience</span></p>
+        <div class="menu-list">
+          <div class="menu-item">
+            <div class="menu-icon">🏖️</div>
+            <div>
+              <strong>EX Travel</strong>
+              <p>휴양소 · 여행 · 후기 · 추천</p>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">🤖</div>
+            <div>
+              <strong>EX AI</strong>
+              <p>AI 복지비서 · 맞춤 추천 · 분석</p>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">🏢</div>
+            <div>
+              <strong>Enterprise</strong>
+              <p>기업 맞춤형 복지 통합 플랫폼</p>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-icon">☁️</div>
+            <div>
+              <strong>SaaS Platform</strong>
+              <p>확장 가능한 클라우드 기반 플랫폼</p>
+            </div>
+            <div class="arrow">›</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scroll">
+      <div>↓</div>
+      SCROLL
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <section class="section" id="background">
+        <div class="section-head">
+          <div>
+            <span class="num">01</span>
+            <div class="eyebrow">Proposal Background</div>
+            <h2>제안 배경</h2>
+            <p class="lead">
+              변화하는 임직원 니즈와 복지 트렌드 속에서, 직원 경험을 통합적으로 관리하고 개인화하는 플랫폼이 필요합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid4">
+          <div class="card">
+            <div class="index">01</div>
+            <div class="icon">👥</div>
+            <h3>임직원 니즈 변화</h3>
+            <p>워라밸, 경험 소비, 개인화된 복지에 대한 요구가 빠르게 증가하고 있습니다.</p>
+          </div>
+          <div class="card">
+            <div class="index">02</div>
+            <div class="icon">🧭</div>
+            <h3>복지 제도 복잡화</h3>
+            <p>다양한 복지 제도와 정보가 분산되어 이용이 어렵고 비효율적입니다.</p>
+          </div>
+          <div class="card">
+            <div class="index">03</div>
+            <div class="icon">📊</div>
+            <h3>데이터 기반 필요</h3>
+            <p>복지 이용 데이터의 통합 분석과 인사이트 도출 체계가 부족합니다.</p>
+          </div>
+          <div class="card">
+            <div class="index">04</div>
+            <div class="icon">🏢</div>
+            <h3>플랫폼 부재</h3>
+            <p>임직원 경험을 통합적으로 설계하고 확장할 수 있는 플랫폼이 필요합니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark">
+        <div class="section-head">
+          <div>
+            <span class="num">02</span>
+            <div class="eyebrow">Idea Summary</div>
+            <h2>아이디어 설명</h2>
+            <p class="lead">
+              휴양소 후기(EX Travel)를 시작점으로, 복지 정보·AI 추천·관리자 분석 기능을 단계적으로 결합하는 플랫폼입니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid3">
+          <div class="card">
+            <h3>해결하려는 문제</h3>
+            <ul>
+              <li>복지 정보가 흩어져 직원이 쉽게 찾지 못함</li>
+              <li>휴양소 후기가 PC 게시판 중심으로 활용성이 낮음</li>
+              <li>복지 이용 데이터가 체계적으로 축적되지 않음</li>
+              <li>관리 효율과 만족도 분석이 어려움</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>제안하는 솔루션</h3>
+            <p>
+              EX Travel을 출발점으로 복지·커뮤니티·AI·관리자 기능을 단계적으로 확장하는
+              AI 기반 Employee Experience Platform을 구축합니다.
+            </p>
+          </div>
+          <div class="card">
+            <h3>핵심 방향</h3>
+            <ul>
+              <li>직원에게는 쉬운 복지 탐색 경험 제공</li>
+              <li>기업에게는 복지 운영 데이터 제공</li>
+              <li>초기 서비스에서 B2B SaaS 사업으로 확장</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="service">
+        <div class="section-head">
+          <div>
+            <span class="num">03</span>
+            <div class="eyebrow">Service Modules</div>
+            <h2>서비스 소개</h2>
+            <p class="lead">
+              EX Platform은 직원이 실제로 사용하는 기능과 기업이 운영하는 기능을 함께 제공합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid4">
+          <div class="card module-card">
+            <div class="module-icon">🏖️</div>
+            <h3>EX Travel</h3>
+            <p>휴양소 후기, 지도, 댓글, 스크랩, AI 여행 추천을 제공하는 시작 모듈입니다.</p>
+            <div class="tag-row">
+              <span class="tag">후기</span><span class="tag">지도</span><span class="tag">추천</span>
+            </div>
+          </div>
+          <div class="card module-card">
+            <div class="module-icon">🎁</div>
+            <h3>EX Benefit</h3>
+            <p>휴가, 경조사, 학자금, 복지포인트 등 기업 복지 정보를 한곳에 통합합니다.</p>
+            <div class="tag-row">
+              <span class="tag">복지안내</span><span class="tag">신청</span><span class="tag">포인트</span>
+            </div>
+          </div>
+          <div class="card module-card">
+            <div class="module-icon">🤖</div>
+            <h3>EX AI</h3>
+            <p>AI 복지비서, 후기 요약, 맞춤 추천, FAQ, 이용 패턴 분석 기능을 제공합니다.</p>
+            <div class="tag-row">
+              <span class="tag">AI 비서</span><span class="tag">요약</span><span class="tag">분석</span>
+            </div>
+          </div>
+          <div class="card module-card">
+            <div class="module-icon">📊</div>
+            <h3>EX Admin</h3>
+            <p>기업별 복지 설정, 이용 통계, 만족도 분석, 운영 리포트를 제공합니다.</p>
+            <div class="tag-row">
+              <span class="tag">관리자</span><span class="tag">통계</span><span class="tag">SaaS</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="phone-section">
+          <div>
+            <span class="num">04</span>
+            <div class="eyebrow">Mobile Experience</div>
+            <h2>직원이 쓰고 싶은 복지 경험</h2>
+            <p class="lead">
+              기존 게시판형 후기를 모바일 중심의 탐색 경험으로 전환합니다.
+              사용자는 후기를 보고, AI 추천을 받고, 자신에게 맞는 복지 정보를 자연스럽게 발견합니다.
+            </p>
+
+            <div class="grid2" style="margin-top:24px">
+              <div class="card">
+                <h3>후기 탐색</h3>
+                <p>지역, 테마, 평점, 방문 목적별로 휴양소 후기를 쉽게 탐색합니다.</p>
+              </div>
+              <div class="card">
+                <h3>AI 요약</h3>
+                <p>긴 후기를 장점·단점·추천대상 중심으로 자동 정리합니다.</p>
+              </div>
+            </div>
+          
+            <div class="prototype-box">
+              <div class="prototype-title">🚀 실제 구현 Prototype</div>
+              <div class="prototype-desc">
+                아이디어에 그치지 않고 실제 동작하는 Prototype을 구현했습니다.<br>
+                EX Travel 휴양소 후기 서비스를 직접 체험해 보실 수 있습니다.
+              </div>
+              <a class="prototype-btn" href="https://jakyungkim.github.io/seni_resort/" target="_blank">
+                🚀 Prototype 체험하기
+              </a>
+            </div>
+
+</div>
+
+          <div class="phone">
+            <div class="screen">
+              <div class="app-hero">
+                <small>EX TRAVEL</small>
+                <h3>이번 휴양소,<br>AI가 먼저 추천해드려요</h3>
+              </div>
+              <div class="app-body">
+                <div class="search">🔎 지역, 테마, 휴양소 검색</div>
+                <div class="app-card">
+                  <strong>제주 조천 휴양소</strong>
+                  <p>깨끗하고 조용한 가족형 휴양소. 바다 접근성과 주변 관광지가 우수합니다.</p>
+                  <div class="tag-row">
+                    <span class="tag">#가족</span><span class="tag">#바다</span><span class="tag">#청결</span>
+                  </div>
+                </div>
+                <div class="app-card ai-box">
+                  <strong>AI 후기 요약</strong>
+                  <p>장점은 객실 청결과 주변 경관이며, 단점은 성수기 예약 경쟁과 주차 혼잡입니다.</p>
+                </div>
+                <div class="app-card">
+                  <strong>추천 코스</strong>
+                  <p>숙소 → 근처 맛집 → 산책 코스 → 카페까지 하루 일정으로 자동 구성합니다.</p>
+                </div>
+                <div class="app-card">
+                  <strong>나에게 맞는 복지</strong>
+                  <p>가족여행 복지, 휴가제도, 복지포인트 사용 가능 여부까지 연결합니다.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="business">
+        <div class="section-head">
+          <div>
+            <span class="num">05</span>
+            <div class="eyebrow">Business Model Canvas</div>
+            <h2>비즈니스 모델 캔버스</h2>
+            <p class="lead">
+              EX Platform은 기업 복지 운영을 SaaS화하고, AI 기반 개인화와 데이터 분석을 통해 확장 가능한 수익 구조를 만듭니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="bmc-grid">
+          <div class="bmc-box"><strong>01 핵심 파트너</strong><p>기업 HR/복지팀, 그룹사, 휴양소·숙박 제휴사, 여행사, 지도 API, AI 모델 제공사, 클라우드·보안 사업자, ERP/그룹웨어 연동 파트너</p></div>
+          <div class="bmc-box"><strong>02 핵심 활동</strong><p>플랫폼 개발·운영, AI 추천 알고리즘 고도화, 복지 데이터 표준화, 고객사 온보딩, 관리자 리포트 제공, 제휴 콘텐츠 확보</p></div>
+          <div class="bmc-box"><strong>03 핵심 자원</strong><p>모바일 서비스, AI 추천 엔진, 후기·복지 데이터, 관리자 시스템, SaaS 운영 인프라, 보안·권한관리, 서비스 기획·운영 역량</p></div>
+          <div class="bmc-box"><strong>04 가치 제안</strong><p>직원에게는 찾기 쉬운 복지 경험을, 기업에게는 복지 이용률·만족도·운영 효율을 동시에 제공하는 AI 기반 EX 플랫폼</p></div>
+          <div class="bmc-box"><strong>05 고객 관계</strong><p>기업별 전담 온보딩, 관리자 교육, AI 챗봇 지원, 정기 리포트, 커뮤니티 기반 피드백, 고객사 맞춤형 기능 개선</p></div>
+          <div class="bmc-box"><strong>06 채널</strong><p>모바일 웹/앱, 사내 포털, 그룹웨어, HR 시스템, B2B 영업, 제안서·데모, 기업 복지 박람회 및 파트너 채널</p></div>
+          <div class="bmc-box"><strong>07 고객 세그먼트</strong><p>대기업·중견기업, 공공기관, 그룹사, HR/총무/복지 담당부서, 임직원, 복지 제휴 사업자</p></div>
+          <div class="bmc-box"><strong>08 비용 구조</strong><p>서비스 개발비, AI 사용료, 클라우드·보안 비용, 유지보수, 고객지원, 제휴 콘텐츠 운영, 마케팅·영업 비용</p></div>
+          <div class="bmc-box"><strong>09 수익 흐름</strong><p>SaaS 구독료, Enterprise 라이선스, AI Premium, Marketplace 수수료, 복지포인트 연계, API/데이터 리포트, 커스터마이징 구축비</p></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <span class="num">06</span>
+            <div class="eyebrow">Revenue Strategy</div>
+            <h2>수익흐름 전략</h2>
+            <p class="lead">
+              수익흐름은 비즈니스 모델 캔버스와 동일한 핵심 축으로 별도 관리합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="revenue-layout">
+          <div class="revenue-main">
+            <div class="eyebrow" style="color:#67e8f9">Main Revenue Model</div>
+            <h3>B2B SaaS + AI Premium + Marketplace</h3>
+            <p>
+              EX Platform은 단순 광고형 서비스가 아니라 기업이 매월 사용하는 업무형 복지 플랫폼입니다.
+              기본 구독료로 안정적인 반복 매출을 만들고, AI 추천·분석 기능과 제휴 마켓플레이스를 통해 확장 매출을 설계합니다.
+            </p>
+            <div class="revenue-stats">
+              <div class="rev-stat"><small>기본 매출</small><strong>SaaS</strong></div>
+              <div class="rev-stat"><small>확장 매출</small><strong>AI</strong></div>
+              <div class="rev-stat"><small>거래 매출</small><strong>Market</strong></div>
+              <div class="rev-stat"><small>대형 고객</small><strong>Enterprise</strong></div>
+            </div>
+          </div>
+
+          <div class="money-list">
+            <div class="money">
+              <div class="mini-icon">💼</div>
+              <div><strong>SaaS 구독료</strong><p>기업 규모와 사용자 수에 따라 월 구독료를 부과하는 기본 수익모델</p></div>
+            </div>
+            <div class="money">
+              <div class="mini-icon">🤖</div>
+              <div><strong>AI Premium</strong><p>AI 복지비서, 맞춤 추천, 데이터 분석 리포트를 유료 옵션화</p></div>
+            </div>
+            <div class="money">
+              <div class="mini-icon">🛒</div>
+              <div><strong>Marketplace</strong><p>숙박·여행·복지 제휴상품 연결 시 거래 수수료 확보</p></div>
+            </div>
+            <div class="money">
+              <div class="mini-icon">🏢</div>
+              <div><strong>Enterprise License</strong><p>대기업·그룹사 전용 구축, 보안, 커스터마이징 비용 수익화</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="roadmap">
+        <div class="section-head">
+          <div>
+            <span class="num">07</span>
+            <div class="eyebrow">3-Year Roadmap</div>
+            <h2>3년 성장 로드맵</h2>
+            <p class="lead">
+              1년차는 휴양소 후기 중심의 실현 가능한 시작, 2년차는 AI 탑재, 3년차는 기업형 확장으로 설계합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="roadmap">
+          <div class="road">
+            <span class="year">Year 1</span>
+            <h3>EX Travel Launch</h3>
+            <div class="phase">휴양소 후기 서비스 출시</div>
+            <ul>
+              <li>휴양소 후기 모바일 서비스</li>
+              <li>사진·댓글·스크랩·지도</li>
+              <li>후기 데이터 수집 및 표준화</li>
+              <li>관리자 등록·통계 기능</li>
+            </ul>
+            <p class="lead" style="font-size:14px">목표: 작게 시작해 실제 사용자 데이터 확보</p>
+          </div>
+
+          <div class="road" style="border-color:#c4b5fd;background:linear-gradient(180deg,#fff,#fbf7ff)">
+            <span class="year" style="background:#ede9fe;color:#6d28d9">Year 2</span>
+            <h3>EX AI Integration</h3>
+            <div class="phase" style="color:#7c3aed">AI가 달리는 플랫폼</div>
+            <ul>
+              <li>AI 후기 요약·장단점 추출</li>
+              <li>AI 복지비서 및 FAQ</li>
+              <li>개인 맞춤 복지·여행 추천</li>
+              <li>AI 분석 Dashboard</li>
+            </ul>
+            <p class="lead" style="font-size:14px">목표: 찾는 복지에서 먼저 제안하는 복지로 진화</p>
+          </div>
+
+          <div class="road" style="border-color:#bae6fd;background:linear-gradient(180deg,#fff,#f0fbff)">
+            <span class="year" style="background:#e0f2fe;color:#0369a1">Year 3</span>
+            <h3>Enterprise Expansion</h3>
+            <div class="phase" style="color:#0284c7">확장형 EX 플랫폼</div>
+            <ul>
+              <li>EX Benefit·Community 확장</li>
+              <li>그룹사·외부기업 도입</li>
+              <li>Marketplace·API 연계</li>
+              <li>SaaS 사업화 및 Enterprise 패키지</li>
+            </ul>
+            <p class="lead" style="font-size:14px">목표: 사내 서비스에서 B2B 플랫폼 사업으로 확장</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="impact">
+        <div class="section-head">
+          <div>
+            <span class="num">08</span>
+            <div class="eyebrow">Expected Impact</div>
+            <h2>기대효과</h2>
+            <p class="lead">
+              직원 경험, 기업 운영, 사업화 가능성을 동시에 개선합니다.
+            </p>
+          </div>
+        </div>
+
+        <div class="impact-grid">
+          <div class="impact-card">
+            <strong>+30%</strong>
+            <h3>복지 이용률 향상</h3>
+            <p>분산된 복지 정보를 모바일에서 쉽게 탐색하고 AI 추천으로 실제 이용률을 높입니다.</p>
+            <div class="mini-chart">
+              <div class="bar b1"></div>
+              <div class="bar b2"></div>
+              <div class="bar b3"></div>
+              <div class="bar b4"></div>
+            </div>
+            <div class="impact-caption"><span>Before</span><span>After</span></div>
+          </div>
+
+          <div class="impact-card">
+            <strong>AI</strong>
+            <h3>관리 업무 자동화</h3>
+            <p>후기 요약, FAQ 응답, 복지 추천, 통계 리포트를 AI가 보조하여 운영 효율을 높입니다.</p>
+            <div class="automation-graph">
+              <div class="ring"></div>
+            </div>
+            <div class="impact-caption"><span>Manual</span><span>Automation</span></div>
+          </div>
+
+          <div class="impact-card">
+            <strong>B2B</strong>
+            <h3>SaaS 사업화 가능</h3>
+            <p>기업별 구독형 모델, Enterprise 라이선스, AI Premium 옵션으로 반복 수익을 설계합니다.</p>
+            <div class="saas-graph">
+              <svg class="line-graph" viewBox="0 0 240 70" preserveAspectRatio="none">
+                <polyline points="10,58 62,48 112,36 166,22 230,10"></polyline>
+                <circle cx="10" cy="58" r="5"></circle>
+                <circle cx="62" cy="48" r="5"></circle>
+                <circle cx="112" cy="36" r="5"></circle>
+                <circle cx="166" cy="22" r="5"></circle>
+                <circle cx="230" cy="10" r="5"></circle>
+              </svg>
+            </div>
+            <div class="impact-caption"><span>Launch</span><span>Scale-up</span></div>
+          </div>
+
+          <div class="impact-card">
+            <strong>Data</strong>
+            <h3>직원 경험 데이터 축적</h3>
+            <p>후기, 선호도, 이용 패턴, 만족도 데이터를 축적해 HR·복지 의사결정의 근거로 활용합니다.</p>
+            <div class="data-graph">
+              <span class="node n1"></span>
+              <span class="node n2"></span>
+              <span class="node n3"></span>
+              <span class="node n4"></span>
+            </div>
+            <div class="impact-caption"><span>Review</span><span>Insight</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="closing">
+        <div>
+          <div class="eyebrow">Closing</div>
+          <h2>EX Platform 제안 참여</h2>
+          <p class="slogan">“복지를 관리하는 시대에서, 경험을 설계하는 시대로.”</p>
+          <p class="lead" style="margin-top:10px">ITCEN Innovation Idea Contest 2026</p>
+        </div>
+        <div class="team-card">
+          <div class="team-title">Proposal Team</div>
+          <div class="leader">
+            Team Leader
+            <b>김도현</b>
+          </div>
+          <div class="leader" style="margin-bottom:0">
+            Team Members
+            <div class="members">
+              <span class="member">이지은</span>
+              <span class="member">박준혁</span>
+              <span class="member">최서윤</span>
+              <span class="member">정민수</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</body>
+</html>
