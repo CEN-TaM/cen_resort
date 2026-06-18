@@ -2267,6 +2267,16 @@
   .map-topbar .ttl { font-weight: 800; font-size: 16px; }
   .map-screen .content { overflow-y: auto; }
 
+  /* 검색 입력 (map-topbar 내) */
+  .map-topbar .search-input {
+    flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--surface); outline: none; font-size: 14px; color: var(--text-1);
+  }
+  .map-topbar .search-btn {
+    margin-left: 8px; padding: 8px 12px; border-radius: 10px; border: none;
+    background: linear-gradient(180deg, #2E6BFF, #1F4FE0); color: #fff; font-weight:700; cursor:pointer;
+  }
+
   /* 지도 카드 */
   .map-card {
     background: var(--surface); border: 1px solid var(--border);
@@ -2386,12 +2396,13 @@
             <div class="top-logo">
               <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 312.43 312.43"><defs><style>.cls-1{fill:url(#radial-gradient);}.cls-2{fill:url(#radial-gradient-2);}.cls-3{fill:url(#radial-gradient-3);}.cls-4{fill:#fff;}</style><radialGradient id="radial-gradient" cx="633.2" cy="384.82" r="382.37" gradientTransform="translate(-206.41 -2.51) scale(0.82)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#569dff"></stop><stop offset="0.13" stop-color="#418cfa"></stop><stop offset="0.44" stop-color="#1264ee"></stop><stop offset="0.6" stop-color="#0055e9"></stop><stop offset="0.68" stop-color="#0052e3"></stop><stop offset="0.79" stop-color="#004ad3"></stop><stop offset="0.91" stop-color="#003db8"></stop><stop offset="1" stop-color="#0032a0"></stop></radialGradient><radialGradient id="radial-gradient-2" cx="633.2" cy="384.82" r="382.39" gradientTransform="translate(-206.41 -2.51) scale(0.82)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#569dff"></stop><stop offset="0.13" stop-color="#418cfa"></stop><stop offset="0.45" stop-color="#1264ee"></stop><stop offset="0.6" stop-color="#0055e9"></stop><stop offset="0.69" stop-color="#0052e3"></stop><stop offset="0.79" stop-color="#004ad3"></stop><stop offset="0.91" stop-color="#003db8"></stop><stop offset="1" stop-color="#0032a0"></stop></radialGradient><radialGradient id="radial-gradient-3" cx="633.2" cy="384.82" r="382.39" xlink:href="#radial-gradient-2"></radialGradient></defs><g id="레이어_2" data-name="레이어 2"><g id="레이어_1-2" data-name="레이어 1"><path class="cls-1" d="M156.08,312.42H312.43l0-156.35A166.62,166.62,0,0,0,156.08,312.42Z"></path><path class="cls-2" d="M0,312.43H151L89.88,93.15A311.43,311.43,0,0,0,0,312.43Z"></path><path class="cls-3" d="M93.15,89.88,312.43,151V0A311.45,311.45,0,0,0,93.15,89.88Z"></path><path class="cls-4" d="M89.88,93.15,151,312.43h5.13A166.61,166.61,0,0,1,312.43,156.08V151L93.15,89.88C92.06,91,91,92.05,89.88,93.15Z"></path></g></g></svg>
             </div>
+            <div style="flex:1"></div>
             <div class="top-actions">
               <div class="icon-btn" onclick="openSearch()" title="검색">
                 <i class="ti ti-search"></i>
               </div>
               <div class="icon-btn" onclick="showScreen('device1','map')" title="지도">
-                <i class="ti ti-map-pin"></i>
+                <i class="ti ti-map"></i>
               </div>
               <div class="icon-btn" onclick="openNotifications()" title="알림">
                 <i class="ti ti-bell"></i>
@@ -3555,14 +3566,14 @@
     <!-- SEARCH : 전체 검색 화면 -->
     <div class="screen" data-screen="search">
       <div class="sticky-header">
-        <div class="top-bar">
-          <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
-          <div style="flex:1; display:flex; align-items:center; gap:8px; padding:0 8px;">
-            <input id="global-search-input" placeholder="휴양소 검색" style="flex:1; padding:10px; border-radius:8px; border:1px solid var(--border);"></input>
-            <button onclick="performSearch(document.getElementById('global-search-input').value)">검색</button>
+          <div class="map-topbar">
+            <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
+            <div style="flex:1; display:flex; align-items:center; gap:8px; padding:0 8px;">
+              <input id="global-search-input" class="search-input" placeholder="휴양소 검색"></input>
+              <button class="search-btn" onclick="performSearch(document.getElementById('global-search-input').value)">검색</button>
+            </div>
           </div>
         </div>
-      </div>
       <div class="content" style="padding:14px;">
         <div id="search-results"></div>
       </div>
@@ -3571,7 +3582,7 @@
     <!-- NOTIFICATIONS : 알림 목록 -->
     <div class="screen" data-screen="notifications">
       <div class="sticky-header">
-        <div class="top-bar">
+        <div class="map-topbar">
           <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
           <div class="ttl">알림</div>
         </div>
