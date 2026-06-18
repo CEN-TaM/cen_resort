@@ -3082,7 +3082,7 @@
           <span class="notice-cat" onclick="selectNoticeCat(this)">시설</span>
         </div>
 
-        <div class="notice-card" onclick="openNoticeDetail('n1')">
+        <div class="notice-card" data-category="예약" onclick="openNoticeDetail('n1')">
           <div class="notice-meta">
             <span class="pin"><i class="ti ti-pin"></i> 고정</span>
             <span class="tag tone-sky">예약</span>
@@ -3097,7 +3097,7 @@
           </div>
         </div>
 
-        <div class="notice-card" onclick="openNoticeDetail('n2')">
+        <div class="notice-card" data-category="복지포인트" onclick="openNoticeDetail('n2')">
           <div class="notice-meta">
             <span class="pin"><i class="ti ti-pin"></i> 고정</span>
             <span class="tag tone-mint">복지포인트</span>
@@ -3112,7 +3112,7 @@
           </div>
         </div>
 
-        <div class="notice-card" onclick="openNoticeDetail('n3')">
+        <div class="notice-card" data-category="이용수칙" onclick="openNoticeDetail('n3')">
           <div class="notice-meta">
             <span class="tag tone-peach">이용수칙</span>
           </div>
@@ -3126,7 +3126,7 @@
           </div>
         </div>
 
-        <div class="notice-card" onclick="openNoticeDetail('n4')">
+        <div class="notice-card" data-category="이벤트" onclick="openNoticeDetail('n4')">
           <div class="notice-meta">
             <span class="tag tone-coral">이벤트</span>
           </div>
@@ -3140,7 +3140,7 @@
           </div>
         </div>
 
-        <div class="notice-card" onclick="openNoticeDetail('n5')">
+        <div class="notice-card" data-category="시설" onclick="openNoticeDetail('n5')">
           <div class="notice-meta">
             <span class="tag tone-lilac">시설</span>
           </div>
@@ -3154,7 +3154,7 @@
           </div>
         </div>
 
-        <div class="notice-card" onclick="openNoticeDetail('n6')">
+        <div class="notice-card" data-category="예약" onclick="openNoticeDetail('n6')">
           <div class="notice-meta">
             <span class="tag tone-sky">예약</span>
           </div>
@@ -4007,6 +4007,11 @@
   function selectNoticeCat(el) {
     el.parentElement.querySelectorAll('.notice-cat').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
+    const filter = el.textContent.trim();
+    const cards = document.querySelectorAll('.screen[data-screen="tips"] .notice-card');
+    cards.forEach(card => {
+      card.style.display = filter === '전체' || card.dataset.category === filter ? '' : 'none';
+    });
   }
 
   // ===== 공지사항 데이터 =====
