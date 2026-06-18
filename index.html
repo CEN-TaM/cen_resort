@@ -2281,10 +2281,15 @@
   .map-topbar .search-btn .ms { display: none; }
   .map-topbar .search-btn .label { display: inline; }
   @media (max-width:420px) {
-    .map-topbar .search-input { padding:8px; font-size:13px; }
+    .map-topbar .search-input { padding:8px; font-size:16px; }
     .map-topbar .search-btn { padding:8px; width:40px; display:flex; align-items:center; justify-content:center; }
     .map-topbar .search-btn .ms { display:block; color:#fff; font-size:18px; }
     .map-topbar .search-btn .label { display:none; }
+  }
+
+  /* Prevent iOS Safari from auto-zooming inputs by disabling text-size adjust */
+  html, body, input, textarea {
+    -webkit-text-size-adjust: 100%;
   }
 
   /* 지도 카드 */
