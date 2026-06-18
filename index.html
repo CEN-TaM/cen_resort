@@ -3776,7 +3776,57 @@
     goToBannerSlide(nextIdx);
   }
   // 자동 슬라이드 (5초마다)
-  setInterval(nextBannerSlide, 5000);
+  let bannerAuto = setInterval(nextBannerSlide, 5000);
+
+  // === 모바일 터치 스와이프 지원 ===
+  (function enableBannerTouch() {
+    const carousel = document.getElementById('eventCarousel');
+    if (!carousel) return;
+    const slides = carousel.querySelector('.banner-slides');
+    if (!slides) return;
+
+    let startX = 0;
+    let deltaX = 0;
+    let isDragging = false;
+    const threshold = 50; // px
+
+    function onTouchStart(e) {
+      if (!e.touches || e.touches.length === 0) return;
+      clearInterval(bannerAuto);
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      slides.style.transition = 'none';
+    }
+
+    function onTouchMove(e) {
+      if (!isDragging || !e.touches || e.touches.length === 0) return;
+      const cx = e.touches[0].clientX;
+      deltaX = cx - startX;
+      slides.style.transform = `translateX(calc(-${currentBannerSlide * 100}% + ${deltaX}px))`;
+    }
+
+    function onTouchEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      slides.style.transition = 'transform 0.3s ease';
+      if (Math.abs(deltaX) > threshold) {
+        if (deltaX < 0) {
+          nextBannerSlide();
+        } else {
+          const prev = Math.max(0, currentBannerSlide - 1);
+          goToBannerSlide(prev);
+        }
+      } else {
+        goToBannerSlide(currentBannerSlide);
+      }
+      deltaX = 0;
+      bannerAuto = setInterval(nextBannerSlide, 5000);
+    }
+
+    slides.addEventListener('touchstart', onTouchStart, { passive: true });
+    slides.addEventListener('touchmove', onTouchMove, { passive: true });
+    slides.addEventListener('touchend', onTouchEnd);
+  })();
 
   // ===== 지역 칩 선택 =====
   function selectRegion(el) {
