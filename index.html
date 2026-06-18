@@ -3584,7 +3584,7 @@
           <div class="map-topbar">
             <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
             <div class="search-group" style="padding:0 8px; flex:1;">
-              <input id="global-search-input" class="search-input" placeholder="휴양소 검색">
+              <input id="global-search-input" type="search" inputmode="search" autocomplete="off" autocapitalize="none" class="search-input" placeholder="휴양소 검색">
               <button class="search-btn" onclick="performSearch(document.getElementById('global-search-input').value)"><span class="ms">search</span><span class="label">검색</span></button>
             </div>
           </div>
@@ -3697,10 +3697,15 @@
   // ===== 검색 및 알림 기능 =====
   function openSearch() {
     showScreen('device1', 'search');
+    const inp = document.getElementById('global-search-input');
+    if (inp) {
+      inp.focus({ preventScroll: true });
+      inp.scrollIntoView({ block: 'center', inline: 'nearest' });
+    }
     setTimeout(() => {
-      const inp = document.getElementById('global-search-input');
-      if (inp) inp.focus();
-    }, 80);
+      const delayed = document.getElementById('global-search-input');
+      if (delayed) delayed.focus({ preventScroll: true });
+    }, 120);
     renderSearchResults('');
   }
 
