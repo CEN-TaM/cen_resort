@@ -3783,12 +3783,12 @@
     slides.appendChild(firstClone);
     slides.insertBefore(lastClone, slides.firstChild);
 
-    let logicalIndex = 0; // 0..slideCount-1
     let posIndex = 1; // position in DOM including clones (starts at 1)
     const total = slideCount + 2; // including two clones
 
     function updateDots() {
-      dots.forEach((d, i) => d.classList.toggle('active', i === logicalIndex));
+      const logical = (posIndex - 1 + slideCount) % slideCount;
+      dots.forEach((d, i) => d.classList.toggle('active', i === logical));
     }
 
     function setPosition(idx, animate = true) {
@@ -3799,22 +3799,19 @@
     }
 
     function goToBannerSlide(idx) {
-      logicalIndex = (idx + slideCount) % slideCount;
-      posIndex = logicalIndex + 1;
+      posIndex = ((idx % slideCount) + 1);
       setPosition(posIndex, true);
       updateDots();
     }
 
     function nextBannerSlide() {
-      logicalIndex = (logicalIndex + 1) % slideCount;
-      posIndex = logicalIndex + 1;
+      posIndex = posIndex + 1;
       setPosition(posIndex, true);
       updateDots();
     }
 
     function prevBannerSlide() {
-      logicalIndex = (logicalIndex - 1 + slideCount) % slideCount;
-      posIndex = logicalIndex + 1;
+      posIndex = posIndex - 1;
       setPosition(posIndex, true);
       updateDots();
     }
@@ -3833,10 +3830,12 @@
         // 왼쪽 끝(마지막 클론) -> 실제 마지막으로 점프
         posIndex = slideCount;
         setPosition(posIndex, false);
+        updateDots();
       } else if (cur === total - 1) {
         // 오른쪽 끝(첫 클론) -> 실제 첫으로 점프
         posIndex = 1;
         setPosition(posIndex, false);
+        updateDots();
       }
     });
 
