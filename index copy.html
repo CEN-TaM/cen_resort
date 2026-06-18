@@ -404,31 +404,19 @@
   }
 
   /* 세니 이벤트 배너 (풀블리드 일러스트) */
-  .banner-carousel {
-    position: relative;
-    margin: 0 18px 18px;
-    border-radius: var(--r-xl);
-    overflow: hidden;
-  }
-  .banner-slides {
-    display: flex;
-    transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
-  }
   .event-banner {
-    margin: 0;
+    margin: 0 18px 18px;
     border-radius: var(--r-xl);
     overflow: hidden;
     position: relative;
     aspect-ratio: 340 / 160;
     background: #cfe0f5 center / cover no-repeat;
     color: var(--text-1);
-    flex-shrink: 0;
-    width: 100%;
   }
   /* 텍스트 가독성용 좌측 흰색 그라데이션 오버레이 */
   .event-banner::after {
     content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background: linear-gradient(100deg, rgba(255,255,255,.72) 0%, rgba(255,255,255,.38) 36%, rgba(255,255,255,0) 68%);
+    background: linear-gradient(100deg, rgba(255,255,255,.92) 0%, rgba(255,255,255,.6) 36%, rgba(255,255,255,0) 68%);
   }
   .event-banner .ev-text, .event-banner .pager { z-index: 2; }
   .event-banner .ev-text {
@@ -485,31 +473,6 @@
     letter-spacing: 0.02em;
   }
   .event-banner .pager b { font-weight: 800; }
-
-  /* 배너 캐로셀 컨트롤 */
-  .banner-controls {
-    position: absolute;
-    bottom: 14px;
-    right: 20px;
-    z-index: 10;
-    display: flex;
-    gap: 6px;
-  }
-  .banner-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    padding: 0;
-  }
-  .banner-dot.active {
-    background: rgba(255, 255, 255, 0.9);
-    width: 24px;
-    border-radius: 4px;
-  }
 
   /* 섹션 헤더 */
   .section-head {
@@ -2399,9 +2362,12 @@
           </div>
 
           <div class="main-tab">
-            <div class="mtab active" onclick="switchMainTab(this, 0)">홈</div>
-            <div class="mtab" onclick="switchMainTab(this, 1)">정기 휴양소</div>
-            <div class="mtab" onclick="switchMainTab(this, 2)">이벤트 휴양소</div>
+            <div class="mtab active" onclick="switchMainTab(this, 0)">정기 휴양소</div>
+            <div class="mtab" onclick="switchMainTab(this, 1)">
+              이벤트 휴양소
+              <span class="new-dot"></span>
+            </div>
+            <div class="mtab" onclick="switchMainTab(this, 2)">인기</div>
           </div>
 
           <div class="region-chips">
@@ -2415,30 +2381,13 @@
           </div>
         </div>
 
-        <div class="banner-carousel" id="eventCarousel">
-          <div class="banner-slides">
-            <div class="event-banner" data-img="banner-summer">
-              <div class="ev-text">
-                <div class="label">SUMMER OPEN</div>
-                <div class="title">하계 휴양소<br>신청이 시작됐어요</div>
-                <div class="sub">강릉 태안 통영 외 7곳</div>
-              </div>
-              <div class="pager"><b>1</b> / 2</div>
-            </div>
-
-            <div class="event-banner" data-img="banner-second">
-              <div class="ev-text">
-                <div class="label">2차 예약 접수 기간</div>
-                <div class="title">하계 휴양소 2차 <br>예약 접수기간</div>
-                <div class="sub">2026.06.08(월) ~ 2026.06.17(수)</div>
-              </div>
-              <div class="pager"><b>2</b> / 2</div>
-            </div>
+        <div class="event-banner" data-img="banner-summer">
+          <div class="ev-text">
+            <div class="label">SUMMER OPEN</div>
+            <div class="title">하계 휴양소<br>신청이 시작됐어요</div>
+            <div class="sub">강릉 태안 통영 외 7곳</div>
           </div>
-          <div class="banner-controls">
-            <button class="banner-dot active" onclick="goToBannerSlide(0)"></button>
-            <button class="banner-dot" onclick="goToBannerSlide(1)"></button>
-          </div>
+          <div class="pager"><b>1</b> / 3</div>
         </div>
 
         <div class="map-entry" onclick="showScreen('device1','map')">
@@ -3302,7 +3251,7 @@
         <div class="point-card">
           <div class="row1">
             <div>
-              <div class="plabel">내 복지 포인트</div>
+              <div class="plabel">내 포인트</div>
               <div class="pnum">2,840 <span>P</span></div>
             </div>
             <button class="use-btn">사용내역조회 →</button>
@@ -3757,27 +3706,6 @@
     el.classList.add('active');
   }
 
-  // ===== 배너 슬라이드 기능 =====
-  let currentBannerSlide = 0;
-  function goToBannerSlide(idx) {
-    const carousel = document.getElementById('eventCarousel');
-    if (!carousel) return;
-    const slides = carousel.querySelector('.banner-slides');
-    const dots = carousel.querySelectorAll('.banner-dot');
-    currentBannerSlide = idx;
-    slides.style.transform = `translateX(-${idx * 100}%)`;
-    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-  }
-  function nextBannerSlide() {
-    const carousel = document.getElementById('eventCarousel');
-    if (!carousel) return;
-    const slideCount = carousel.querySelectorAll('.event-banner').length;
-    const nextIdx = (currentBannerSlide + 1) % slideCount;
-    goToBannerSlide(nextIdx);
-  }
-  // 자동 슬라이드 (5초마다)
-  setInterval(nextBannerSlide, 5000);
-
   // ===== 지역 칩 선택 =====
   function selectRegion(el) {
     el.parentElement.querySelectorAll('.region-chip').forEach(c => c.classList.remove('active'));
@@ -4067,9 +3995,6 @@
   Object.keys(favoriteState).forEach(syncFavoriteUI);
   renderFavoriteList();
 
-  // 배너 슬라이드 초기화
-  goToBannerSlide(0);
-
   // ===== 이미지 적용 (로컬 파일 우선, 없으면 fallback) =====
   // 폴더에 동일한 파일명을 넣으면 자동으로 그 이미지가 적용됨
   const IMG = {
@@ -4083,8 +4008,7 @@
     view3:    { local: 'review-3.jpg',        fallback: 'https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=400&q=75' },
     view4:    { local: 'review-4.jpg',        fallback: 'https://images.unsplash.com/photo-1571508601891-ca5e7a713859?w=400&q=75' },
     'hero-jocheon': { local: 'hero-jocheon.jpg', fallback: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=900&q=85' },
-    'banner-summer': { local: 'assets/banner-summer.jpg', fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85' },
-    'banner-second': { local: 'assets/banner-vacation.png', fallback: 'assets/banner-summer.jpg' }
+    'banner-summer': { local: 'assets/banner-summer.jpg', fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85' }
   };
   function setBg(el, url) {
     el.style.backgroundImage = `url("${url}")`;
@@ -4100,8 +4024,6 @@
     probe.onerror = () => setBg(el, cfg.fallback);
     probe.src = cfg.local;
   });
-
-  // banner characters removed
 
   // ===== Q&A 답변 작성 =====
   function openAnswerInput(qnaId) {
