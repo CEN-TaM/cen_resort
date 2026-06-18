@@ -2423,7 +2423,7 @@
                 <div class="title">하계 휴양소<br>신청이 시작됐어요</div>
                 <div class="sub">강릉 태안 통영 외 7곳</div>
               </div>
-              <div class="pager"><b>1</b> / 2</div>
+              <div class="pager"><b>1</b> / 3</div>
             </div>
 
             <div class="event-banner" data-img="banner-second">
@@ -2432,12 +2432,22 @@
                 <div class="title">하계 휴양소 2차 <br>예약 접수기간</div>
                 <div class="sub">2026.06.08(월) ~ 2026.06.17(수)</div>
               </div>
-              <div class="pager"><b>2</b> / 2</div>
+              <div class="pager"><b>2</b> / 3</div>
+            </div>
+            
+            <div class="event-banner" data-img="banner-third">
+              <div class="ev-text">
+                <div class="label">이용수칙</div>
+                <div class="title">휴양소 이용 수칙 개정 안내</div>
+                <div class="sub">5월 15일 시행</div>
+              </div>
+              <div class="pager"><b>3</b> / 3</div>
             </div>
           </div>
           <div class="banner-controls">
             <button class="banner-dot active" onclick="goToBannerSlide(0)"></button>
             <button class="banner-dot" onclick="goToBannerSlide(1)"></button>
+            <button class="banner-dot" onclick="goToBannerSlide(2)"></button>
           </div>
         </div>
 
@@ -3757,38 +3767,82 @@
     el.classList.add('active');
   }
 
-  // ===== 배너 슬라이드 기능 =====
-  let currentBannerSlide = 0;
-  function goToBannerSlide(idx) {
+  // ===== 배너 슬라이드 기능 (무한 루프 지원) =====
+  (function initBannerLoop() {
     const carousel = document.getElementById('eventCarousel');
     if (!carousel) return;
     const slides = carousel.querySelector('.banner-slides');
     const dots = carousel.querySelectorAll('.banner-dot');
-    currentBannerSlide = idx;
-    slides.style.transform = `translateX(-${idx * 100}%)`;
-    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-  }
-  function nextBannerSlide() {
-    const carousel = document.getElementById('eventCarousel');
-    if (!carousel) return;
-    const slideCount = carousel.querySelectorAll('.event-banner').length;
-    const nextIdx = (currentBannerSlide + 1) % slideCount;
-    goToBannerSlide(nextIdx);
-  }
-  // 자동 슬라이드 (5초마다)
-  let bannerAuto = setInterval(nextBannerSlide, 5000);
+    const items = Array.from(slides.querySelectorAll('.event-banner'));
+    const slideCount = items.length;
+    if (slideCount === 0) return;
 
-  // === 모바일 터치 스와이프 지원 ===
-  (function enableBannerTouch() {
-    const carousel = document.getElementById('eventCarousel');
-    if (!carousel) return;
-    const slides = carousel.querySelector('.banner-slides');
-    if (!slides) return;
+    // 클론을 만들어 앞뒤에 붙여 무한 루프 효과 구현
+    const firstClone = items[0].cloneNode(true);
+    const lastClone = items[items.length - 1].cloneNode(true);
+    slides.appendChild(firstClone);
+    slides.insertBefore(lastClone, slides.firstChild);
 
-    let startX = 0;
-    let deltaX = 0;
-    let isDragging = false;
-    const threshold = 50; // px
+    let logicalIndex = 0; // 0..slideCount-1
+    let posIndex = 1; // position in DOM including clones (starts at 1)
+    const total = slideCount + 2; // including two clones
+
+    function updateDots() {
+      dots.forEach((d, i) => d.classList.toggle('active', i === logicalIndex));
+    }
+
+    function setPosition(idx, animate = true) {
+      if (animate) slides.style.transition = 'transform 0.3s ease';
+      else slides.style.transition = 'none';
+      slides.style.transform = `translateX(-${idx * 100}%)`;
+      slides.dataset.pos = idx;
+    }
+
+    function goToBannerSlide(idx) {
+      logicalIndex = (idx + slideCount) % slideCount;
+      posIndex = logicalIndex + 1;
+      setPosition(posIndex, true);
+      updateDots();
+    }
+
+    function nextBannerSlide() {
+      logicalIndex = (logicalIndex + 1) % slideCount;
+      posIndex = logicalIndex + 1;
+      setPosition(posIndex, true);
+      updateDots();
+    }
+
+    function prevBannerSlide() {
+      logicalIndex = (logicalIndex - 1 + slideCount) % slideCount;
+      posIndex = logicalIndex + 1;
+      setPosition(posIndex, true);
+      updateDots();
+    }
+
+    // 초기 위치: 첫 번째 실제 슬라이드
+    setPosition(posIndex, false);
+    updateDots();
+
+    // 자동슬라이드
+    let bannerAuto = setInterval(nextBannerSlide, 5000);
+
+    // 트랜지션 완료시 클론에서 실제 위치로 스냅
+    slides.addEventListener('transitionend', () => {
+      const cur = parseInt(slides.dataset.pos || posIndex, 10);
+      if (cur === 0) {
+        // 왼쪽 끝(마지막 클론) -> 실제 마지막으로 점프
+        posIndex = slideCount;
+        setPosition(posIndex, false);
+      } else if (cur === total - 1) {
+        // 오른쪽 끝(첫 클론) -> 실제 첫으로 점프
+        posIndex = 1;
+        setPosition(posIndex, false);
+      }
+    });
+
+    // 터치/스와이프 처리
+    let startX = 0, deltaX = 0, isDragging = false;
+    const threshold = 50;
 
     function onTouchStart(e) {
       if (!e.touches || e.touches.length === 0) return;
@@ -3796,13 +3850,14 @@
       isDragging = true;
       startX = e.touches[0].clientX;
       slides.style.transition = 'none';
+      deltaX = 0;
     }
 
     function onTouchMove(e) {
       if (!isDragging || !e.touches || e.touches.length === 0) return;
       const cx = e.touches[0].clientX;
       deltaX = cx - startX;
-      slides.style.transform = `translateX(calc(-${currentBannerSlide * 100}% + ${deltaX}px))`;
+      slides.style.transform = `translateX(calc(-${posIndex * 100}% + ${deltaX}px))`;
     }
 
     function onTouchEnd() {
@@ -3810,14 +3865,10 @@
       isDragging = false;
       slides.style.transition = 'transform 0.3s ease';
       if (Math.abs(deltaX) > threshold) {
-        if (deltaX < 0) {
-          nextBannerSlide();
-        } else {
-          const prev = Math.max(0, currentBannerSlide - 1);
-          goToBannerSlide(prev);
-        }
+        if (deltaX < 0) nextBannerSlide();
+        else prevBannerSlide();
       } else {
-        goToBannerSlide(currentBannerSlide);
+        setPosition(posIndex, true);
       }
       deltaX = 0;
       bannerAuto = setInterval(nextBannerSlide, 5000);
@@ -3826,6 +3877,10 @@
     slides.addEventListener('touchstart', onTouchStart, { passive: true });
     slides.addEventListener('touchmove', onTouchMove, { passive: true });
     slides.addEventListener('touchend', onTouchEnd);
+
+    // 외부에서 사용되는 전역 함수 노출
+    window.goToBannerSlide = goToBannerSlide;
+    window.nextBannerSlide = nextBannerSlide;
   })();
 
   // ===== 지역 칩 선택 =====
@@ -4134,7 +4189,8 @@
     view4:    { local: 'review-4.jpg',        fallback: 'https://images.unsplash.com/photo-1571508601891-ca5e7a713859?w=400&q=75' },
     'hero-jocheon': { local: 'hero-jocheon.jpg', fallback: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=900&q=85' },
     'banner-summer': { local: 'assets/banner-summer.jpg', fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85' },
-    'banner-second': { local: 'assets/banner-vacation.png', fallback: 'assets/banner-summer.jpg' }
+    'banner-second': { local: 'assets/banner-vacation.png', fallback: 'assets/banner-summer.jpg' },
+    'banner-third': { local: 'assets/banner-third.jpg', fallback: 'assets/banner-summer.jpg' }
   };
   function setBg(el, url) {
     el.style.backgroundImage = `url("${url}")`;
