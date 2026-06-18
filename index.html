@@ -2268,13 +2268,20 @@
   .map-screen .content { overflow-y: auto; }
 
   /* 검색 입력 (map-topbar 내) */
+  .map-topbar .search-group { display:flex; align-items:center; gap:8px; width:100%; }
   .map-topbar .search-input {
-    flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
-    background: var(--surface); outline: none; font-size: 14px; color: var(--text-1);
+    flex: 1 1 auto; min-width: 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--surface); outline: none; font-size: 14px; color: var(--text-1); box-sizing: border-box;
   }
   .map-topbar .search-btn {
-    margin-left: 8px; padding: 8px 12px; border-radius: 10px; border: none;
-    background: linear-gradient(180deg, #2E6BFF, #1F4FE0); color: #fff; font-weight:700; cursor:pointer;
+    flex: 0 0 auto; margin-left: 8px; padding: 8px 12px; border-radius: 10px; border: none;
+    background: linear-gradient(180deg, #2E6BFF, #1F4FE0); color: #fff; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  @media (max-width:420px) {
+    .map-topbar .search-input { padding:8px; font-size:13px; }
+    .map-topbar .search-btn { padding:8px; width:40px; display:flex; align-items:center; justify-content:center; }
+    .map-topbar .search-btn::after { content: '\1F50D'; }
+    .map-topbar .search-btn span { display:none; }
   }
 
   /* 지도 카드 */
@@ -3568,9 +3575,9 @@
       <div class="sticky-header">
           <div class="map-topbar">
             <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
-            <div style="flex:1; display:flex; align-items:center; gap:8px; padding:0 8px;">
-              <input id="global-search-input" class="search-input" placeholder="휴양소 검색"></input>
-              <button class="search-btn" onclick="performSearch(document.getElementById('global-search-input').value)">검색</button>
+            <div class="search-group" style="padding:0 8px; flex:1;">
+              <input id="global-search-input" class="search-input" placeholder="휴양소 검색">
+              <button class="search-btn" onclick="performSearch(document.getElementById('global-search-input').value)"><span>검색</span></button>
             </div>
           </div>
         </div>
