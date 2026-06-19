@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>세니와 함께 - 사내 휴양소 리뷰</title>
+<title>CEN-TaM - 사내 휴양소 리뷰</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
@@ -376,6 +376,17 @@
     border-color: var(--brand-100);
     font-weight: 700;
   }
+  .region-chip.cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    background: var(--brand-50);
+    border-color: var(--brand-100);
+  }
+  .region-chip.cat-chip i { font-size: 14px; }
+  .region-chip.cat-chip:hover { background: var(--brand-100); }
 
   /* 필터 칩 */
   .filter-row {
@@ -520,6 +531,35 @@
   }
   .section-head .title { font-size: 15px; font-weight: 700; color: #0F172A; }
   .section-head .more { font-size: 11px; color: #475569; cursor: pointer; }
+
+  /* 실시간 리뷰 정렬 드롭다운 */
+  .review-sort { position: relative; }
+  .review-sort > span { cursor: pointer; }
+  .sort-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 6px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    padding: 4px;
+    min-width: 96px;
+    z-index: 30;
+    display: none;
+  }
+  .sort-menu.open { display: block; }
+  .sort-menu-item {
+    padding: 9px 12px;
+    font-size: 12px;
+    color: var(--text-2);
+    cursor: pointer;
+    border-radius: 7px;
+    white-space: nowrap;
+  }
+  .sort-menu-item:hover { background: var(--surface-3); }
+  .sort-menu-item.active { color: var(--brand-dark); font-weight: 700; }
 
   /* 가로 스크롤 카드 */
   .hcards {
@@ -984,7 +1024,43 @@
   .dtab-pane { display: none; }
   .dtab-pane.active { display: block; animation: fadeIn 0.2s ease; }
 
+  /* 상세 리뷰 탭 좋아요/댓글 버튼 정렬 */
+  .dtab-pane[data-dtab="reviews"] [data-like],
+  .dtab-pane[data-dtab="reviews"] [data-comment] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .dtab-pane[data-dtab="reviews"] [data-like] i,
+  .dtab-pane[data-dtab="reviews"] [data-comment] i {
+    vertical-align: 0;
+    font-size: 15px;
+  }
+
   /* === 공지사항 === */
+  .notice-search {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 18px 2px;
+    padding: 9px 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--pill);
+  }
+  .notice-search.open { display: flex; }
+  .notice-search > i { font-size: 18px; color: var(--text-2); cursor: pointer; flex-shrink: 0; }
+  .notice-search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-1);
+  }
   .notice-cats {
     display: flex;
     gap: 6px;
@@ -1340,6 +1416,13 @@
     transform: translateX(-50%) translateY(0);
   }
   .toast i { color: #4ADE80; font-size: 16px; }
+  #app-toast {
+    z-index: 300;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+  }
 
   /* === 편의시설 섹션 === */
   .feature-section {
@@ -1684,6 +1767,23 @@
   }
   .form-label .req { color: #C73E3A; font-size: 12px; }
   .form-label .hint { font-size: 10px; color: #475569; font-weight: 400; margin-left: 4px; }
+  .form-label .hint-pill {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 9px;
+    background: var(--brand-50);
+    color: var(--brand-dark);
+    border: 1px solid var(--brand-100);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  /* 동행 선택 칩: 선택 시 체크표시 */
+  .companion-chip.active::before {
+    content: "✓";
+    margin-right: 4px;
+    font-weight: 900;
+  }
 
   .select-box {
     padding: 14px;
@@ -1694,6 +1794,40 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
+  }
+  /* 휴양소 구분 세그먼트 + 휴양소 선택 (리뷰 작성) */
+  .resort-type-seg { display: flex; gap: 6px; }
+  .resort-type-seg .rts-btn {
+    flex: 1;
+    padding: 10px 0;
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .resort-type-seg .rts-btn.active {
+    background: var(--brand-50);
+    color: var(--brand-dark);
+    border-color: var(--brand-100);
+  }
+  .resort-select {
+    width: 100%;
+    min-width: 0;
+    padding-right: 22px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-1);
+    appearance: none;
+    -webkit-appearance: none;
     cursor: pointer;
   }
 
@@ -1707,7 +1841,10 @@
     margin-bottom: 8px;
   }
   .rate-row .rname { font-size: 12px; color: #475569; }
-  .rate-stars { font-size: 18px; cursor: pointer; }
+  .rate-stars { font-size: 18px; cursor: pointer; display: inline-flex; gap: 2px; }
+  .rate-stars .rstar { color: #E8EAEE; cursor: pointer; transition: color 0.1s, transform 0.1s; }
+  .rate-stars .rstar.on { color: #F59E0B; }
+  .rate-stars .rstar:hover { transform: scale(1.2); }
 
   .photo-grid {
     display: grid;
@@ -1730,6 +1867,28 @@
   }
   .photo-grid .pcell.add i { font-size: 22px; }
   .photo-grid .pcell.add .cnt { font-size: 9px; margin-top: 3px; }
+  .photo-grid .pcell.photo-thumb {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  .photo-del {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+  .photo-del i { font-size: 12px; }
 
   .chip-row {
     display: flex;
@@ -1754,6 +1913,8 @@
   .textarea:focus { outline: none; border-color: #1F4FE0; color: #0F172A; }
 
   .write-submit {
+    display: block;
+    width: calc(100% - 36px);
     margin: 0 18px 24px;
     padding: 16px;
     background: #1F4FE0;
@@ -1973,18 +2134,71 @@
     font-weight: 700;
   }
 
+  .tip-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 12px;
+  }
+  .tip-nav { display: flex; gap: 6px; }
+  .tip-arrow {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, transform 0.1s;
+  }
+  .tip-arrow:hover { border-color: var(--border-strong); color: var(--text-1); }
+  .tip-arrow:active { transform: scale(0.9); }
+  .tip-arrow i { font-size: 16px; }
+
+  /* 꿀팁 작성 폼 */
+  .tip-form {
+    padding: 14px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tip-field {
+    padding: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-1);
+    outline: none;
+    background: #fff;
+  }
+  .tip-field::placeholder { color: var(--text-3); }
+  .tip-field:focus { border-color: var(--brand); }
+  .tip-textarea { min-height: 96px; resize: none; line-height: 1.5; }
+  .tip-submit {
+    padding: 12px;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .tip-submit:active { transform: scale(0.98); }
+
   .tip-card {
     margin: 0 18px 12px;
     background: #fff;
     border: 1px solid var(--border);
     border-radius: var(--r-lg);
     padding: 14px;
-    cursor: pointer;
-    transition: box-shadow 0.15s, border-color 0.15s;
-  }
-  .tip-card:hover {
-    border-color: var(--border-strong);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    cursor: default;
   }
   .tip-card .tag-row {
     display: flex;
@@ -2022,6 +2236,62 @@
     font-size: 10px;
     color: #475569;
   }
+
+  /* 공유하기 시트 */
+  .share-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 16px 18px 24px;
+  }
+  .share-opt {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    font-family: inherit;
+  }
+  .share-ic {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+  }
+  .share-ic i { font-size: 26px; }
+  .share-ic.kakao { background: #FEE500; color: #3C1E1E; }
+  .share-ic.sms   { background: #34C759; color: #fff; }
+  .share-ic.insta { background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5); color: #fff; }
+  .share-ic.link  { background: var(--surface-3); color: var(--text-2); }
+  .share-opt:active .share-ic { transform: scale(0.92); }
+  .share-label { font-size: 11px; color: var(--text-2); }
+
+  /* 즐겨찾기 정렬 시트 */
+  .sort-options { padding: 6px 12px 18px; display: flex; flex-direction: column; }
+  .sort-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    padding: 14px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-1);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .sort-opt:hover { background: var(--surface-3); }
+  .sort-opt i { font-size: 18px; color: var(--brand); visibility: hidden; }
+  .sort-opt.active { color: var(--brand-dark); font-weight: 700; }
+  .sort-opt.active i { visibility: visible; }
 
   /* === 즐겨찾기 화면 === */
   .empty-state {
@@ -2084,6 +2354,121 @@
     color: #475569;
     margin-top: 3px;
   }
+
+  /* === 메인 탭 패널 (홈 / 정기 / 이벤트) === */
+  .mtab-pane { display: none; }
+  .mtab-pane.active { display: block; animation: fadeIn 0.2s ease; }
+
+  /* === 휴양소 목록 (정기 / 이벤트) === */
+  .resort-list-head {
+    padding: 16px 18px 8px;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  .resort-list-head b { color: var(--text-1); font-weight: 800; }
+  /* 이벤트 휴양소 하계/동계 세그먼트 */
+  .event-seg {
+    display: flex;
+    gap: 4px;
+    margin: 4px 18px 14px;
+    padding: 4px;
+    background: var(--surface-3);
+    border-radius: var(--pill);
+  }
+  .event-seg-btn {
+    flex: 1;
+    padding: 9px 0;
+    border: none;
+    background: transparent;
+    border-radius: var(--pill);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .event-seg-btn em {
+    font-style: normal;
+    font-size: 11px;
+    color: var(--text-3);
+    margin-left: 3px;
+  }
+  .event-seg-btn.active {
+    background: #fff;
+    color: var(--brand-dark);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+  }
+  .event-seg-btn.active em { color: var(--brand); }
+  .event-group { display: none; }
+  .event-group.active { display: block; animation: fadeIn 0.2s ease; }
+
+  .resort-group-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 18px 8px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-1);
+  }
+  .resort-group-label .gl-tag {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: var(--pill);
+  }
+  .resort-list {
+    padding: 0 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .resort-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .resort-row:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .resort-row:active { transform: scale(0.98); }
+  .resort-row .r-thumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .resort-row .r-thumb i { font-size: 24px; }
+  .resort-row .r-info { flex: 1; min-width: 0; }
+  .resort-row .r-name { font-size: 14px; font-weight: 700; color: var(--text-1); }
+  .resort-row .r-loc {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .resort-row .r-loc i { font-size: 13px; }
+  .resort-row .r-arrow { color: var(--text-3); font-size: 20px; flex-shrink: 0; }
+
+  /* 정기/이벤트 목록 카드 (place-card 풀폭 버전) */
+  .resort-list .place-card { width: 100%; min-width: 0; }
+  .resort-list .place-card .thumb { height: 120px; }
+  .resort-list .place-card .info { padding: 12px 14px; }
+  .resort-list .place-card .info .name { font-size: 15px; }
+  .resort-list .place-card .info .meta { font-size: 12px; margin-top: 4px; }
 
   /* === 포인트 적립 모달 === */
   .modal-backdrop {
@@ -2340,6 +2725,7 @@
   .marker.basic .pin-dot { fill: var(--brand); }
   .marker.winter .pin-dot { fill: #64748B; }
   .marker.summer .pin-dot { fill: #0284C7; }
+  .marker.both .pin-dot { fill: #7C3AED; }
   .marker .pin-label {
     font-size: 9.5px; font-weight: 800; fill: var(--text-1); pointer-events: none;
     paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round;
@@ -2358,6 +2744,7 @@
   .dot-basic { background: var(--brand); }
   .dot-winter { background: #64748B; }
   .dot-summer { background: #0284C7; }
+  .dot-both { background: #7C3AED; }
 
   /* 마커 클릭 바텀시트 */
   .map-sheet-backdrop {
@@ -2434,35 +2821,60 @@
 
           <div class="region-chips">
             <div class="region-chip active" onclick="selectRegion(this)">전체</div>
-            <div class="region-chip" onclick="selectRegion(this)">속초</div>
-            <div class="region-chip" onclick="selectRegion(this)">제주</div>
-            <div class="region-chip" onclick="selectRegion(this)">보령</div>
-            <div class="region-chip" onclick="selectRegion(this)">여수</div>
-            <div class="region-chip" onclick="selectRegion(this)">부산</div>
-            <div class="region-chip" onclick="selectRegion(this)">과천</div>
+            <!-- 정기 휴양소 12곳 -->
+            <div class="region-chip" onclick="openResortEl(this)">부산휴양소(해운대)</div>
+            <div class="region-chip" onclick="openResortEl(this)">부산휴양소(기장)</div>
+            <div class="region-chip" onclick="openResortEl(this)">속초(힐스) 휴양소</div>
+            <div class="region-chip" onclick="openResortEl(this)">속초(서희) 휴양소</div>
+            <div class="region-chip" onclick="openResortEl(this)">경주휴양소</div>
+            <div class="region-chip" onclick="openResortEl(this)">조천 휴양소</div>
+            <div class="region-chip" onclick="openResortEl(this)">애월 1호점</div>
+            <div class="region-chip" onclick="openResortEl(this)">애월 2호점</div>
+            <div class="region-chip" onclick="openResortEl(this)">보령 휴양소</div>
+            <div class="region-chip" onclick="openResortEl(this)">여수휴양소</div>
+            <div class="region-chip" onclick="openResortEl(this)">과천휴양소(1001호)</div>
+            <div class="region-chip" onclick="openResortEl(this)">과천휴양소(504호)</div>
+            <!-- 이벤트 휴양소 14곳 (하계 8 + 동계 6) -->
+            <div class="region-chip" onclick="openResortEl(this)">제주(서귀포)</div>
+            <div class="region-chip" onclick="openResortEl(this)">부산(송도)</div>
+            <div class="region-chip" onclick="openResortEl(this)">여수(금오도)</div>
+            <div class="region-chip" onclick="openResortEl(this)">인천(영흥도)</div>
+            <div class="region-chip" onclick="openResortEl(this)">인천(강화)</div>
+            <div class="region-chip" onclick="openResortEl(this)">경기(포천)</div>
+            <div class="region-chip" onclick="openResortEl(this)">경기(가평)</div>
+            <div class="region-chip" onclick="openResortEl(this)">충남(태안)</div>
+            <div class="region-chip" onclick="openResortEl(this)">무주</div>
+            <div class="region-chip" onclick="openResortEl(this)">고성</div>
+            <div class="region-chip" onclick="openResortEl(this)">평창</div>
+            <div class="region-chip" onclick="openResortEl(this)">가평</div>
+            <div class="region-chip" onclick="openResortEl(this)">홍천</div>
+            <div class="region-chip" onclick="openResortEl(this)">충남</div>
           </div>
         </div>
 
+        <!-- 탭 패널: 홈 -->
+        <div class="mtab-pane active" data-mtab-pane="0">
+
         <div class="banner-carousel" id="eventCarousel">
           <div class="banner-slides">
-            <div class="event-banner" data-img="banner-summer">
-              <div class="ev-text">
-                <div class="label">SUMMER OPEN</div>
-                <div class="title">하계 휴양소<br>신청이 시작됐어요</div>
-                <div class="sub">강릉 태안 통영 외 7곳</div>
-              </div>
-              <div class="pager"><b>1</b> / 3</div>
-            </div>
-
             <div class="event-banner" data-img="banner-second">
               <div class="ev-text">
                 <div class="label">2차 예약 접수 기간</div>
                 <div class="title">하계 휴양소 2차 <br>예약 접수기간</div>
                 <div class="sub">2026.06.08(월) ~ 2026.06.17(수)</div>
               </div>
+              <div class="pager"><b>1</b> / 3</div>
+            </div>
+
+            <div class="event-banner" data-img="banner-summer">
+              <div class="ev-text">
+                <div class="label">SUMMER OPEN</div>
+                <div class="title">하계 휴양소<br>신청이 시작됐어요</div>
+                <div class="sub">강릉 태안 통영 외 7곳</div>
+              </div>
               <div class="pager"><b>2</b> / 3</div>
             </div>
-            
+
             <div class="event-banner" data-img="banner-third">
               <div class="ev-text">
                 <div class="label">이용수칙</div>
@@ -2483,17 +2895,17 @@
           <div class="me-ico">🗺️</div>
           <div class="me-txt">
             <div class="t">지도에서 휴양소 찾기</div>
-            <div class="s">전국 휴양소 위치를 한눈에 · 22곳</div>
+            <div class="s">전국 휴양소 위치를 한눈에 · 26곳</div>
           </div>
           <i class="ti ti-chevron-right me-arrow"></i>
         </div>
 
         <div class="section-head">
           <div class="title">🏖️ 인기 휴양소</div>
-          <div class="more">전체보기 →</div>
+          <div class="more" onclick="showScreen('device1','popular')">전체보기 →</div>
         </div>
         <div class="hcards">
-          <div class="place-card" onclick="showScreen('device1','detail')">
+          <div class="place-card" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="sokcho" onclick="toggleFavorite(event,'sokcho')"><i class="ti ti-star"></i></div>
             <div class="thumb" data-img="sokcho"></div>
             <div class="info">
@@ -2501,7 +2913,7 @@
               <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 32</div>
             </div>
           </div>
-          <div class="place-card" onclick="showScreen('device1','detail')">
+          <div class="place-card" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="aewol" onclick="toggleFavorite(event,'aewol')"><i class="ti ti-star"></i></div>
             <div class="thumb" data-img="aewol"></div>
             <div class="info">
@@ -2509,7 +2921,7 @@
               <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 28</div>
             </div>
           </div>
-          <div class="place-card" onclick="showScreen('device1','detail')">
+          <div class="place-card" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="yeosu" onclick="toggleFavorite(event,'yeosu')"><i class="ti ti-star"></i></div>
             <div class="thumb" data-img="yeosu"></div>
             <div class="info">
@@ -2517,7 +2929,7 @@
               <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 19</div>
             </div>
           </div>
-          <div class="place-card" onclick="showScreen('device1','detail')">
+          <div class="place-card" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></div>
             <div class="thumb" data-img="jocheon"></div>
             <div class="info">
@@ -2525,7 +2937,7 @@
               <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 24</div>
             </div>
           </div>
-          <div class="place-card" onclick="showScreen('device1','detail')">
+          <div class="place-card" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="gwacheon" onclick="toggleFavorite(event,'gwacheon')"><i class="ti ti-star"></i></div>
             <div class="thumb" data-img="gwacheon"></div>
             <div class="info">
@@ -2537,10 +2949,17 @@
 
         <div class="section-head">
           <div class="title">✍️ 실시간 리뷰</div>
-          <div class="more">최신순 ▾</div>
+          <div class="more review-sort" id="review-sort">
+            <span id="review-sort-label" onclick="toggleReviewSort(event)">최신순 ▾</span>
+            <div class="sort-menu" id="review-sort-menu">
+              <div class="sort-menu-item active" onclick="sortReviews('recent')">최신순</div>
+              <div class="sort-menu-item" onclick="sortReviews('likes')">좋아요순</div>
+              <div class="sort-menu-item" onclick="sortReviews('rating')">평점순</div>
+            </div>
+          </div>
         </div>
 
-        <div class="review-card" onclick="showScreen('device1','detail')">
+        <div class="review-card" onclick="openResort('조천 휴양소','reviews','rv1')">
           <div class="review-head">
             <div class="avatar" style="background:#1F4FE0">박</div>
             <div class="who">
@@ -2566,7 +2985,7 @@
           </div>
         </div>
 
-        <div class="review-card" onclick="showScreen('device1','detail')">
+        <div class="review-card" onclick="openResort('속초 (힐스)','reviews','rv2')">
           <div class="review-head">
             <div class="avatar" style="background:#F59E0B">이</div>
             <div class="who">
@@ -2586,7 +3005,7 @@
           </div>
         </div>
 
-        <div class="review-card" onclick="showScreen('device1','detail')">
+        <div class="review-card" onclick="openResort('애월 2호점','reviews','rv3')">
           <div class="review-head">
             <div class="avatar" style="background:#047857">최</div>
             <div class="who">
@@ -2605,6 +3024,243 @@
             </span>
           </div>
         </div>
+
+        </div><!-- /탭 패널: 홈 -->
+
+        <!-- 탭 패널: 정기 휴양소 -->
+        <div class="mtab-pane" data-mtab-pane="1">
+          <div class="resort-list-head">정기 휴양소 <b>12곳</b> · 연중 상시 운영</div>
+          <div class="resort-list">
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="busan-haeundae" onclick="toggleFavorite(event,'busan-haeundae')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="yeosu"></div>
+              <div class="info">
+                <div class="name">부산휴양소(해운대)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 21</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="busan-gijang" onclick="toggleFavorite(event,'busan-gijang')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="aewol"></div>
+              <div class="info">
+                <div class="name">부산휴양소(기장)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 14</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="sokcho" onclick="toggleFavorite(event,'sokcho')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="sokcho"></div>
+              <div class="info">
+                <div class="name">속초(힐스) 휴양소</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 32</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="sokcho-seohee" onclick="toggleFavorite(event,'sokcho-seohee')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="sokcho"></div>
+              <div class="info">
+                <div class="name">속초(서희) 휴양소</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 17</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="gyeongju" onclick="toggleFavorite(event,'gyeongju')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="gwacheon"></div>
+              <div class="info">
+                <div class="name">경주휴양소</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 11</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="jocheon"></div>
+              <div class="info">
+                <div class="name">조천 휴양소</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 24</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="aewol" onclick="toggleFavorite(event,'aewol')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="aewol"></div>
+              <div class="info">
+                <div class="name">애월 1호점</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 28</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="aewol2" onclick="toggleFavorite(event,'aewol2')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="aewol"></div>
+              <div class="info">
+                <div class="name">애월 2호점</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.9 · 리뷰 22</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="boryeong" onclick="toggleFavorite(event,'boryeong')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="yeosu"></div>
+              <div class="info">
+                <div class="name">보령 휴양소</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.4 · 리뷰 9</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="yeosu" onclick="toggleFavorite(event,'yeosu')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="yeosu"></div>
+              <div class="info">
+                <div class="name">여수휴양소</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 19</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="gwacheon" onclick="toggleFavorite(event,'gwacheon')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="gwacheon"></div>
+              <div class="info">
+                <div class="name">과천휴양소(1001호)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 12</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="gwacheon504" onclick="toggleFavorite(event,'gwacheon504')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="gwacheon"></div>
+              <div class="info">
+                <div class="name">과천휴양소(504호)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.4 · 리뷰 8</div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /탭 패널: 정기 휴양소 -->
+
+        <!-- 탭 패널: 이벤트 휴양소 -->
+        <div class="mtab-pane" data-mtab-pane="2">
+          <div class="resort-list-head">이벤트 휴양소 <b>14곳</b> · 시즌 한정 운영</div>
+
+          <div class="event-seg">
+            <button class="event-seg-btn active" onclick="selectEventSeg(this,'summer')">하계 휴양소 <em>8</em></button>
+            <button class="event-seg-btn" onclick="selectEventSeg(this,'winter')">동계 휴양소 <em>6</em></button>
+          </div>
+
+          <div class="event-group active" data-group="summer">
+          <div class="resort-list">
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-seogwipo" onclick="toggleFavorite(event,'ev-seogwipo')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="jocheon"></div>
+              <div class="info">
+                <div class="name">제주(서귀포)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 15</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-songdo" onclick="toggleFavorite(event,'ev-songdo')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="aewol"></div>
+              <div class="info">
+                <div class="name">부산(송도)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 12</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-geumodo" onclick="toggleFavorite(event,'ev-geumodo')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="yeosu"></div>
+              <div class="info">
+                <div class="name">여수(금오도)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 10</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-yeongheung" onclick="toggleFavorite(event,'ev-yeongheung')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="aewol"></div>
+              <div class="info">
+                <div class="name">인천(영흥도)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 8</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-ganghwa" onclick="toggleFavorite(event,'ev-ganghwa')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="yeosu"></div>
+              <div class="info">
+                <div class="name">인천(강화)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.4 · 리뷰 7</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-pocheon" onclick="toggleFavorite(event,'ev-pocheon')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="sokcho"></div>
+              <div class="info">
+                <div class="name">경기(포천)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 9</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-gapyeong" onclick="toggleFavorite(event,'ev-gapyeong')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="sokcho"></div>
+              <div class="info">
+                <div class="name">경기(가평)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 11</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="ev-taean" onclick="toggleFavorite(event,'ev-taean')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="yeosu"></div>
+              <div class="info">
+                <div class="name">충남(태안)</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 13</div>
+              </div>
+            </div>
+          </div>
+          </div><!-- /event-group summer -->
+
+          <div class="event-group" data-group="winter">
+          <div class="resort-list">
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="wn-muju" onclick="toggleFavorite(event,'wn-muju')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="win-1"></div>
+              <div class="info">
+                <div class="name">무주</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 14</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="wn-goseong" onclick="toggleFavorite(event,'wn-goseong')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="win-2"></div>
+              <div class="info">
+                <div class="name">고성</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 9</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="wn-pyeongchang" onclick="toggleFavorite(event,'wn-pyeongchang')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="win-1"></div>
+              <div class="info">
+                <div class="name">평창</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 16</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="wn-gapyeong" onclick="toggleFavorite(event,'wn-gapyeong')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="win-2"></div>
+              <div class="info">
+                <div class="name">가평</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 10</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="wn-hongcheon" onclick="toggleFavorite(event,'wn-hongcheon')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="win-1"></div>
+              <div class="info">
+                <div class="name">홍천</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 8</div>
+              </div>
+            </div>
+            <div class="place-card" onclick="openResortEl(this)">
+              <div class="fav-btn absolute" data-fav="wn-chungnam" onclick="toggleFavorite(event,'wn-chungnam')"><i class="ti ti-star"></i></div>
+              <div class="thumb" data-img="win-2"></div>
+              <div class="info">
+                <div class="name">충남</div>
+                <div class="meta"><span style="color:#F59E0B">★</span> 4.4 · 리뷰 6</div>
+              </div>
+            </div>
+          </div>
+          </div><!-- /event-group winter -->
+        </div><!-- /탭 패널: 이벤트 휴양소 -->
       </div>
 
       <div class="tabbar">
@@ -2626,16 +3282,70 @@
       </div>
     </div>
 
+    <!-- POPULAR (인기 휴양소 전체) -->
+    <div class="screen" data-screen="popular">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')"></i>
+        <div class="title">🏖️ 인기 휴양소</div>
+        <div class="actions" style="visibility:hidden"><i class="ti ti-dots-vertical"></i></div>
+      </div>
+      <div class="content">
+        <div style="padding:14px 18px 4px;font-size:11px;color:#475569">가장 인기 있는 휴양소 <b>5곳</b></div>
+        <div class="resort-list">
+          <div class="place-card" onclick="openResortEl(this)">
+            <div class="fav-btn absolute" data-fav="sokcho" onclick="toggleFavorite(event,'sokcho')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="sokcho"></div>
+            <div class="info">
+              <div class="name">속초 (힐스)</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 32</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="openResortEl(this)">
+            <div class="fav-btn absolute" data-fav="aewol" onclick="toggleFavorite(event,'aewol')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="aewol"></div>
+            <div class="info">
+              <div class="name">애월 1호점</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 28</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="openResortEl(this)">
+            <div class="fav-btn absolute" data-fav="yeosu" onclick="toggleFavorite(event,'yeosu')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="yeosu"></div>
+            <div class="info">
+              <div class="name">여수</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 19</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="openResortEl(this)">
+            <div class="fav-btn absolute" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="jocheon"></div>
+            <div class="info">
+              <div class="name">조천</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 24</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="openResortEl(this)">
+            <div class="fav-btn absolute" data-fav="gwacheon" onclick="toggleFavorite(event,'gwacheon')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="gwacheon"></div>
+            <div class="info">
+              <div class="name">과천 1001호</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- DETAIL -->
     <div class="screen" data-screen="detail">
       <div class="app-header">
         <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')"></i>
         <div class="title">조천 휴양소</div>
-        <div class="actions"><i class="ti ti-share"></i><span class="fav-btn inline header-style" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></span></div>
+        <div class="actions"><i class="ti ti-share" onclick="openShareSheet()"></i><span class="fav-btn inline header-style" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></span></div>
       </div>
       <div class="content">
         <div class="hero" data-img="hero-jocheon">
-          <div class="hero-tag">정규 휴양소</div>
+          <div class="hero-tag">정기 휴양소</div>
         </div>
         <div class="place-detail-head">
           <h2 id="detail-resort-name">조천 휴양소</h2>
@@ -2715,7 +3425,7 @@
 
           <div class="rev-divider"></div>
 
-          <div class="review-head">
+          <div class="review-head" id="rev-rv1">
             <div class="avatar" style="background:#1F4FE0">박</div>
             <div class="who">
               <div class="name">박OO 책임 <span class="badge king">🏆 리뷰왕</span></div>
@@ -2758,7 +3468,7 @@
           <!-- 두 번째 리뷰 -->
           <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>
 
-          <div class="review-head">
+          <div class="review-head" id="rev-rv4">
             <div class="avatar" style="background:#047857">김</div>
             <div class="who">
               <div class="name">김OO 선임</div>
@@ -2781,6 +3491,61 @@
               <i class="ti ti-heart" style="vertical-align:-2px"></i> 좋아요 <b class="like-count" style="color:#0F172A">9</b>
             </div>
             <div data-comment="rv4" onclick="openComments(event,'rv4')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-message-circle" style="vertical-align:-2px"></i> 댓글 <b class="comment-count" style="color:#0F172A">0</b>
+            </div>
+          </div>
+
+          <!-- 세 번째 리뷰 (이OO 선임) -->
+          <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>
+
+          <div class="review-head" id="rev-rv2">
+            <div class="avatar" style="background:#F59E0B">이</div>
+            <div class="who">
+              <div class="name">이OO 선임</div>
+              <div class="meta">2025.04.30 방문 · 친구와 함께</div>
+            </div>
+          </div>
+          <div class="rating-line" style="margin-top:10px"><span class="stars">★★★★</span><span class="stars empty">★</span><span class="rating-num">4.2</span></div>
+
+          <div style="font-size:13px;color:#0F172A;line-height:1.7;margin-top:8px">
+            <b>👍 좋았던 점</b><br>
+            시설은 정말 좋고 바베큐 시설도 잘 갖춰져 있어요.
+            <br><br>
+            <b>⚠️ 아쉬웠던 점</b><br>
+            주차가 좀 협소합니다. 미리 가시는 거 추천드려요.
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <div class="detail-action" data-like="rv2" onclick="toggleLike(event,'rv2')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-heart" style="vertical-align:-2px"></i> 좋아요 <b class="like-count" style="color:#0F172A">18</b>
+            </div>
+            <div data-comment="rv2" onclick="openComments(event,'rv2')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-message-circle" style="vertical-align:-2px"></i> 댓글 <b class="comment-count" style="color:#0F172A">1</b>
+            </div>
+          </div>
+
+          <!-- 네 번째 리뷰 (최OO 매니저) -->
+          <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>
+
+          <div class="review-head" id="rev-rv3">
+            <div class="avatar" style="background:#047857">최</div>
+            <div class="who">
+              <div class="name">최OO 매니저 <span class="badge verified">제주 전문가</span></div>
+              <div class="meta">2025.05.05 방문 · 가족과 함께</div>
+            </div>
+          </div>
+          <div class="rating-line" style="margin-top:10px"><span class="stars">★★★★★</span><span class="rating-num">4.9</span></div>
+
+          <div style="font-size:13px;color:#0F172A;line-height:1.7;margin-top:8px">
+            <b>👍 좋았던 점</b><br>
+            애월 1호점보다 신축이라 시설이 훨씬 좋아요! 거실 통창에서 보이는 바다가 진짜 그림 같아요.
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <div class="detail-action" data-like="rv3" onclick="toggleLike(event,'rv3')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-heart" style="vertical-align:-2px"></i> 좋아요 <b class="like-count" style="color:#0F172A">12</b>
+            </div>
+            <div data-comment="rv3" onclick="openComments(event,'rv3')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
               <i class="ti ti-message-circle" style="vertical-align:-2px"></i> 댓글 <b class="comment-count" style="color:#0F172A">0</b>
             </div>
           </div>
@@ -2844,7 +3609,13 @@
 
           <div class="feature-divider"></div>
 
-          <div style="padding:0 18px 12px;font-size:11px;color:#475569">💡 다녀온 동료들의 꿀팁</div>
+          <div class="tip-head">
+            <div style="font-size:11px;color:#475569">💡 다녀온 동료들의 꿀팁</div>
+            <div class="tip-nav">
+              <button class="tip-arrow" onclick="scrollSwipe(this,-1)" aria-label="이전 꿀팁"><i class="ti ti-chevron-left"></i></button>
+              <button class="tip-arrow" onclick="scrollSwipe(this,1)" aria-label="다음 꿀팁"><i class="ti ti-chevron-right"></i></button>
+            </div>
+          </div>
 
           <div class="swipe-row">
           <div class="tip-card">
@@ -2898,12 +3669,12 @@
           </div>
 
           </div>
-          <button class="qna-write-btn" style="margin:0 18px;width:calc(100% - 36px)">+ 나도 꿀팁 공유하기</button>
+          <button class="qna-write-btn" style="margin:0 18px;width:calc(100% - 36px)" onclick="openTipModal()">+ 나도 꿀팁 공유하기</button>
         </div>
 
         <!-- Q&A 탭 -->
         <div class="dtab-pane" data-dtab="qna" style="padding: 14px 18px;">
-          <button class="qna-write-btn">❓ 궁금한 점을 물어보세요</button>
+          <button class="qna-write-btn" onclick="openQnaModal()">❓ 궁금한 점을 물어보세요</button>
 
           <div class="qna-item">
             <div class="qhead">
@@ -2998,10 +3769,17 @@
         </div>
 
         <div class="form-section">
-          <div class="form-label">어느 휴양소였나요?</div>
-          <div class="select-box">
-            <span>조천 휴양소</span>
-            <i class="ti ti-chevron-down" style="color:#475569"></i>
+          <div class="form-label">어느 휴양소였나요? <span class="req">*</span></div>
+          <!-- 1단계: 휴양소 구분 -->
+          <div class="resort-type-seg">
+            <button type="button" class="rts-btn active" onclick="selectReviewType(this,'regular')">정기 휴양소</button>
+            <button type="button" class="rts-btn" onclick="selectReviewType(this,'summer')">하계 휴양소</button>
+            <button type="button" class="rts-btn" onclick="selectReviewType(this,'winter')">동계 휴양소</button>
+          </div>
+          <!-- 2단계: 휴양소 선택 -->
+          <div class="select-box" style="margin-top:8px;position:relative">
+            <select id="rv-resort-select" class="resort-select"></select>
+            <i class="ti ti-chevron-down" style="color:#475569;pointer-events:none;position:absolute;right:14px;top:50%;transform:translateY(-50%)"></i>
           </div>
         </div>
 
@@ -3009,39 +3787,55 @@
           <div class="form-label">항목별 평점 <span class="req">*</span></div>
           <div class="rate-row">
             <span class="rname">위치 (접근성)</span>
-            <span class="rate-stars stars">★★★★★</span>
+            <span class="rate-stars" data-score="5">
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+            </span>
           </div>
           <div class="rate-row">
             <span class="rname">시설 (편의)</span>
-            <span class="rate-stars stars">★★★★★</span>
+            <span class="rate-stars" data-score="5">
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+            </span>
           </div>
           <div class="rate-row">
             <span class="rname">청결도</span>
-            <span class="rate-stars"><span class="stars">★★★★</span><span class="stars empty">★</span></span>
+            <span class="rate-stars" data-score="4">
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar on" onclick="setRate(this)">★</span>
+              <span class="rstar" onclick="setRate(this)">★</span>
+            </span>
           </div>
         </div>
 
         <div class="form-section">
           <div class="form-label">사진 첨부 <span class="req">*</span><span class="hint">최소 1장</span></div>
-          <div class="photo-grid">
-            <div class="pcell add">
+          <div class="photo-grid" id="photo-grid">
+            <label class="pcell add" id="photo-add">
               <i class="ti ti-camera"></i>
-              <span class="cnt">3/10</span>
-            </div>
-            <div class="pcell bg-mt"></div>
-            <div class="pcell bg-beach"></div>
-            <div class="pcell bg-sunset"></div>
+              <span class="cnt" id="photo-count">0/10</span>
+              <input type="file" accept="image/*" multiple hidden onchange="addPhotos(this)">
+            </label>
           </div>
         </div>
 
         <div class="form-section">
-          <div class="form-label">누구와 함께? <span class="hint">선택</span></div>
+          <div class="form-label">누구와 함께? <span class="hint hint-pill">선택</span></div>
           <div class="chip-row">
-            <div class="chip active">가족</div>
-            <div class="chip">친구</div>
-            <div class="chip">혼자</div>
-            <div class="chip">동료</div>
-            <div class="chip">연인</div>
+            <div class="chip companion-chip active" onclick="toggleChip(this)">가족</div>
+            <div class="chip companion-chip" onclick="toggleChip(this)">친구</div>
+            <div class="chip companion-chip" onclick="toggleChip(this)">혼자</div>
+            <div class="chip companion-chip" onclick="toggleChip(this)">동료</div>
+            <div class="chip companion-chip" onclick="toggleChip(this)">연인</div>
           </div>
         </div>
 
@@ -3070,9 +3864,14 @@
       <div class="app-header">
         <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
         <div class="title">공지사항</div>
-        <div class="actions"><i class="ti ti-search"></i></div>
+        <div class="actions"><i class="ti ti-search" onclick="toggleNoticeSearch()"></i></div>
       </div>
       <div class="content">
+        <div class="notice-search" id="notice-search">
+          <i class="ti ti-search"></i>
+          <input id="notice-search-input" type="search" autocomplete="off" placeholder="제목·내용 검색" oninput="searchNotices(this.value)">
+          <i class="ti ti-x" onclick="clearNoticeSearch()"></i>
+        </div>
         <div class="notice-cats">
           <span class="notice-cat active" onclick="selectNoticeCat(this)">전체</span>
           <span class="notice-cat" onclick="selectNoticeCat(this)">이용수칙</span>
@@ -3167,6 +3966,10 @@
             <span class="views"><i class="ti ti-eye"></i> 1,108</span>
           </div>
         </div>
+
+        <div id="notice-empty" style="display:none;text-align:center;padding:40px 20px;color:#94A3B8;font-size:13px">
+          🔍 검색 결과가 없습니다.
+        </div>
       </div>
 
       <div class="tabbar">
@@ -3259,12 +4062,12 @@
       <div class="app-header">
         <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
         <div class="title">⭐ 즐겨찾기</div>
-        <div class="actions"><i class="ti ti-dots-vertical"></i></div>
+        <div class="actions"><i class="ti ti-arrows-sort" onclick="openFavSortSheet()" title="정렬"></i></div>
       </div>
       <div class="content">
         <div style="padding:14px 18px 4px;font-size:11px;color:#475569">총 <span id="fav-count">4</span>곳을 즐겨찾기했어요</div>
         <div class="fav-grid" id="fav-grid">
-          <div class="fav-card" data-fav-card="sokcho" onclick="showScreen('device1','detail')">
+          <div class="fav-card" data-fav-card="sokcho" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="sokcho" onclick="toggleFavorite(event,'sokcho')"><i class="ti ti-star"></i></div>
             <div class="fthumb" data-img="sokcho"></div>
             <div class="finfo">
@@ -3272,7 +4075,7 @@
               <div class="fmeta"><span style="color:#F59E0B">★</span> 4.8 · 강원</div>
             </div>
           </div>
-          <div class="fav-card" data-fav-card="aewol" onclick="showScreen('device1','detail')">
+          <div class="fav-card" data-fav-card="aewol" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="aewol" onclick="toggleFavorite(event,'aewol')"><i class="ti ti-star"></i></div>
             <div class="fthumb" data-img="aewol"></div>
             <div class="finfo">
@@ -3280,7 +4083,7 @@
               <div class="fmeta"><span style="color:#F59E0B">★</span> 4.7 · 제주</div>
             </div>
           </div>
-          <div class="fav-card" data-fav-card="yeosu" onclick="showScreen('device1','detail')">
+          <div class="fav-card" data-fav-card="yeosu" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="yeosu" onclick="toggleFavorite(event,'yeosu')"><i class="ti ti-star"></i></div>
             <div class="fthumb" data-img="yeosu"></div>
             <div class="finfo">
@@ -3288,7 +4091,7 @@
               <div class="fmeta"><span style="color:#F59E0B">★</span> 4.6 · 전남</div>
             </div>
           </div>
-          <div class="fav-card" data-fav-card="jocheon" onclick="showScreen('device1','detail')">
+          <div class="fav-card" data-fav-card="jocheon" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></div>
             <div class="fthumb" data-img="jocheon"></div>
             <div class="finfo">
@@ -3296,7 +4099,7 @@
               <div class="fmeta"><span style="color:#F59E0B">★</span> 4.8 · 제주</div>
             </div>
           </div>
-          <div class="fav-card" data-fav-card="gwacheon" onclick="showScreen('device1','detail')">
+          <div class="fav-card" data-fav-card="gwacheon" onclick="openResortEl(this)">
             <div class="fav-btn absolute" data-fav="gwacheon" onclick="toggleFavorite(event,'gwacheon')"><i class="ti ti-star"></i></div>
             <div class="fthumb" data-img="gwacheon"></div>
             <div class="finfo">
@@ -3517,7 +4320,7 @@
           </div>
           <div class="map-filter" id="seni-map-filter">
             <button class="map-chip active" onclick="seniFilterMap('all',this)">전체</button>
-            <button class="map-chip" onclick="seniFilterMap('basic',this)">기본 휴양소</button>
+            <button class="map-chip" onclick="seniFilterMap('basic',this)">정기 휴양소</button>
             <button class="map-chip" onclick="seniFilterMap('winter',this)">동계 이벤트</button>
             <button class="map-chip" onclick="seniFilterMap('summer',this)">하계 이벤트</button>
           </div>
@@ -3561,9 +4364,10 @@
             </div>
           </div>
           <div class="map-legend">
-            <span><i class="legend-dot dot-basic"></i>기본 휴양소</span>
-            <span><i class="legend-dot dot-winter"></i>동계 이벤트</span>
+            <span><i class="legend-dot dot-basic"></i>정기 휴양소</span>
             <span><i class="legend-dot dot-summer"></i>하계 이벤트</span>
+            <span><i class="legend-dot dot-winter"></i>동계 이벤트</span>
+            <span><i class="legend-dot dot-both"></i>하계+동계</span>
           </div>
 
           <!-- 마커 클릭 바텀시트 -->
@@ -3590,7 +4394,7 @@
           </div>
         </div>
       <div class="content" style="padding:14px;">
-        <div id="search-results"></div>
+        <div id="search-results" style="display:flex;flex-direction:column;gap:12px;"></div>
       </div>
     </div>
 
@@ -3622,6 +4426,87 @@
         </div>
       </div>
     </div>
+
+    <!-- 꿀팁 작성 바텀시트 -->
+    <div class="comment-modal" id="tip-modal" onclick="closeTipModal(event)">
+      <div class="comment-sheet" onclick="event.stopPropagation()">
+        <div class="comment-sheet-handle"></div>
+        <div class="comment-sheet-header">
+          <div class="ct">💡 꿀팁 공유하기</div>
+          <i class="ti ti-x" onclick="closeTipModal()"></i>
+        </div>
+        <div class="tip-form">
+          <input id="tip-tag-input" class="tip-field" maxlength="6" placeholder="태그 (예: 주차, 맛집, 준비물)">
+          <input id="tip-title-input" class="tip-field" placeholder="제목을 입력하세요">
+          <textarea id="tip-content-input" class="tip-field tip-textarea" placeholder="다녀온 경험에서 얻은 꿀팁을 자유롭게 공유해주세요!"></textarea>
+          <button class="tip-submit" onclick="submitTip()">공유하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q&A 질문 작성 바텀시트 -->
+    <div class="comment-modal" id="qna-modal" onclick="closeQnaModal(event)">
+      <div class="comment-sheet" onclick="event.stopPropagation()">
+        <div class="comment-sheet-handle"></div>
+        <div class="comment-sheet-header">
+          <div class="ct">❓ 궁금한 점 물어보기</div>
+          <i class="ti ti-x" onclick="closeQnaModal()"></i>
+        </div>
+        <div class="tip-form">
+          <textarea id="qna-input" class="tip-field tip-textarea" placeholder="휴양소에 대해 궁금한 점을 자유롭게 물어보세요!"></textarea>
+          <button class="tip-submit" onclick="submitQna()">질문 등록</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 즐겨찾기 정렬 바텀시트 -->
+    <div class="comment-modal" id="fav-sort-modal" onclick="closeFavSort(event)">
+      <div class="comment-sheet" onclick="event.stopPropagation()">
+        <div class="comment-sheet-handle"></div>
+        <div class="comment-sheet-header">
+          <div class="ct">정렬</div>
+          <i class="ti ti-x" onclick="closeFavSort()"></i>
+        </div>
+        <div class="sort-options">
+          <button class="sort-opt" data-mode="default" onclick="sortFav('default')"><i class="ti ti-check"></i><span>기본(추가)순</span></button>
+          <button class="sort-opt" data-mode="name" onclick="sortFav('name')"><i class="ti ti-check"></i><span>이름순</span></button>
+          <button class="sort-opt" data-mode="rating" onclick="sortFav('rating')"><i class="ti ti-check"></i><span>평점 높은순</span></button>
+          <button class="sort-opt" data-mode="region" onclick="sortFav('region')"><i class="ti ti-check"></i><span>지역순</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 공유하기 바텀시트 -->
+    <div class="comment-modal" id="share-modal" onclick="closeShareSheet(event)">
+      <div class="comment-sheet" onclick="event.stopPropagation()">
+        <div class="comment-sheet-handle"></div>
+        <div class="comment-sheet-header">
+          <div class="ct">공유하기</div>
+          <i class="ti ti-x" onclick="closeShareSheet()"></i>
+        </div>
+        <div class="share-grid">
+          <button class="share-opt" onclick="shareVia('kakao')">
+            <span class="share-ic kakao"><i class="ti ti-message-circle"></i></span>
+            <span class="share-label">카카오</span>
+          </button>
+          <button class="share-opt" onclick="shareVia('sms')">
+            <span class="share-ic sms"><i class="ti ti-message"></i></span>
+            <span class="share-label">SMS</span>
+          </button>
+          <button class="share-opt" onclick="shareVia('insta')">
+            <span class="share-ic insta"><i class="ti ti-brand-instagram"></i></span>
+            <span class="share-label">인스타그램</span>
+          </button>
+          <button class="share-opt" onclick="shareVia('link')">
+            <span class="share-ic link"><i class="ti ti-link"></i></span>
+            <span class="share-label">링크복사</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전역 토스트 (모든 화면 공통) -->
+    <div class="toast" id="app-toast"><i class="ti ti-circle-check"></i><span id="app-toast-msg"></span></div>
 
   </div>
 </div>
@@ -3764,10 +4649,81 @@
     showScreen(deviceId, 'home');
   }
 
-  // 별점 인터랙션 (간단)
-  document.querySelectorAll('.rate-stars').forEach(el => {
-    el.style.cursor = 'pointer';
-  });
+  // 리뷰 작성: 휴양소 구분 → 휴양소 선택 (2단계)
+  const REVIEW_RESORTS = {
+    regular: ['부산휴양소(해운대)', '부산휴양소(기장)', '속초(힐스) 휴양소', '속초(서희) 휴양소', '경주휴양소', '조천 휴양소', '애월 1호점', '애월 2호점', '보령 휴양소', '여수휴양소', '과천휴양소(1001호)', '과천휴양소(504호)'],
+    summer: ['제주(서귀포)', '부산(송도)', '여수(금오도)', '인천(영흥도)', '인천(강화)', '경기(포천)', '경기(가평)', '충남(태안)'],
+    winter: ['무주', '고성', '평창', '가평', '홍천', '충남']
+  };
+  function selectReviewType(btn, type) {
+    const seg = btn.parentElement;
+    seg.querySelectorAll('.rts-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const sel = document.getElementById('rv-resort-select');
+    if (!sel) return;
+    sel.innerHTML = (REVIEW_RESORTS[type] || []).map(n => `<option value="${n}">${n}</option>`).join('');
+  }
+  // 초기: 정기 휴양소 목록 채우기
+  (function initReviewResortSelect() {
+    const sel = document.getElementById('rv-resort-select');
+    if (sel) sel.innerHTML = REVIEW_RESORTS.regular.map(n => `<option value="${n}">${n}</option>`).join('');
+  })();
+
+  // 동행 선택 칩 토글 (복수 선택)
+  function toggleChip(el) {
+    el.classList.toggle('active');
+  }
+
+  // ===== 사진 첨부 =====
+  const PHOTO_MAX = 10;
+  function addPhotos(input) {
+    const grid = document.getElementById('photo-grid');
+    const addCell = document.getElementById('photo-add');
+    if (!grid || !addCell) return;
+    const used = grid.querySelectorAll('.photo-thumb').length;
+    let remaining = PHOTO_MAX - used;
+    const files = Array.from(input.files || []).filter(f => f.type.startsWith('image/'));
+    if (files.length > remaining && typeof showToast === 'function') {
+      showToast(`사진은 최대 ${PHOTO_MAX}장까지 첨부할 수 있어요`);
+    }
+    files.slice(0, Math.max(0, remaining)).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const cell = document.createElement('div');
+        cell.className = 'pcell photo-thumb';
+        cell.style.backgroundImage = `url("${e.target.result}")`;
+        cell.innerHTML = '<button type="button" class="photo-del" onclick="removePhoto(this)" aria-label="사진 삭제"><i class="ti ti-x"></i></button>';
+        grid.insertBefore(cell, addCell);
+        updatePhotoCount();
+      };
+      reader.readAsDataURL(file);
+    });
+    input.value = '';
+  }
+  function removePhoto(btn) {
+    const cell = btn.closest('.photo-thumb');
+    if (cell) cell.remove();
+    updatePhotoCount();
+  }
+  function updatePhotoCount() {
+    const grid = document.getElementById('photo-grid');
+    if (!grid) return;
+    const n = grid.querySelectorAll('.photo-thumb').length;
+    const cnt = document.getElementById('photo-count');
+    if (cnt) cnt.textContent = n + '/' + PHOTO_MAX;
+    const addCell = document.getElementById('photo-add');
+    if (addCell) addCell.style.display = n >= PHOTO_MAX ? 'none' : '';
+  }
+
+  // 별점 선택 (항목별 평점)
+  function setRate(star) {
+    const wrap = star.parentElement;
+    const stars = Array.from(wrap.querySelectorAll('.rstar'));
+    const idx = stars.indexOf(star);
+    if (idx < 0) return;
+    wrap.dataset.score = idx + 1;
+    stars.forEach((s, i) => s.classList.toggle('on', i <= idx));
+  }
 
   // ===== 좋아요 / 댓글 기능 =====
   const reviewState = {
@@ -3875,7 +4831,75 @@
   function switchMainTab(el, idx) {
     el.parentElement.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
+    const screen = el.closest('.screen');
+    if (!screen) return;
+    screen.querySelectorAll('.mtab-pane').forEach(pane => {
+      pane.classList.toggle('active', pane.getAttribute('data-mtab-pane') === String(idx));
+    });
+    // 지역/카테고리 칩은 홈 탭에서만 표시
+    const chips = screen.querySelector('.region-chips');
+    if (chips) chips.style.display = (idx === 0) ? '' : 'none';
+    // 탭 전환 시 스크롤 맨 위로
+    const sb = screen.querySelector('.scroll-body');
+    if (sb) sb.scrollTop = 0;
+    // 홈으로 돌아오면 배너 위치를 정상 슬라이드로 초기화 (빈 배너 방지)
+    if (idx === 0 && typeof window.goToBannerSlide === 'function') {
+      window.goToBannerSlide(0);
+    }
   }
+
+  // 칩에서 메인 탭으로 이동 (해당 탭 클릭을 트리거)
+  function goMainTab(idx) {
+    const tabs = document.querySelectorAll('.screen[data-screen="home"] .main-tab .mtab');
+    if (tabs[idx]) tabs[idx].click();
+  }
+
+  // ===== 이벤트 휴양소 하계/동계 전환 =====
+  function selectEventSeg(btn, group) {
+    const pane = btn.closest('.mtab-pane');
+    if (!pane) return;
+    pane.querySelectorAll('.event-seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    pane.querySelectorAll('.event-group').forEach(g => {
+      g.classList.toggle('active', g.dataset.group === group);
+    });
+  }
+
+  // ===== 실시간 리뷰 정렬 =====
+  function toggleReviewSort(event) {
+    if (event) event.stopPropagation();
+    const menu = document.getElementById('review-sort-menu');
+    if (menu) menu.classList.toggle('open');
+  }
+  function sortReviews(mode) {
+    const cards = Array.from(document.querySelectorAll('.screen[data-screen="home"] .review-card'));
+    if (cards.length) {
+      const parent = cards[0].parentNode;
+      const getDays = c => { const e = c.querySelector('.meta'); const m = e ? e.textContent.match(/(\d+)\s*일/) : null; return m ? parseInt(m[1], 10) : 999; };
+      const getLikes = c => { const b = c.querySelector('.like-count'); return b ? (parseInt(b.textContent, 10) || 0) : 0; };
+      const getRating = c => { const b = c.querySelector('.rating-num'); return b ? (parseFloat(b.textContent) || 0) : 0; };
+      if (mode === 'recent')      cards.sort((a, b) => getDays(a) - getDays(b));
+      else if (mode === 'likes')  cards.sort((a, b) => getLikes(b) - getLikes(a));
+      else if (mode === 'rating') cards.sort((a, b) => getRating(b) - getRating(a));
+      cards.forEach(c => parent.appendChild(c));
+    }
+    const labels = { recent: '최신순', likes: '좋아요순', rating: '평점순' };
+    const lbl = document.getElementById('review-sort-label');
+    if (lbl) lbl.textContent = (labels[mode] || '최신순') + ' ▾';
+    document.querySelectorAll('#review-sort-menu .sort-menu-item').forEach(it => {
+      it.classList.toggle('active', (it.getAttribute('onclick') || '').indexOf("'" + mode + "'") !== -1);
+    });
+    const menu = document.getElementById('review-sort-menu');
+    if (menu) menu.classList.remove('open');
+  }
+  // 바깥 클릭 시 정렬 메뉴 닫기
+  document.addEventListener('click', (e) => {
+    const box = document.getElementById('review-sort');
+    const menu = document.getElementById('review-sort-menu');
+    if (menu && menu.classList.contains('open') && box && !box.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
 
   // ===== 배너 슬라이드 기능 (무한 루프 지원) =====
   (function initBannerLoop() {
@@ -3930,8 +4954,12 @@
     setPosition(posIndex, false);
     updateDots();
 
-    // 자동슬라이드
-    let bannerAuto = setInterval(nextBannerSlide, 5000);
+    // 자동슬라이드 (숨겨져 있으면 건너뜀 — 무한루프 인덱스 어긋남 방지)
+    function autoTick() {
+      if (carousel.offsetParent === null) return; // display:none 이면 정지
+      nextBannerSlide();
+    }
+    let bannerAuto = setInterval(autoTick, 5000);
 
     // 트랜지션 완료시 클론에서 실제 위치로 스냅
     slides.addEventListener('transitionend', () => {
@@ -3980,7 +5008,7 @@
         setPosition(posIndex, true);
       }
       deltaX = 0;
-      bannerAuto = setInterval(nextBannerSlide, 5000);
+      bannerAuto = setInterval(autoTick, 5000);
     }
 
     slides.addEventListener('touchstart', onTouchStart, { passive: true });
@@ -4003,15 +5031,57 @@
     el.classList.toggle('active');
   }
 
-  // ===== 공지사항 카테고리 칩 (단일 선택) =====
+  // ===== 공지사항 카테고리 + 검색 필터 =====
+  let noticeCat = '전체';
+  let noticeQuery = '';
+
+  function applyNoticeFilter() {
+    const q = noticeQuery.trim().toLowerCase();
+    const cards = document.querySelectorAll('.screen[data-screen="tips"] .notice-card');
+    let shown = 0;
+    cards.forEach(card => {
+      const catOk = noticeCat === '전체' || card.dataset.category === noticeCat;
+      const titleEl = card.querySelector('.notice-title');
+      const bodyEl = card.querySelector('.notice-body');
+      const text = ((titleEl ? titleEl.textContent : '') + ' ' + (bodyEl ? bodyEl.textContent : '')).toLowerCase();
+      const qOk = !q || text.includes(q);
+      const show = catOk && qOk;
+      card.style.display = show ? '' : 'none';
+      if (show) shown++;
+    });
+    const empty = document.getElementById('notice-empty');
+    if (empty) empty.style.display = shown === 0 ? '' : 'none';
+  }
+
   function selectNoticeCat(el) {
     el.parentElement.querySelectorAll('.notice-cat').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
-    const filter = el.textContent.trim();
-    const cards = document.querySelectorAll('.screen[data-screen="tips"] .notice-card');
-    cards.forEach(card => {
-      card.style.display = filter === '전체' || card.dataset.category === filter ? '' : 'none';
-    });
+    noticeCat = el.textContent.trim();
+    applyNoticeFilter();
+  }
+
+  function searchNotices(q) {
+    noticeQuery = q || '';
+    applyNoticeFilter();
+  }
+
+  function toggleNoticeSearch() {
+    const box = document.getElementById('notice-search');
+    if (!box) return;
+    box.classList.toggle('open');
+    if (box.classList.contains('open')) {
+      const inp = document.getElementById('notice-search-input');
+      if (inp) setTimeout(() => inp.focus(), 50);
+    } else {
+      clearNoticeSearch();
+    }
+  }
+
+  function clearNoticeSearch() {
+    const inp = document.getElementById('notice-search-input');
+    if (inp) inp.value = '';
+    noticeQuery = '';
+    applyNoticeFilter();
   }
 
   // ===== 공지사항 데이터 =====
@@ -4244,6 +5314,9 @@
     favoriteState[id] = !favoriteState[id];
     syncFavoriteUI(id);
     renderFavoriteList();
+    if (typeof showToast === 'function') {
+      showToast(favoriteState[id] ? '즐겨찾기에 추가되었습니다' : '즐겨찾기에서 해제되었습니다');
+    }
   }
 
   function syncFavoriteUI(id) {
@@ -4304,7 +5377,9 @@
     'hero-jocheon': { local: 'hero-jocheon.jpg', fallback: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=900&q=85' },
     'banner-summer': { local: 'assets/banner-summer.jpg', fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85' },
     'banner-second': { local: 'assets/banner-vacation.png', fallback: 'assets/banner-summer.jpg' },
-    'banner-third': { local: 'assets/banner-third.jpg', fallback: 'assets/banner-summer.jpg' }
+    'banner-third': { local: 'assets/banner-third.jpg', fallback: 'assets/banner-summer.jpg' },
+    'win-1':  { local: 'resort-winter-1.jpg', fallback: 'https://images.unsplash.com/photo-1418985991508-e47386d96a71?w=500&q=75' },
+    'win-2':  { local: 'resort-winter-2.jpg', fallback: 'https://images.unsplash.com/photo-1551524559-8af4e6624178?w=500&q=75' }
   };
   function setBg(el, url) {
     el.style.backgroundImage = `url("${url}")`;
@@ -4320,6 +5395,287 @@
     probe.onerror = () => setBg(el, cfg.fallback);
     probe.src = cfg.local;
   });
+
+  // ===== 휴양소 상세 데이터 & 동적 채우기 =====
+  // type: 'regular'(정규) | 'summer'(하계 이벤트) | 'winter'(동계 이벤트)
+  function R(name, loc, type, rating, reviews, img) {
+    return { name, loc, type, rating, reviews, img };
+  }
+  const _sokchoHills = R('속초(힐스) 휴양소', '강원 속초시', 'regular', 4.8, 32, 'sokcho');
+  const _jocheon     = R('조천 휴양소', '제주 제주시 조천읍', 'regular', 4.8, 24, 'jocheon');
+  const _yeosu       = R('여수휴양소', '전남 여수시', 'regular', 4.6, 19, 'yeosu');
+  const _gwa1001     = R('과천휴양소(1001호)', '경기 과천시', 'regular', 4.5, 12, 'gwacheon');
+  const _aewol1      = R('애월 1호점', '제주 제주시 애월읍', 'regular', 4.7, 28, 'aewol');
+
+  const RESORT = {
+    // 정기 휴양소 12곳
+    '부산휴양소(해운대)': R('부산휴양소(해운대)', '부산 해운대구', 'regular', 4.7, 21, 'yeosu'),
+    '부산휴양소(기장)':   R('부산휴양소(기장)', '부산 기장군', 'regular', 4.5, 14, 'aewol'),
+    '속초(힐스) 휴양소':  _sokchoHills,
+    '속초 (힐스)':        _sokchoHills,
+    '속초(서희) 휴양소':  R('속초(서희) 휴양소', '강원 속초시', 'regular', 4.6, 17, 'sokcho'),
+    '경주휴양소':         R('경주휴양소', '경북 경주시', 'regular', 4.5, 11, 'gwacheon'),
+    '조천 휴양소':        _jocheon,
+    '조천':               _jocheon,
+    '애월 1호점':         _aewol1,
+    '애월 2호점':         R('애월 2호점', '제주 제주시 애월읍', 'regular', 4.9, 22, 'aewol'),
+    '보령 휴양소':        R('보령 휴양소', '충남 보령시', 'regular', 4.4, 9, 'yeosu'),
+    '여수휴양소':         _yeosu,
+    '여수':               _yeosu,
+    '여수 휴양소':        _yeosu,
+    '과천휴양소(1001호)': _gwa1001,
+    '과천 1001호':        _gwa1001,
+    '과천휴양소(504호)':  R('과천휴양소(504호)', '경기 과천시', 'regular', 4.4, 8, 'gwacheon'),
+    // 이벤트(하계) 8곳
+    '제주(서귀포)':       R('제주(서귀포)', '제주 서귀포시', 'summer', 4.8, 15, 'jocheon'),
+    '부산(송도)':         R('부산(송도)', '부산 서구', 'summer', 4.6, 12, 'aewol'),
+    '여수(금오도)':       R('여수(금오도)', '전남 여수시', 'summer', 4.7, 10, 'yeosu'),
+    '인천(영흥도)':       R('인천(영흥도)', '인천 옹진군', 'summer', 4.5, 8, 'aewol'),
+    '인천(강화)':         R('인천(강화)', '인천 강화군', 'summer', 4.4, 7, 'yeosu'),
+    '경기(포천)':         R('경기(포천)', '경기 포천시', 'summer', 4.6, 9, 'sokcho'),
+    '경기(가평)':         R('경기(가평)', '경기 가평군', 'summer', 4.5, 11, 'sokcho'),
+    '충남(태안)':         R('충남(태안)', '충남 태안군', 'summer', 4.7, 13, 'yeosu'),
+    // 이벤트(동계) 6곳
+    '무주':               R('무주', '전북 무주군', 'winter', 4.7, 14, 'win-1'),
+    '고성':               R('고성', '강원 고성군', 'winter', 4.6, 9, 'win-2'),
+    '평창':               R('평창', '강원 평창군', 'winter', 4.8, 16, 'win-1'),
+    '가평':               R('가평', '경기 가평군', 'winter', 4.5, 10, 'win-2'),
+    '홍천':               R('홍천', '강원 홍천군', 'winter', 4.6, 8, 'win-1'),
+    '충남':               R('충남', '충남', 'winter', 4.4, 6, 'win-2')
+  };
+
+  function applyBg(el, key) {
+    const cfg = IMG[key];
+    if (!cfg || !el) return;
+    const probe = new Image();
+    probe.onload  = () => setBg(el, cfg.local);
+    probe.onerror = () => setBg(el, cfg.fallback);
+    probe.src = cfg.local;
+  }
+  function clampScore(v) { return Math.round(Math.max(0, Math.min(5, v)) * 10) / 10; }
+  function starStr(r) { const full = Math.round(r); return '★'.repeat(full) + '☆'.repeat(5 - full); }
+  function setScoreItem(item, v) {
+    if (!item) return;
+    const bn = item.querySelector('.bn'); if (bn) bn.textContent = v.toFixed(1);
+    const bar = item.querySelector('.bbar > span'); if (bar) bar.style.width = Math.round(v / 5 * 100) + '%';
+  }
+
+  // 꿀팁 카드 좌우 화살표 스크롤 (.tip-head 바로 다음의 .swipe-row 대상)
+  function scrollSwipe(btn, dir) {
+    const head = btn.closest('.tip-head');
+    const row = head ? head.nextElementSibling : null;
+    if (!row || !row.classList.contains('swipe-row')) return;
+    const first = row.querySelector(':scope > *');
+    const step = first ? first.offsetWidth + 12 : row.clientWidth * 0.85;
+    row.scrollBy({ left: dir * step, behavior: 'smooth' });
+  }
+
+  // ===== 전역 토스트 =====
+  function showToast(msg) {
+    const toast = document.getElementById('app-toast');
+    const msgEl = document.getElementById('app-toast-msg');
+    if (!toast || !msgEl) return;
+    msgEl.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  // ===== 공유하기 (레이어팝업 시트) =====
+  function openShareSheet() {
+    const m = document.getElementById('share-modal');
+    if (m) m.classList.add('show');
+  }
+  function closeShareSheet(event) {
+    if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+    document.getElementById('share-modal').classList.remove('show');
+  }
+  function shareVia(type) {
+    if (type === 'link') {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(location.href)
+          .then(() => showToast('링크가 복사되었습니다'))
+          .catch(() => showToast('링크 복사에 실패했습니다'));
+      } else {
+        showToast('링크가 복사되었습니다');
+      }
+    } else {
+      const label = { kakao: '카카오톡', sms: 'SMS', insta: '인스타그램' }[type] || '';
+      showToast(label + '(으)로 공유합니다');
+    }
+    closeShareSheet();
+  }
+
+  // ===== 즐겨찾기 정렬 =====
+  const FAV_SORT_LABEL = { default: '기본순', name: '이름순', rating: '평점 높은순', region: '지역순' };
+  let currentFavSort = 'default';
+
+  // 최초 추가 순서 기억
+  (function stampFavOrder() {
+    const grid = document.getElementById('fav-grid');
+    if (!grid) return;
+    Array.from(grid.querySelectorAll('.fav-card')).forEach((c, i) => { c.dataset.idx = i; });
+  })();
+
+  function openFavSortSheet() {
+    const m = document.getElementById('fav-sort-modal');
+    if (!m) return;
+    m.querySelectorAll('.sort-opt').forEach(b => b.classList.toggle('active', b.dataset.mode === currentFavSort));
+    m.classList.add('show');
+  }
+  function closeFavSort(event) {
+    if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+    document.getElementById('fav-sort-modal').classList.remove('show');
+  }
+  function sortFav(mode) {
+    const grid = document.getElementById('fav-grid');
+    if (!grid) return;
+    const cards = Array.from(grid.querySelectorAll('.fav-card'));
+    const getName = c => { const e = c.querySelector('.fname'); return e ? e.textContent.trim() : ''; };
+    const getMeta = c => { const e = c.querySelector('.fmeta'); return e ? e.textContent : ''; };
+    const getRating = c => { const m = getMeta(c).match(/[\d.]+/); return m ? parseFloat(m[0]) : 0; };
+    const getRegion = c => { const p = getMeta(c).split('·'); return p.length > 1 ? p[p.length - 1].trim() : ''; };
+    const getIdx = c => parseInt(c.dataset.idx || '0', 10);
+    if (mode === 'name')        cards.sort((a, b) => getName(a).localeCompare(getName(b), 'ko'));
+    else if (mode === 'rating') cards.sort((a, b) => getRating(b) - getRating(a));
+    else if (mode === 'region') cards.sort((a, b) => getRegion(a).localeCompare(getRegion(b), 'ko'));
+    else                        cards.sort((a, b) => getIdx(a) - getIdx(b));
+    cards.forEach(c => grid.appendChild(c));
+    currentFavSort = mode;
+    closeFavSort();
+    if (typeof showToast === 'function') showToast('정렬: ' + (FAV_SORT_LABEL[mode] || ''));
+  }
+
+  // ===== Q&A 질문 작성 =====
+  function openQnaModal() {
+    const m = document.getElementById('qna-modal');
+    if (!m) return;
+    m.classList.add('show');
+    setTimeout(() => { const t = document.getElementById('qna-input'); if (t) t.focus(); }, 300);
+  }
+  function closeQnaModal(event) {
+    if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+    document.getElementById('qna-modal').classList.remove('show');
+  }
+  function submitQna() {
+    const inp = document.getElementById('qna-input');
+    const q = (inp.value || '').trim();
+    if (!q) {
+      if (typeof showToast === 'function') showToast('질문 내용을 입력해주세요');
+      return;
+    }
+    const pane = document.querySelector('.screen[data-screen="detail"] .dtab-pane[data-dtab="qna"]');
+    if (pane) {
+      const btn = pane.querySelector('.qna-write-btn');
+      const item = document.createElement('div');
+      item.className = 'qna-item unanswered';
+      item.innerHTML =
+        '<div class="qhead"><div class="qavatar" style="background:#1F4FE0">박</div>' +
+        '<div class="qname">박OO 책임 (나)</div><div class="qdate">방금 전</div></div>' +
+        '<div class="qtext">Q. ' + escapeHtml(q) + '</div>' +
+        '<div class="answer-cta" style="cursor:default">아직 답변이 없어요. 답변을 기다리고 있어요 ⏳</div>';
+      if (btn && btn.nextSibling) btn.parentNode.insertBefore(item, btn.nextSibling);
+      else pane.appendChild(item);
+      // Q&A 탭 개수 +1
+      const qnaNav = document.querySelector('.screen[data-screen="detail"] .tab-nav .tnav[onclick*="qna"]');
+      if (qnaNav) {
+        const m = qnaNav.textContent.match(/\d+/);
+        qnaNav.textContent = 'Q&A ' + (m ? parseInt(m[0], 10) + 1 : 1);
+      }
+    }
+    inp.value = '';
+    document.getElementById('qna-modal').classList.remove('show');
+    if (typeof showToast === 'function') showToast('질문이 등록되었어요! ❓');
+  }
+
+  // ===== 꿀팁 작성 =====
+  function openTipModal() {
+    const m = document.getElementById('tip-modal');
+    if (!m) return;
+    m.classList.add('show');
+    setTimeout(() => { const t = document.getElementById('tip-title-input'); if (t) t.focus(); }, 300);
+  }
+  function closeTipModal(event) {
+    if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+    document.getElementById('tip-modal').classList.remove('show');
+  }
+  function submitTip() {
+    const tagEl = document.getElementById('tip-tag-input');
+    const titleEl = document.getElementById('tip-title-input');
+    const contentEl = document.getElementById('tip-content-input');
+    const title = (titleEl.value || '').trim();
+    const content = (contentEl.value || '').trim();
+    if (!title || !content) {
+      if (typeof showToast === 'function') showToast('제목과 내용을 입력해주세요');
+      return;
+    }
+    const tag = (tagEl.value || '').trim();
+    const row = document.querySelector('.screen[data-screen="detail"] .tip-head + .swipe-row');
+    if (row) {
+      const card = document.createElement('div');
+      card.className = 'tip-card';
+      const tagHtml = tag ? `<span class="tag tone-mint">${escapeHtml(tag)}</span>` : '';
+      card.innerHTML =
+        `<div class="tag-row"><span class="tag tone-coral">NEW</span>${tagHtml}</div>` +
+        `<div class="ttitle">${escapeHtml(title)}</div>` +
+        `<div class="tcontent">${escapeHtml(content)}</div>` +
+        `<div class="tfoot"><span>박OO 책임 (나) · 방금 전</span><span>👁 0 · 👍 0</span></div>`;
+      row.insertBefore(card, row.firstElementChild);
+      row.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+    tagEl.value = ''; titleEl.value = ''; contentEl.value = '';
+    document.getElementById('tip-modal').classList.remove('show');
+    if (typeof showToast === 'function') showToast('꿀팁이 공유되었어요! 💡');
+  }
+
+  // 리뷰 탭에서 특정 리뷰로 스크롤 (없으면 첫 리뷰로)
+  function scrollToReview(reviewId) {
+    const pane = document.querySelector('.screen[data-screen="detail"] .dtab-pane[data-dtab="reviews"]');
+    if (!pane) return;
+    const target = (reviewId && pane.querySelector('#rev-' + reviewId)) || pane.querySelector('.review-head');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // 클릭한 요소(카드/칩)에서 휴양소 이름을 추출해 상세 열기
+  function openResortEl(el) {
+    let name = '';
+    const nameEl = el && el.querySelector ? el.querySelector('.name, .fname') : null;
+    name = nameEl ? nameEl.textContent.trim() : (el && el.textContent ? el.textContent.trim() : '');
+    openResort(name);
+  }
+
+  function openResort(name, tab, reviewId) {
+    showScreen('device1', 'detail');
+    // 상세 탭 지정 (기본: 편의시설)
+    const dt = document.querySelector('.screen[data-screen="detail"]');
+    if (dt) {
+      const wantTab = tab || 'tips';
+      const nav = dt.querySelector(`.tab-nav .tnav[onclick*="'${wantTab}'"]`);
+      if (nav) showDetailTab(nav, wantTab);
+      if (wantTab === 'reviews') setTimeout(() => scrollToReview(reviewId), 80);
+    }
+    const r = RESORT[name];
+    const d = document.querySelector('.screen[data-screen="detail"]');
+    if (!r || !d) return;
+    const tag = r.type === 'winter' ? '동계 이벤트 휴양소'
+              : r.type === 'summer' ? '하계 이벤트 휴양소'
+              : '정기 휴양소';
+    const title = d.querySelector('.app-header .title'); if (title) title.textContent = r.name;
+    const h2 = d.querySelector('#detail-resort-name'); if (h2) h2.textContent = r.name;
+    const locEl = d.querySelector('.place-detail-head .loc');
+    if (locEl) locEl.innerHTML = `<i class="ti ti-map-pin"></i> ${r.loc} · 4인실 · 정원 4명`;
+    const hero = d.querySelector('.hero'); if (hero) applyBg(hero, r.img);
+    const heroTag = d.querySelector('.hero .hero-tag'); if (heroTag) heroTag.textContent = tag;
+    const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = r.rating.toFixed(1);
+    const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(r.rating);
+    const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${r.reviews}개</b> 리뷰의 평균`;
+    const items = d.querySelectorAll('.score-breakdown .score-item');
+    setScoreItem(items[0], clampScore(r.rating - 0.1)); // 위치
+    setScoreItem(items[1], clampScore(r.rating + 0.1)); // 시설
+    setScoreItem(items[2], clampScore(r.rating));        // 청결
+    const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `리뷰 ${r.reviews}`;
+    const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = r.reviews;
+  }
 
   // banner characters removed
 
@@ -4359,6 +5715,58 @@
     `;
     item.insertAdjacentHTML('beforeend', html);
   }
+</script>
+
+<script>
+  // 데스크톱: 가로 스크롤 영역 위에서 마우스 휠(세로)을 가로 스크롤로 변환
+  const HSCROLL_SELECTOR = '.region-chips, .filter-row, .notice-cats, .hcards, .swipe-row';
+  (function enableHorizontalWheelScroll() {
+    document.addEventListener('wheel', (e) => {
+      const row = e.target.closest(HSCROLL_SELECTOR);
+      if (!row) return;
+      if (row.scrollWidth <= row.clientWidth) return; // 넘칠 내용이 없으면 무시
+      // 이미 가로 휠(트랙패드 등)이면 브라우저 기본 동작에 맡김
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      row.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }, { passive: false });
+  })();
+
+  // 데스크톱: 마우스로 클릭한 채 드래그하면 가로 스크롤
+  (function enableDragToScroll() {
+    let row = null, startX = 0, startScroll = 0, dragged = false;
+    const DRAG_THRESHOLD = 5; // 이 이상 움직여야 드래그로 간주(클릭과 구분)
+
+    document.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return; // 좌클릭만
+      const target = e.target.closest(HSCROLL_SELECTOR);
+      if (!target || target.scrollWidth <= target.clientWidth) return;
+      row = target;
+      startX = e.clientX;
+      startScroll = row.scrollLeft;
+      dragged = false;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!row) return;
+      const dx = e.clientX - startX;
+      if (!dragged && Math.abs(dx) < DRAG_THRESHOLD) return;
+      dragged = true;
+      row.style.cursor = 'grabbing';
+      row.scrollLeft = startScroll - dx;
+      e.preventDefault();
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (row) row.style.cursor = '';
+      // 드래그 직후의 클릭(칩/카드 클릭) 한 번 무시
+      if (dragged) {
+        const blocker = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+        document.addEventListener('click', blocker, { capture: true, once: true });
+      }
+      row = null;
+    });
+  })();
 </script>
 
 <script>
@@ -4415,26 +5823,28 @@
   /* ============ 전국 휴양소 지도 (session-05 데이터/로직 통합) ============ */
   // 휴양소 위치 데이터 — mx/my 는 실제 위경도를 지도 SVG(viewBox 200x280)로 투영한 좌표
   const SENI_MARKERS = [
+    // 정기 휴양소 (12곳)
     { type:'basic', label:'속초', mx:131, my:32.5, places:['속초(힐스) 휴양소','속초(서희) 휴양소'] },
     { type:'basic', label:'과천', mx:59.1, my:75.6, places:['과천휴양소(1001호)','과천휴양소(504호)'] },
     { type:'basic', label:'보령', mx:42.3, my:136.2, places:['보령 휴양소'] },
     { type:'basic', label:'여수', mx:89.3, my:223.3, places:['여수휴양소'] },
-    { type:'basic', label:'부산', mx:152.7, my:200.1, places:['부산휴양소'] },
+    { type:'basic', label:'부산', mx:152.7, my:200.1, places:['부산휴양소(해운대)','부산휴양소(기장)'] },
+    { type:'basic', label:'경주', mx:140, my:178, places:['경주휴양소'] },
     { type:'basic', label:'제주', mx:38.6, my:293.1, places:['조천 휴양소','애월 1호점','애월 2호점'] },
+    // 동계 이벤트 휴양소 (6곳)
     { type:'winter', label:'고성', mx:125.5, my:22.9, places:['고성 동계 휴양소'] },
     { type:'winter', label:'홍천', mx:99.5, my:60.7, places:['홍천 동계 휴양소'] },
     { type:'winter', label:'평창', mx:122, my:78.8, places:['평창 동계 휴양소'] },
-    { type:'winter', label:'가평', mx:82.5, my:53.3, places:['가평 동계 휴양소'] },
+    { type:'both', label:'가평', mx:84, my:52, places:['경기(가평) 하계 휴양소','가평 동계 휴양소'] },
     { type:'winter', label:'무주', mx:89.3, my:154.3, places:['무주 동계 휴양소'] },
     { type:'winter', label:'충남', mx:44.4, my:121.4, places:['충남 동계 휴양소'] },
+    // 하계 이벤트 휴양소 (8곳)
     { type:'summer', label:'강화', mx:36.7, my:58, places:['인천(강화) 하계 휴양소'] },
     { type:'summer', label:'영흥도', mx:36.7, my:85.7, places:['인천(영흥도) 하계 휴양소'] },
-    { type:'summer', label:'포천', mx:68.6, my:49.8, places:['경기(포천) 하계 휴양소'] },
+    { type:'summer', label:'포천', mx:64, my:50, places:['경기(포천) 하계 휴양소'] },
     { type:'summer', label:'태안', mx:28.2, my:113.4, places:['충남(태안) 하계 휴양소'] },
     { type:'summer', label:'금오도', mx:94.6, my:234.9, places:['여수(금오도) 하계 휴양소'] },
-    { type:'summer', label:'해운대', mx:156.6, my:201, places:['부산(해운대) 하계 휴양소'] },
     { type:'summer', label:'송도', mx:150.1, my:205.8, places:['부산(송도) 하계 휴양소'] },
-    { type:'summer', label:'월정리', mx:50.4, my:290, places:['제주(월정리) 하계 휴양소'] },
     { type:'summer', label:'서귀포', mx:39.9, my:306.7, places:['제주(서귀포) 하계 휴양소'] },
   ];
 
@@ -4459,7 +5869,7 @@
   // 각 마커의 표시 좌표 계산 — 가까운 것들은 부채꼴로 펼쳐 겹침을 줄인다
   function computeMarkerLayout() {
     const pos = new Array(SENI_MARKERS.length);
-    buildClusters(14).forEach(idxs => {
+    buildClusters(16).forEach(idxs => {
       if (idxs.length === 1) {
         const m = SENI_MARKERS[idxs[0]];
         pos[idxs[0]] = { x: m.mx, y: m.my, ox: 0, oy: -1, single: true };
@@ -4482,10 +5892,34 @@
     if (!layer) return;
     while (layer.firstChild) layer.removeChild(layer.firstChild);
     const layout = computeMarkerLayout();
+
+    // ----- 라벨 겹침 회피 -----
+    const placed = [];                       // 이미 차지한 사각형 영역들
+    // 모든 점(dot) 영역을 먼저 등록해 라벨이 점을 덮지 않게 한다
+    layout.forEach(p => placed.push({ x1: p.x - 5, y1: p.y - 5, x2: p.x + 5, y2: p.y + 5 }));
+    const LH = 10;                           // 라벨 높이(대략)
+    const estW = t => {                      // 라벨 너비 추정
+      let w = 0;
+      for (const ch of t) w += /[가-힣]/.test(ch) ? 9.5 : (ch === ' ' ? 3 : 5.5);
+      return w;
+    };
+    const hits = r => placed.some(q => r.x1 < q.x2 && r.x2 > q.x1 && r.y1 < q.y2 && r.y2 > q.y1);
+    function labelCandidates(p, w) {
+      const up    = { anchor: 'middle', x: 0,  y: -8, rect: { x1: p.x - w / 2, y1: p.y - 8 - LH, x2: p.x + w / 2, y2: p.y - 8 } };
+      const down  = { anchor: 'middle', x: 0,  y: 13, rect: { x1: p.x - w / 2, y1: p.y + 13 - LH, x2: p.x + w / 2, y2: p.y + 13 } };
+      const right = { anchor: 'start',  x: 7,  y: 3,  rect: { x1: p.x + 7, y1: p.y + 3 - LH, x2: p.x + 7 + w, y2: p.y + 3 } };
+      const left  = { anchor: 'end',    x: -7, y: 3,  rect: { x1: p.x - 7 - w, y1: p.y + 3 - LH, x2: p.x - 7, y2: p.y + 3 } };
+      if (p.single) return [up, down, right, left];
+      const horiz = p.ox >= 0 ? right : left;
+      const vert = p.oy >= 0 ? down : up;
+      return [horiz, vert, up, down, right, left];
+    }
+
     SENI_MARKERS.forEach((m, i) => {
       const p = layout[i];
       const g = document.createElementNS(SVG_NS, 'g');
-      g.setAttribute('class', 'marker ' + m.type + (seniMapType !== 'all' && seniMapType !== m.type ? ' hide' : ''));
+      const vis = seniMapType === 'all' || m.type === seniMapType || (m.type === 'both' && (seniMapType === 'summer' || seniMapType === 'winter'));
+      g.setAttribute('class', 'marker ' + m.type + (vis ? '' : ' hide'));
       g.dataset.type = m.type;
       g.dataset.idx = i;                    // 탭 판정 시 마커 식별용
       g.setAttribute('transform', `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`);
@@ -4504,16 +5938,16 @@
 
       const label = document.createElementNS(SVG_NS, 'text');
       label.setAttribute('class', 'pin-label');
-      label.textContent = m.places.length > 1 ? `${m.label} ${m.places.length}` : m.label;
-      if (p.single) {                       // 단독 마커: 라벨을 위에
-        label.setAttribute('text-anchor', 'middle');
-        label.setAttribute('y', '-8');
-      } else {                              // 클러스터: 바깥쪽으로 밀어 겹침 완화
-        const right = p.ox >= 0;
-        label.setAttribute('text-anchor', right ? 'start' : 'end');
-        label.setAttribute('x', right ? '7' : '-7');
-        label.setAttribute('y', p.oy >= 0 ? '12' : '-5');
-      }
+      label.textContent = (m.places.length > 1 && m.type !== 'both') ? `${m.label} ${m.places.length}` : m.label;
+
+      // 빈 방향을 골라 라벨 배치(겹침 회피)
+      const cands = labelCandidates(p, estW(label.textContent));
+      let chosen = cands[0];
+      for (const c of cands) { if (!hits(c.rect)) { chosen = c; break; } }
+      placed.push(chosen.rect);
+      label.setAttribute('text-anchor', chosen.anchor);
+      label.setAttribute('x', String(chosen.x));
+      label.setAttribute('y', String(chosen.y));
       g.appendChild(label);
 
       // 클릭 처리는 뷰포트 탭 판정(setupMapPan)에서 일괄 수행
@@ -4526,7 +5960,10 @@
     document.querySelectorAll('#seni-map-filter .map-chip').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
     document.querySelectorAll('#seni-map-canvas .marker').forEach(m => {
-      m.classList.toggle('hide', type !== 'all' && m.dataset.type !== type);
+      const t = m.dataset.type;
+      // 'both'(하계+동계 겸용) 마커는 하계/동계 필터 모두에서 표시
+      const visible = type === 'all' || t === type || (t === 'both' && (type === 'summer' || type === 'winter'));
+      m.classList.toggle('hide', !visible);
     });
   }
 
@@ -4619,6 +6056,13 @@
   // 선택한 휴양소로 상세 이동 (이름을 상세 화면에 반영)
   function goResortDetail(name) {
     closeMapSheet();
+    // 휴양소 데이터와 매칭되면 상세 내용을 채워서 이동
+    if (name && typeof RESORT !== 'undefined') {
+      const key = name.replace(/\s*(하계|동계)\s*휴양소$/, '').trim();
+      if (RESORT[name]) { openResort(name); return; }
+      if (RESORT[key])  { openResort(key);  return; }
+    }
+    // 매칭 데이터가 없으면 이름만 반영
     if (name) {
       const h = document.getElementById('detail-resort-name');
       if (h) h.textContent = name;
