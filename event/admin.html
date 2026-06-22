@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Enterprise Experience Admin Demo</title>
+<style>
+:root{--bg:#F6F8FC;--ink:#0F172A;--muted:#64748B;--blue:#2563EB;--violet:#7C3AED;--card:#FFFFFF;--line:#E2E8F0;--shadow:0 18px 60px rgba(15,23,42,.10)}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Pretendard GOV","Pretendard","Noto Sans KR",Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:#08111F;color:#EAF2FF;padding:26px 20px;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:12px;font-weight:900;margin-bottom:32px}
+.mark{width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,#60A5FA,#A78BFA);display:grid;place-items:center;box-shadow:0 0 28px rgba(96,165,250,.35)}
+.nav{display:grid;gap:8px}.nav a{padding:13px 14px;border-radius:14px;color:#CBD5E1;text-decoration:none;font-weight:700}.nav a.active,.nav a:hover{background:rgba(255,255,255,.10);color:white}
+.main{padding:28px 34px 48px}.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+h1{margin:0;font-size:34px;letter-spacing:-.045em}.sub{color:var(--muted);margin-top:6px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:#ECFDF5;color:#047857;font-weight:900;border:1px solid #BBF7D0}.badge:before{content:"";width:8px;height:8px;border-radius:50%;background:#22C55E}
+.grid{display:grid;gap:18px}.metrics{grid-template-columns:repeat(4,1fr);margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+.metric small{color:var(--muted);font-weight:800}.metric b{display:block;font-size:34px;letter-spacing:-.05em;margin:8px 0}.delta{font-size:13px;font-weight:900;color:#16A34A}
+.two{grid-template-columns:1.2fr .8fr;margin-bottom:18px}.chart{height:260px;display:flex;align-items:end;gap:12px;padding-top:20px}
+.bar{flex:1;border-radius:12px 12px 6px 6px;background:linear-gradient(180deg,#60A5FA,#7C3AED);min-height:34px;position:relative}.bar span{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted)}.bar i{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-style:normal;font-size:12px;font-weight:900;color:#334155}
+.list{display:grid;gap:12px}.item{display:flex;gap:12px;align-items:center;padding:13px;border-radius:16px;background:#F8FAFC;border:1px solid #E2E8F0}.thumb{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#93C5FD,#C4B5FD,#F0ABFC)}.item b{display:block}.item small{color:var(--muted)}
+.pill{display:inline-flex;padding:7px 10px;border-radius:999px;background:#EEF2FF;color:#3730A3;font-weight:900;font-size:12px;margin:4px}
+.ai-box{background:linear-gradient(135deg,#EFF6FF,#F5F3FF);border-color:#DBEAFE}.ai-box h3{margin-top:0}.ai-answer{padding:18px;border-radius:18px;background:white;border:1px solid #E2E8F0;line-height:1.65;color:#334155}
+.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:14px;border-bottom:1px solid #E2E8F0}.table th{color:#475569;font-size:13px}.status{font-weight:900;color:#2563EB}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.metrics,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo"><div class="mark">EX</div><div>Experience<br/>Admin</div></div>
+    <nav class="nav">
+      <a class="active" href="#">Overview</a><a href="#">Experience Feed</a><a href="#">AI Insights</a><a href="#">Challenge</a><a href="#">Reports</a><a href="#">Settings</a>
+    </nav>
+  </aside>
+  <main class="main">
+    <div class="topbar"><div><h1>Employee Experience Dashboard</h1><div class="sub">복지·휴양소·행사 경험을 데이터로 확인하는 관리자 데모</div></div><div class="badge">Prototype Demo</div></div>
+    <section class="grid metrics">
+      <div class="card metric"><small>이번 달 참여율</small><b>62%</b><div class="delta">+18%p vs. 게시판 운영</div></div>
+      <div class="card metric"><small>후기 작성 수</small><b>184</b><div class="delta">3.8x 증가</div></div>
+      <div class="card metric"><small>AI 요약 생성</small><b>96</b><div class="delta">운영자 검토시간 절감</div></div>
+      <div class="card metric"><small>인기 경험 키워드</small><b>가족</b><div class="delta">제주 · 아이추천 · 산책</div></div>
+    </section>
+    <section class="grid two">
+      <div class="card"><h3>월별 참여 추이</h3><div class="chart">
+        <div class="bar" style="height:38%"><i>34%</i><span>1월</span></div><div class="bar" style="height:42%"><i>39%</i><span>2월</span></div><div class="bar" style="height:49%"><i>45%</i><span>3월</span></div><div class="bar" style="height:56%"><i>52%</i><span>4월</span></div><div class="bar" style="height:64%"><i>58%</i><span>5월</span></div><div class="bar" style="height:70%"><i>62%</i><span>6월</span></div>
+      </div></div>
+      <div class="card"><h3>인기 경험 TOP 3</h3><div class="list">
+        <div class="item"><div class="thumb"></div><div><b>제주 가족휴양소</b><small>좋아요 248 · 후기 42</small></div></div>
+        <div class="item"><div class="thumb"></div><div><b>강원 숲캉스</b><small>좋아요 185 · 후기 29</small></div></div>
+        <div class="item"><div class="thumb"></div><div><b>봉사활동 챌린지</b><small>참여 96명 · 댓글 118</small></div></div>
+      </div></div>
+    </section>
+    <section class="grid two">
+      <div class="card ai-box"><h3>AI 운영 인사이트</h3><div class="ai-answer">
+        이번 달 직원들은 <b>가족 동반 휴양소</b>와 <b>아이와 함께 가기 좋은 장소</b>에 높은 관심을 보였습니다.
+        제주 휴양소 후기는 사진이 포함된 게시물이 평균 좋아요가 2.4배 높았습니다.
+        다음 달에는 “가족여행 후기 챌린지”와 “실제 객실 사진 공유 이벤트”를 운영하는 것이 효과적입니다.
+      </div></div>
+      <div class="card"><h3>키워드 클러스터</h3>
+        <span class="pill">#가족</span><span class="pill">#제주</span><span class="pill">#아이추천</span><span class="pill">#실제사진</span><span class="pill">#산책로</span><span class="pill">#주차편리</span><span class="pill">#조식</span><span class="pill">#여름휴가</span><span class="pill">#재방문</span>
+      </div>
+    </section>
+    <section class="card" style="margin-top:18px"><h3>운영 개선 액션</h3><table class="table"><thead><tr><th>제안 액션</th><th>근거</th><th>상태</th></tr></thead><tbody>
+      <tr><td>가족 휴양소 후기 챌린지 운영</td><td>가족 키워드 참여율 1위</td><td class="status">추천</td></tr>
+      <tr><td>실제 객실 사진 필수 항목 추가</td><td>사진 포함 후기 반응 2.4배</td><td class="status">검토</td></tr>
+      <tr><td>제주/강원 지역 큐레이션 페이지 구성</td><td>검색량 상위 지역</td><td class="status">추천</td></tr>
+    </tbody></table></section>
+  </main>
+</div>
+</body>
+</html>
