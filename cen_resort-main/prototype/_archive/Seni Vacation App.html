@@ -1,0 +1,3849 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세니와 함께 - 사내 휴양소 리뷰</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0">
+<style>
+  /* ============ DESIGN TOKENS ============ */
+  :root {
+    /* Neutral - cool slate */
+    --bg: #F4F5F7;
+    --surface: #FFFFFF;
+    --surface-2: #F8F9FB;
+    --surface-3: #F1F3F6;
+    --border: #E8EAEE;
+    --border-strong: #D7DAE0;
+    --text-1: #0F172A;
+    --text-2: #475569;
+    --text-3: #94A3B8;
+
+    /* Brand */
+    --brand: #1F4FE0;
+    --brand-dark: #1A3FB8;
+    --brand-50: #EEF3FF;
+    --brand-100: #DCE6FC;
+
+    /* Pastels (bg / fg pairs) */
+    --mint-bg: #DEF7EC;    --mint-fg: #047857;
+    --sky-bg: #DBEAFE;     --sky-fg: #1E40AF;
+    --pink-bg: #FCE7F3;    --pink-fg: #9D174D;
+    --lilac-bg: #EDE9FE;   --lilac-fg: #5B21B6;
+    --peach-bg: #FFEDD5;   --peach-fg: #9A3412;
+    --cream-bg: #FEF3C7;   --cream-fg: #92400E;
+    --coral-bg: #FFE4E6;   --coral-fg: #9F1239;
+    --teal-bg: #CCFBF1;    --teal-fg: #115E59;
+
+    /* Accent */
+    --star: #F59E0B;
+
+    /* Radius */
+    --r-sm: 8px;
+    --r: 12px;
+    --r-lg: 14px;
+    --r-xl: 18px;
+    --pill: 999px;
+  }
+
+  /* ============ ICON ============ */
+  .ms {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+    -webkit-font-smoothing: antialiased;
+  }
+  .ms.outline { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+
+  /* ============ BASE ============ */
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+    font-size: 14px;
+  }
+  .num-display {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  /* 7-디바이스 디자인 리뷰 스테이지 */
+  .device-stage {
+    display: flex;
+    gap: 28px 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 1620px;
+    width: 100%;
+  }
+  .device-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .device.static {
+    pointer-events: none;
+  }
+  .device.static .tabbar { pointer-events: none; }
+
+  .device {
+    width: 360px;
+    height: 760px;
+    background: var(--surface-2);
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 12px 40px rgba(15,23,42,0.12), 0 2px 8px rgba(15,23,42,0.06);
+    border: 8px solid #0F172A;
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: var(--surface-2);
+    display: none;
+    flex-direction: column;
+    scrollbar-width: none;
+  }
+  .screen.active { display: flex; }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* 공통 헤더 */
+  .app-header {
+    padding: 14px 18px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface-2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .app-header .back { font-size: 22px; cursor: pointer; color: #0F172A; }
+  .app-header .title { font-size: 16px; font-weight: 700; flex: 1; text-align: center; }
+  .app-header .actions { display: flex; gap: 12px; color: #475569; }
+  .app-header .actions i { font-size: 20px; cursor: pointer; }
+
+  /* 하단 탭바 (고정) */
+  .tabbar {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid #E8EAEE;
+    display: flex;
+    padding: 8px 0 14px;
+    z-index: 20;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1;
+    text-align: center;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-item i { font-size: 22px; display: block; }
+  .tab-item span { font-size: 10px; margin-top: 2px; display: block; }
+  .tab-item.active { color: #1F4FE0; }
+  .tab-item.center {
+    flex: 0 0 60px;
+    margin-top: -22px;
+  }
+  .tab-fab {
+    width: 52px;
+    height: 52px;
+    background: #1F4FE0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(31,79,224,0.35);
+    transition: transform 0.15s;
+  }
+  .tab-fab:active { transform: scale(0.92); }
+  .tab-fab i { font-size: 24px; display: inline; }
+
+  /* 콘텐츠 스크롤 영역 */
+  .content { flex: 1; padding-bottom: 16px; }
+
+  /* === 컴포넌트 === */
+  .greeting-row {
+    padding: 8px 18px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .greeting-row .seni-avatar {
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+  }
+  .greeting-row .hello { font-size: 11px; color: #475569; }
+  .greeting-row .name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-top: 2px;
+  }
+  .greeting-row .icons {
+    display: flex; gap: 14px;
+    color: #475569;
+    margin-left: auto;
+  }
+  .greeting-row .icons i { font-size: 22px; }
+
+  /* === 스티키 헤더 === */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    background: var(--surface-2);
+    z-index: 15;
+  }
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px 8px;
+  }
+  .top-logo {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .top-logo svg { width: 100%; height: 100%; display: block; }
+  .search-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: #475569;
+    cursor: pointer;
+    min-width: 0;
+  }
+  .search-bar i { font-size: 16px; color: #475569; flex-shrink: 0; }
+  .search-bar span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .top-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .top-actions .icon-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+  }
+  .top-actions .icon-btn i { font-size: 22px; color: #0F172A; }
+  .top-actions .icon-btn .badge-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: #E94A4A;
+    color: #fff;
+    border-radius: var(--pill);
+    border: 2px solid var(--surface-2);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.02em;
+  }
+
+  .main-tab {
+    display: flex;
+    padding: 0 16px;
+    border-bottom: 1px solid #E8EAEE;
+  }
+  .mtab {
+    flex: 1;
+    padding: 12px 0;
+    font-size: 14px;
+    color: #475569;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: color 0.15s;
+  }
+  .mtab.active {
+    color: #0F172A;
+    font-weight: 700;
+    border-bottom-color: #1F4FE0;
+  }
+  .mtab .new-dot {
+    width: 6px;
+    height: 6px;
+    background: #E94A4A;
+    border-radius: 50%;
+  }
+
+  .region-chips {
+    display: flex;
+    gap: 6px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .region-chips::-webkit-scrollbar { display: none; }
+  .region-chip {
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    background: rgba(255,255,255,0.4);
+    border: 1px solid rgba(229,221,208,0.4);
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .region-chip:hover { background: rgba(245,240,232,0.6); }
+  .region-chip.active {
+    background: var(--brand-50);
+    color: var(--brand-dark);
+    border-color: var(--brand-100);
+    font-weight: 700;
+  }
+
+  /* 필터 칩 */
+  .filter-row {
+    padding: 0 18px 14px;
+    display: flex; gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .chip {
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    background: #FFFFFF;
+    border: 1px solid #E8EAEE;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chip.active {
+    background: var(--brand-50);
+    color: var(--brand-dark);
+    border-color: var(--brand-100);
+    font-weight: 700;
+  }
+
+  /* 세니 이벤트 배너 (풀블리드 일러스트) */
+  .event-banner {
+    margin: 0 18px 18px;
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 340 / 160;
+    background-image: url('vacation.png');
+    background-position: right center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: var(--text-1);
+  }
+  .event-banner .ev-text {
+    position: absolute;
+    top: 14px;
+    left: 20px;
+    max-width: 60%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .event-banner .label {
+    align-self: flex-start;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--brand-dark);
+    padding: 4px 10px;
+    border-radius: var(--pill);
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .event-banner .title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--text-1);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .event-banner .sub {
+    font-size: 12px;
+    line-height: 1.3;
+    color: var(--text-2);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .event-banner .seni-img { display: none; }
+  .event-banner .pager {
+    position: absolute;
+    left: 20px;
+    bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: var(--pill);
+    background: rgba(15,23,42,0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .event-banner .pager b { font-weight: 800; }
+
+  /* 섹션 헤더 */
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 18px 12px;
+  }
+  .section-head .title { font-size: 15px; font-weight: 700; color: #0F172A; }
+  .section-head .more { font-size: 11px; color: #475569; cursor: pointer; }
+
+  /* 가로 스크롤 카드 */
+  .hcards {
+    display: flex; gap: 10px;
+    padding: 0 18px 18px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 18px;
+  }
+  .hcards::-webkit-scrollbar { display: none; }
+  .hcards::after {
+    content: '';
+    flex: 0 0 1px;
+    height: 1px;
+  }
+  .hcards .place-card { scroll-snap-align: start; }
+
+  /* 카드 가로 스와이프 */
+  .swipe-row {
+    display: flex;
+    gap: 12px;
+    padding: 0 18px 18px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 18px;
+  }
+  .swipe-row::-webkit-scrollbar { display: none; }
+  .swipe-row > * {
+    margin: 0 !important;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+  .swipe-row::after {
+    content: '';
+    flex: 0 0 1px;
+    height: 1px;
+  }
+  .swipe-row .review-card { width: 268px; }
+  .swipe-row .tip-card { width: 260px; }
+  .place-card {
+    min-width: 140px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .place-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .place-card:active { transform: scale(0.97); }
+  .place-card { position: relative; }
+
+  /* === 즐겨찾기 버튼 === */
+  .fav-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .fav-btn:active { transform: scale(0.85); }
+  .fav-btn i { font-size: 16px; color: #475569; transition: color 0.15s; }
+  .fav-btn.favorited i { color: #F5A623; }
+
+  .fav-btn.absolute {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 5;
+  }
+  .fav-btn.inline {
+    background: transparent;
+    box-shadow: none;
+    width: auto;
+    height: auto;
+  }
+  .fav-btn.header-style i { font-size: 20px; color: #0F172A; }
+  .fav-btn.header-style.favorited i { color: #F5A623; }
+  .place-card .thumb {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .place-card .thumb i { font-size: 28px; }
+  .place-card .info { padding: 9px 11px; }
+  .place-card .info .name {
+    font-size: 12px; font-weight: 700;
+    color: #0F172A;
+  }
+  .place-card .info .meta {
+    font-size: 10px; color: #475569;
+    margin-top: 3px;
+  }
+
+  /* 리뷰 카드 */
+  .review-card {
+    margin: 0 18px 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 14px;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .review-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .review-head {
+    display: flex; gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .review-head .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #FFFFFF;
+    flex-shrink: 0;
+  }
+  .review-head .who { flex: 1; }
+  .review-head .name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0F172A;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+  .review-head .meta {
+    font-size: 10px;
+    color: #475569;
+    margin-top: 2px;
+  }
+  .badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: var(--pill);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .badge.king     { background: var(--cream-bg); color: var(--cream-fg); }
+  .badge.verified { background: var(--mint-bg);  color: var(--mint-fg); }
+  .badge.regular  { background: var(--surface-3); color: var(--text-2); font-weight: 500; }
+
+  /* 파스텔 카테고리 (.tone-*) */
+  .tone-mint  { background: var(--mint-bg);  color: var(--mint-fg); }
+  .tone-sky   { background: var(--sky-bg);   color: var(--sky-fg); }
+  .tone-pink  { background: var(--pink-bg);  color: var(--pink-fg); }
+  .tone-lilac { background: var(--lilac-bg); color: var(--lilac-fg); }
+  .tone-peach { background: var(--peach-bg); color: var(--peach-fg); }
+  .tone-cream { background: var(--cream-bg); color: var(--cream-fg); }
+  .tone-coral { background: var(--coral-bg); color: var(--coral-fg); }
+  .tone-teal  { background: var(--teal-bg);  color: var(--teal-fg); }
+
+  .rating-line {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .stars { color: #F59E0B; letter-spacing: 1px; }
+  .stars.empty { color: #E8EAEE; }
+  .rating-num { color: #0F172A; font-weight: 700; margin-left: 4px; }
+
+  .photo-row {
+    display: flex; gap: 4px;
+    margin-bottom: 10px;
+  }
+  .photo-row .ph {
+    flex: 1;
+    aspect-ratio: 1;
+    border-radius: 8px;
+  }
+
+  .review-text {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.6;
+  }
+  .review-actions {
+    display: flex; gap: 8px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #475569;
+  }
+  .review-actions i { font-size: 14px; vertical-align: -2px; }
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid #E8EAEE;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    font-size: 11px;
+    color: #475569;
+  }
+  .action-btn:hover { background: #F1F3F6; }
+  .action-btn:active { transform: scale(0.92); }
+  .action-btn i { font-size: 14px; }
+  .action-btn.liked {
+    background: #FFE8EC;
+    border-color: #FFC4CC;
+    color: #E94A4A;
+  }
+  .action-btn.liked i { color: #E94A4A; }
+
+  /* === 댓글 모달 === */
+  .comment-modal {
+    position: absolute;
+    inset: 0;
+    background: rgba(44,31,18,0.5);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 200;
+  }
+  .comment-modal.show { display: flex; animation: fadeIn 0.25s ease; }
+  .comment-sheet {
+    width: 100%;
+    background: #FFFFFF;
+    border-radius: 20px 20px 0 0;
+    max-height: 70%;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  .comment-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: #D7DAE0;
+    border-radius: 2px;
+    margin: 10px auto 6px;
+  }
+  .comment-sheet-header {
+    padding: 6px 18px 12px;
+    border-bottom: 1px solid #E8EAEE;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .comment-sheet-header .ct { font-size: 14px; font-weight: 700; color: #0F172A; }
+  .comment-sheet-header i { cursor: pointer; color: #475569; font-size: 20px; }
+  .comment-list-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 18px 8px;
+    min-height: 120px;
+    max-height: 320px;
+  }
+  .comment-input-area {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px 14px;
+    border-top: 1px solid #E8EAEE;
+  }
+  .comment-input-area input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #E8EAEE;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    background: #fff;
+  }
+  .comment-input-area input:focus { border-color: #1F4FE0; }
+  .comment-input-area button {
+    padding: 10px 16px;
+    background: #1F4FE0;
+    color: white;
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .comment-input-area button:active { transform: scale(0.95); }
+  .comment-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #E8EAEE;
+  }
+  .comment-row:last-child { border-bottom: none; }
+  .comment-row .ch {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+  }
+  .comment-row .cavatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: white;
+  }
+  .comment-row .cname { font-size: 12px; font-weight: 700; color: #0F172A; }
+  .comment-row .cbody {
+    font-size: 12px; color: #475569;
+    padding-left: 32px; line-height: 1.5;
+  }
+  .comment-empty {
+    text-align: center; padding: 40px 20px;
+    color: #94A3B8; font-size: 12px;
+  }
+
+  /* === 휴양소 상세 === */
+  .hero {
+    height: 220px;
+    margin: 0 18px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero i { font-size: 48px; opacity: 0.6; }
+  .hero .hero-tag {
+    position: absolute;
+    top: 14px; left: 14px;
+    background: rgba(255,255,255,0.9);
+    color: #0F172A;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .place-detail-head {
+    padding: 0 22px 16px;
+  }
+  .place-detail-head h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0F172A;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .place-detail-head .loc {
+    font-size: 12px;
+    color: #475569;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .score-board {
+    margin: 0 18px 18px;
+    padding: 22px 20px 18px;
+    background: linear-gradient(135deg, #fff 0%, #F1F3F6 100%);
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(44,31,18,0.08);
+  }
+  .score-main {
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed #E8EAEE;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .score-main .big-num {
+    font-size: 44px;
+    font-weight: 800;
+    color: #1F4FE0;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+  .score-main .main-meta { text-align: left; }
+  .score-main .main-meta .stars {
+    color: #F59E0B;
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+  .score-main .main-meta .review-count {
+    font-size: 11px;
+    color: #475569;
+    margin-top: 4px;
+  }
+  .score-main .main-meta .review-count b { color: #0F172A; }
+  .score-breakdown {
+    display: flex;
+    gap: 8px;
+  }
+  .score-item {
+    flex: 1;
+    padding: 10px 6px;
+    background: #fff;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    box-shadow: 0 2px 6px rgba(44,31,18,0.04);
+  }
+  .score-item i { font-size: 18px; color: #1F4FE0; margin-bottom: 2px; }
+  .score-item .bl { font-size: 10px; color: #475569; }
+  .score-item .bn { font-size: 17px; font-weight: 700; color: #0F172A; }
+  .score-item .bbar {
+    width: 100%;
+    height: 3px;
+    background: #F1F3F6;
+    border-radius: 2px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .score-item .bbar > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #1F4FE0, #569dff);
+    border-radius: 2px;
+  }
+
+  .tab-nav {
+    display: flex;
+    border-bottom: 1px solid #E8EAEE;
+    margin: 0 18px;
+  }
+  .tab-nav .tnav {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    font-size: 13px;
+    color: #475569;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab-nav .tnav.active {
+    color: #0F172A;
+    font-weight: 700;
+    border-bottom-color: #1F4FE0;
+  }
+  .dtab-pane { display: none; }
+  .dtab-pane.active { display: block; animation: fadeIn 0.2s ease; }
+
+  /* === 공지사항 === */
+  .notice-cats {
+    display: flex;
+    gap: 6px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .notice-cats::-webkit-scrollbar { display: none; }
+  .notice-cat {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border-radius: var(--pill);
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .notice-cat:hover { border-color: var(--border-strong); }
+  .notice-cat.active {
+    background: var(--brand-50);
+    color: var(--brand-dark);
+    border-color: var(--brand-100);
+    font-weight: 700;
+  }
+
+  .notice-card {
+    margin: 0 18px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 16px;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .notice-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .notice-card .notice-meta {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .notice-card .pin {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--brand-dark);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 8px;
+    background: var(--brand-50);
+    border-radius: var(--pill);
+    letter-spacing: -0.01em;
+  }
+  .notice-card .pin i { font-size: 13px; }
+  .notice-card .notice-title {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+    margin-bottom: 6px;
+    line-height: 1.35;
+  }
+  .notice-card .notice-body {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .notice-card .notice-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  .notice-card .notice-foot .views {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .notice-card .notice-foot .views i { font-size: 13px; }
+
+  /* === 공지 상세 === */
+  .notice-detail-hero {
+    margin: 4px 18px 16px;
+    padding: 4px 0 16px;
+    border-bottom: 1px solid var(--border);
+    background: none;
+    border-radius: 0;
+  }
+  .notice-detail-hero .nd-tags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .notice-detail-hero .nd-title {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+  }
+  .notice-detail-hero .nd-meta {
+    margin-top: 12px;
+    padding-top: 0;
+    border-top: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-2);
+    font-weight: 600;
+  }
+  .notice-detail-hero .nd-meta .author {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .notice-detail-hero .nd-meta .author-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .notice-detail-hero .nd-meta .stat-group {
+    display: flex;
+    gap: 10px;
+    color: var(--text-3);
+    font-weight: 500;
+  }
+  .notice-detail-hero .nd-meta .stat-group span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .notice-detail-hero .nd-meta .stat-group i { font-size: 14px; }
+
+  .notice-body {
+    padding: 0 22px 8px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+  }
+  .notice-body p { margin-bottom: 14px; text-wrap: pretty; }
+  .notice-body h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-1);
+    margin: 4px 0 8px;
+    letter-spacing: -0.02em;
+  }
+  .notice-body ul { list-style: none; padding: 0; margin-bottom: 14px; }
+  .notice-body ul li {
+    position: relative;
+    padding-left: 14px;
+    margin-bottom: 6px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .notice-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 11px;
+    width: 4px; height: 4px;
+    background: var(--text-3);
+    border-radius: 50%;
+  }
+  .notice-body strong { color: var(--text-1); font-weight: 700; }
+  .notice-body .callout {
+    background: var(--surface-3);
+    border-left: 3px solid var(--brand);
+    padding: 12px 14px;
+    border-radius: 0 var(--r) var(--r) 0;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .notice-body .callout strong { color: var(--brand-dark); }
+
+  /* Attached files */
+  .notice-attachments { margin: 8px 18px 16px; }
+  .attach-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .attach-header .ah-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: -0.01em;
+  }
+  .attach-header .ah-title i { font-size: 18px; color: var(--text-2); }
+  .attach-header .ah-count {
+    font-size: 11px;
+    color: var(--text-3);
+    font-weight: 600;
+  }
+  .attach-header .ah-all {
+    font-size: 12px;
+    color: var(--brand);
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .attach-header .ah-all i { font-size: 15px; }
+
+  .attach-list {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+  .attach-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .attach-row:last-child { border-bottom: none; }
+  .attach-row:hover { background: var(--surface-2); }
+  .attach-row .file-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .attach-row .file-icon i { font-size: 20px; }
+  .file-icon.pdf  { background: var(--pastel-coral-bg); color: var(--pastel-coral-fg); }
+  .file-icon.doc  { background: var(--pastel-sky-bg);   color: var(--pastel-sky-fg); }
+  .file-icon.xls  { background: var(--pastel-mint-bg);  color: var(--pastel-mint-fg); }
+  .file-icon.zip  { background: var(--pastel-peach-bg); color: var(--pastel-peach-fg); }
+  .file-icon.img  { background: var(--pastel-lilac-bg); color: var(--pastel-lilac-fg); }
+  .file-icon.hwp  { background: var(--pastel-cream-bg); color: var(--pastel-cream-fg); }
+  .attach-row .file-info { flex: 1; min-width: 0; }
+  .attach-row .file-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .attach-row .file-meta {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
+  .attach-row .file-meta .sep {
+    width: 2px; height: 2px;
+    background: var(--text-3);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .attach-row .file-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .attach-row .file-actions button {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .attach-row .file-actions button:hover {
+    border-color: var(--brand);
+    color: var(--brand);
+    background: var(--brand-50);
+  }
+  .attach-row .file-actions button:active { transform: scale(0.92); }
+  .attach-row .file-actions button i { font-size: 18px; }
+  .attach-row .file-actions button.primary {
+    border-color: var(--brand);
+    background: var(--brand);
+    color: #fff;
+  }
+  .attach-row .file-actions button.primary:hover {
+    background: var(--brand-dark);
+    border-color: var(--brand-dark);
+  }
+
+  /* Bottom action bar */
+  .notice-actions {
+    margin: 18px 18px 24px;
+    display: flex;
+    gap: 8px;
+  }
+  .notice-actions .na-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--r);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.15s;
+  }
+  .notice-actions .na-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--text-1);
+  }
+  .notice-actions .na-btn i { font-size: 18px; }
+  .notice-actions .na-btn.primary {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+  .notice-actions .na-btn.primary:hover {
+    background: var(--brand-dark);
+    border-color: var(--brand-dark);
+  }
+
+  /* Toast */
+  .toast {
+    position: absolute;
+    left: 50%;
+    bottom: 84px;
+    transform: translateX(-50%) translateY(8px);
+    background: rgba(15, 23, 42, 0.92);
+    color: #fff;
+    padding: 11px 16px;
+    border-radius: var(--pill);
+    font-size: 12.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 50;
+    white-space: nowrap;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast i { font-size: 16px; color: #4ADE80; }
+
+  /* === 편의시설 섹션 === */
+  .feature-section {
+    padding: 4px 18px 20px;
+  }
+  .fs-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    color: var(--text-1);
+  }
+  .fs-chips {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px 6px;
+  }
+  .feat-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.4;
+    filter: grayscale(0.5);
+    transition: opacity 0.15s, filter 0.15s;
+  }
+  .feat-chip.active {
+    opacity: 1;
+    filter: none;
+  }
+  .feat-chip .fc-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .feat-chip .fc-icon i { font-size: 22px; }
+  .feat-chip .fc-name {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--text-2);
+    letter-spacing: -0.01em;
+  }
+  .feat-chip.active .fc-name { color: var(--text-1); }
+  .feature-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 18px 16px;
+  }
+
+  /* === 리뷰 섹션 헤더 (Naver Place 스타일) === */
+  .rev-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0 12px;
+  }
+  .rev-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-1);
+    letter-spacing: -0.02em;
+  }
+  .rev-title .rev-count {
+    color: var(--brand);
+    font-style: normal;
+    font-weight: 800;
+  }
+  .rev-info {
+    width: 18px; height: 18px;
+    border: none; background: none;
+    cursor: pointer;
+    color: var(--text-3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .rev-info i { font-size: 16px; }
+  .rev-filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-2);
+    cursor: pointer;
+    user-select: none;
+  }
+  .rev-filter-toggle input {
+    accent-color: var(--brand);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
+  .rev-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 0;
+    border-top: 1px solid var(--border);
+  }
+  .rev-filter-row:last-of-type { border-bottom: 1px solid var(--border); }
+  .rev-filter-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-1);
+    flex-shrink: 0;
+    padding-right: 6px;
+  }
+  .rev-chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex: 1;
+    min-width: 0;
+  }
+  .rev-chips::-webkit-scrollbar { display: none; }
+  .rev-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-2);
+    padding: 6px 11px;
+    border-radius: var(--pill);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .rev-chip em {
+    font-style: normal;
+    color: var(--text-3);
+    font-weight: 500;
+    font-size: 11px;
+  }
+  .rev-chip:hover { border-color: var(--border-strong); }
+  .rev-chip.active {
+    border-color: var(--brand-100);
+    background: var(--brand-50);
+    color: var(--brand-dark);
+  }
+  .rev-chip.active em { color: var(--brand); }
+  .rev-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 14px 0;
+  }
+
+  /* === 상세 Q&A === */
+  .qna-item {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .qna-item:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  }
+  .qna-item .qhead {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .qna-item .qhead .qavatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: white;
+  }
+  .qna-item .qhead .qname { font-size: 11px; font-weight: 700; color: #0F172A; }
+  .qna-item .qhead .qdate { font-size: 10px; color: #475569; margin-left: auto; }
+  .qna-item .qtext {
+    font-size: 13px; color: #0F172A;
+    padding-left: 30px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .qna-item .answer {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #F1F3F6;
+    border-radius: 10px;
+    border-left: 3px solid #1F4FE0;
+  }
+  .qna-item .answer .ahead {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; color: #0F172A;
+    margin-bottom: 4px;
+  }
+  .qna-item .answer .atext {
+    font-size: 12px; color: #475569;
+    line-height: 1.5;
+  }
+  .qna-item.unanswered .answer-cta {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: #FFFFFF;
+    border: 1px dashed #D7DAE0;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 11px;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .qna-item.unanswered .answer-cta:hover {
+    background: #F1F3F6;
+    border-color: #1F4FE0;
+    color: #1F4FE0;
+  }
+  .answer-form { margin-top: 8px; }
+  .answer-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #E8EAEE;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    resize: vertical;
+    min-height: 60px;
+    background: #fff;
+    outline: none;
+    box-sizing: border-box;
+    color: #0F172A;
+  }
+  .answer-form textarea:focus { border-color: #1F4FE0; }
+  .answer-form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: flex-end;
+  }
+  .answer-form-actions button {
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    border: 1px solid #E8EAEE;
+    transition: all 0.15s;
+  }
+  .answer-form-actions button:active { transform: scale(0.95); }
+  .answer-form-actions .cancel-btn {
+    background: #fff;
+    color: #475569;
+  }
+  .answer-form-actions .submit-btn {
+    background: #1F4FE0;
+    border-color: #1F4FE0;
+    color: white;
+    font-weight: 700;
+  }
+  .qna-write-btn {
+    width: 100%;
+    padding: 12px;
+    background: #FFFFFF;
+    border: 1px dashed #D7DAE0;
+    border-radius: 12px;
+    color: #475569;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  .qna-write-btn:hover { background: #F1F3F6; }
+
+  /* === 작성 화면 === */
+  .write-encourage {
+    margin: 14px 18px;
+    padding: 14px 16px;
+    background: var(--brand-50);
+    border-radius: var(--r-lg);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .write-encourage .seni-mini {
+    width: 56px; height: 56px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+  .write-encourage .tx-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1A3FB8;
+  }
+  .write-encourage .tx-sub {
+    font-size: 11px;
+    color: #0F172A;
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .write-encourage .tx-sub b { color: #1F4FE0; }
+
+  .verify-row {
+    margin: 0 18px 16px;
+    padding: 11px 14px;
+    background: #DEF7EC;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .verify-row i {
+    font-size: 18px;
+    color: #047857;
+  }
+  .verify-row .vmain {
+    font-size: 11px;
+    color: #047857;
+    font-weight: 700;
+  }
+  .verify-row .vsub {
+    font-size: 10px;
+    color: #475569;
+    margin-top: 2px;
+  }
+
+  .form-section { padding: 0 18px 18px; }
+  .form-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .form-label .req { color: #C73E3A; font-size: 12px; }
+  .form-label .hint { font-size: 10px; color: #475569; font-weight: 400; margin-left: 4px; }
+
+  .select-box {
+    padding: 14px;
+    background: #FFFFFF;
+    border: 1px solid #E8EAEE;
+    border-radius: 12px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .rate-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #F1F3F6;
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .rate-row .rname { font-size: 12px; color: #475569; }
+  .rate-stars { font-size: 18px; cursor: pointer; }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .photo-grid .pcell {
+    aspect-ratio: 1;
+    border-radius: 10px;
+  }
+  .photo-grid .pcell.add {
+    background: #F1F3F6;
+    border: 1.5px dashed #D7DAE0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    cursor: pointer;
+  }
+  .photo-grid .pcell.add i { font-size: 22px; }
+  .photo-grid .pcell.add .cnt { font-size: 9px; margin-top: 3px; }
+
+  .chip-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .chip-row .chip { font-size: 11px; padding: 6px 12px; }
+
+  .textarea {
+    padding: 14px;
+    background: #FFFFFF;
+    border: 1px solid #E8EAEE;
+    border-radius: 12px;
+    min-height: 100px;
+    font-size: 12px;
+    color: #94A3B8;
+    line-height: 1.6;
+    font-family: inherit;
+    width: 100%;
+    resize: none;
+  }
+  .textarea:focus { outline: none; border-color: #1F4FE0; color: #0F172A; }
+
+  .write-submit {
+    margin: 0 18px 24px;
+    padding: 16px;
+    background: #1F4FE0;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s;
+  }
+  .write-submit:active { transform: scale(0.98); }
+
+  /* === MY 페이지 === */
+  .my-header {
+    background: linear-gradient(135deg, var(--brand-50) 0%, var(--lilac-bg) 55%, var(--pink-bg) 100%);
+    padding: 24px 22px 60px;
+    color: var(--text-1);
+    position: relative;
+    overflow: hidden;
+  }
+  .my-header .name {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+  }
+  .my-header .role {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-top: 4px;
+  }
+  .my-header .seni-mascot {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    width: 86px;
+    height: 86px;
+    object-fit: contain;
+  }
+
+  .point-card {
+    margin: -40px 18px 20px;
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 4px 16px rgba(44,31,18,0.08);
+    position: relative;
+    z-index: 5;
+  }
+  .point-card .row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .point-card .plabel {
+    font-size: 11px;
+    color: #475569;
+  }
+  .point-card .pnum {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1F4FE0;
+    margin-top: 4px;
+  }
+  .point-card .pnum span {
+    font-size: 14px;
+    color: #0F172A;
+    font-weight: 400;
+  }
+  .point-card .use-btn {
+    background: #0F172A;
+    color: #FFFFFF;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .point-card .ranking {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed #E8EAEE;
+    font-size: 11px;
+    color: #475569;
+  }
+  .point-card .ranking b { color: #F59E0B; font-weight: 700; }
+
+  .menu-list {
+    margin: 0 18px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .menu-list:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  }
+  .menu-row {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #E8EAEE;
+    cursor: pointer;
+  }
+  .menu-row:last-child { border-bottom: none; }
+  .menu-row .micon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: #F1F3F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+  }
+  .menu-row .mlabel { flex: 1; font-size: 13px; color: #0F172A; }
+  .menu-row .mext { font-size: 11px; color: #475569; }
+  .menu-row .mext.point { color: #F59E0B; font-weight: 700; }
+
+  /* === 배지 그리드 === */
+  .badge-stat {
+    margin: 14px 18px 20px;
+    padding: 16px;
+    background: #F1F3F6;
+    border-radius: 16px;
+    display: flex;
+    text-align: center;
+  }
+  .badge-stat .bcell { flex: 1; border-right: 1px solid #E8EAEE; }
+  .badge-stat .bcell:last-child { border-right: none; }
+  .badge-stat .bn { font-size: 18px; font-weight: 700; color: #0F172A; }
+  .badge-stat .bl { font-size: 10px; color: #475569; margin-top: 2px; }
+
+  .badge-grid {
+    margin: 0 18px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .badge-item {
+    aspect-ratio: 1;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+    padding: 12px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .badge-item:hover:not(.locked) {
+    border-color: var(--border-strong);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+  }
+  .badge-item:active { transform: scale(0.96); }
+  .badge-item.locked { opacity: 0.4; }
+  .badge-item .b-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  .badge-item .b-icon i { font-size: 28px; }
+  .badge-item .bname {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0F172A;
+  }
+  .badge-item .bdesc {
+    font-size: 9px;
+    color: #475569;
+    margin-top: 2px;
+  }
+
+  /* === 꿀팁 게시판 === */
+  .tip-cats {
+    padding: 14px 18px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tip-cats::-webkit-scrollbar { display: none; }
+  .tip-cat {
+    min-width: 70px;
+    padding: 12px 8px;
+    background: #FFFFFF;
+    border: 1px solid #E8EAEE;
+    border-radius: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tip-cat.active {
+    background: #FFF5E0;
+    border-color: #F59E0B;
+  }
+  .tip-cat i {
+    font-size: 22px;
+    color: #475569;
+    margin-bottom: 4px;
+  }
+  .tip-cat .tname {
+    font-size: 10px;
+    color: #0F172A;
+    font-weight: 700;
+  }
+
+  .tip-card {
+    margin: 0 18px 12px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 14px;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .tip-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .tip-card .tag-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .tag {
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: var(--pill);
+    background: var(--surface-3);
+    color: var(--text-2);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .tag.hot { background: var(--coral-bg); color: var(--coral-fg); }
+  .tip-card .ttitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 6px;
+  }
+  .tip-card .tcontent {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.6;
+  }
+  .tip-card .tfoot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #E8EAEE;
+    font-size: 10px;
+    color: #475569;
+  }
+
+  /* === 즐겨찾기 화면 === */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+  }
+  .empty-state svg { margin-bottom: 20px; }
+  .empty-state .etitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 6px;
+  }
+  .empty-state .edesc {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .fav-grid {
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .fav-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    cursor: pointer;
+  }
+  .fav-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .fav-card .fthumb {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fav-card .finfo {
+    padding: 10px;
+  }
+  .fav-card .fname {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0F172A;
+  }
+  .fav-card .fmeta {
+    font-size: 10px;
+    color: #475569;
+    margin-top: 3px;
+  }
+
+  /* === 포인트 적립 모달 === */
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(44,31,18,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 30px;
+  }
+  .modal-backdrop.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .point-modal {
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 32px 24px 24px;
+    text-align: center;
+    width: 100%;
+    max-width: 280px;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .point-modal .seni-jump {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: 0 auto 14px;
+    object-fit: contain;
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .point-modal h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 8px;
+  }
+  .point-modal .pmsub {
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .point-modal .gain {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1F4FE0;
+    margin-bottom: 18px;
+  }
+  .point-modal button {
+    width: 100%;
+    padding: 14px;
+    background: #1F4FE0;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* === 디바이스 라벨 === */
+  .device-label {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-2);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .device-label .badge-active {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 7px;
+    background: var(--brand);
+    color: #fff;
+    border-radius: var(--pill);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .stage-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #475569;
+  }
+  .stage-header h1 {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 4px;
+  }
+  .stage-header p {
+    font-size: 13px;
+  }
+
+  /* 스타일 - 휴양소 색상 */
+  .bg-mt { background: linear-gradient(135deg, #C8DCC0, #9FBE94); color: #3D5A2C; }
+  .bg-beach { background: linear-gradient(135deg, #B4D4E5, #7FB0CA); color: #1B4A66; }
+  .bg-sunset { background: linear-gradient(135deg, #F5D4B0, #E8B580); color: #804A1F; }
+  .bg-city { background: linear-gradient(135deg, #D5D2E8, #B4ADC9); color: #3D3458; }
+  .bg-warm { background: linear-gradient(135deg, #E5C5B0, #C99A7F); color: #5C3A20; }
+
+  /* 가운데 가이드 텍스트 */
+  .nav-guide {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 16px 20px;
+    font-size: 12px;
+    color: #475569;
+    max-width: 280px;
+    line-height: 1.7;
+    margin-top: 20px;
+  }
+  .nav-guide b { color: #1F4FE0; font-weight: 700; }
+  .nav-guide kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    background: #FFFFFF;
+    border: 1px solid #D7DAE0;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 11px;
+    color: #0F172A;
+  }
+
+  /* 모바일 대응 */
+  @media (max-width: 800px) {
+    body { padding: 12px; }
+    .device { width: 100%; max-width: 380px; height: 720px; }
+    .device-label { font-size: 11px; }
+    .stage-header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="device-stage">
+
+  <!-- ====== DEVICE (인터랙티브 프로토타입) ====== -->
+  <div class="device" id="device1">
+
+    <!-- HOME -->
+    <div class="screen active" data-screen="home">
+      <div class="content">
+        <div class="sticky-header">
+          <div class="top-bar">
+            <div class="top-logo">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 312.43 312.43"><defs><style>.cls-1{fill:url(#radial-gradient);}.cls-2{fill:url(#radial-gradient-2);}.cls-3{fill:url(#radial-gradient-3);}.cls-4{fill:#fff;}</style><radialGradient id="radial-gradient" cx="633.2" cy="384.82" r="382.37" gradientTransform="translate(-206.41 -2.51) scale(0.82)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#569dff"></stop><stop offset="0.13" stop-color="#418cfa"></stop><stop offset="0.44" stop-color="#1264ee"></stop><stop offset="0.6" stop-color="#0055e9"></stop><stop offset="0.68" stop-color="#0052e3"></stop><stop offset="0.79" stop-color="#004ad3"></stop><stop offset="0.91" stop-color="#003db8"></stop><stop offset="1" stop-color="#0032a0"></stop></radialGradient><radialGradient id="radial-gradient-2" cx="633.2" cy="384.82" r="382.39" gradientTransform="translate(-206.41 -2.51) scale(0.82)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#569dff"></stop><stop offset="0.13" stop-color="#418cfa"></stop><stop offset="0.45" stop-color="#1264ee"></stop><stop offset="0.6" stop-color="#0055e9"></stop><stop offset="0.69" stop-color="#0052e3"></stop><stop offset="0.79" stop-color="#004ad3"></stop><stop offset="0.91" stop-color="#003db8"></stop><stop offset="1" stop-color="#0032a0"></stop></radialGradient><radialGradient id="radial-gradient-3" cx="633.2" cy="384.82" r="382.39" xlink:href="#radial-gradient-2"></radialGradient></defs><g id="레이어_2" data-name="레이어 2"><g id="레이어_1-2" data-name="레이어 1"><path class="cls-1" d="M156.08,312.42H312.43l0-156.35A166.62,166.62,0,0,0,156.08,312.42Z"></path><path class="cls-2" d="M0,312.43H151L89.88,93.15A311.43,311.43,0,0,0,0,312.43Z"></path><path class="cls-3" d="M93.15,89.88,312.43,151V0A311.45,311.45,0,0,0,93.15,89.88Z"></path><path class="cls-4" d="M89.88,93.15,151,312.43h5.13A166.61,166.61,0,0,1,312.43,156.08V151L93.15,89.88C92.06,91,91,92.05,89.88,93.15Z"></path></g></g></svg>
+            </div>
+            <div class="search-bar">
+              <i class="ti ti-search"></i>
+              <span>가고 싶은 휴양소를 검색해보세요</span>
+            </div>
+            <div class="top-actions">
+              <div class="icon-btn">
+                <i class="ti ti-bell"></i>
+                <span class="badge-dot">3</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="main-tab">
+            <div class="mtab active" onclick="switchMainTab(this, 0)">정기 휴양소</div>
+            <div class="mtab" onclick="switchMainTab(this, 1)">
+              이벤트 휴양소
+              <span class="new-dot"></span>
+            </div>
+            <div class="mtab" onclick="switchMainTab(this, 2)">인기</div>
+          </div>
+
+          <div class="region-chips">
+            <div class="region-chip active" onclick="selectRegion(this)">전체</div>
+            <div class="region-chip" onclick="selectRegion(this)">속초</div>
+            <div class="region-chip" onclick="selectRegion(this)">제주</div>
+            <div class="region-chip" onclick="selectRegion(this)">보령</div>
+            <div class="region-chip" onclick="selectRegion(this)">여수</div>
+            <div class="region-chip" onclick="selectRegion(this)">부산</div>
+            <div class="region-chip" onclick="selectRegion(this)">과천</div>
+          </div>
+        </div>
+
+        <div class="event-banner">
+          <div class="ev-text">
+            <div class="label">SUMMER OPEN</div>
+            <div class="title">하계 휴양소<br>신청이 시작됐어요</div>
+            <div class="sub">강릉 태안 통영 외 7곳</div>
+          </div>
+          <div class="pager"><b>1</b> / 3</div>
+        </div>
+
+        <div class="section-head">
+          <div class="title">🏖️ 인기 휴양소</div>
+          <div class="more">전체보기 →</div>
+        </div>
+        <div class="hcards">
+          <div class="place-card" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="sokcho" onclick="toggleFavorite(event,'sokcho')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="sokcho"></div>
+            <div class="info">
+              <div class="name">속초 (힐스)</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 32</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="aewol" onclick="toggleFavorite(event,'aewol')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="aewol"></div>
+            <div class="info">
+              <div class="name">애월 1호점</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 리뷰 28</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="yeosu" onclick="toggleFavorite(event,'yeosu')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="yeosu"></div>
+            <div class="info">
+              <div class="name">여수</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 리뷰 19</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="jocheon"></div>
+            <div class="info">
+              <div class="name">조천</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 리뷰 24</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="gwacheon" onclick="toggleFavorite(event,'gwacheon')"><i class="ti ti-star"></i></div>
+            <div class="thumb" data-img="gwacheon"></div>
+            <div class="info">
+              <div class="name">과천 1001호</div>
+              <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 리뷰 12</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div class="title">✍️ 실시간 리뷰</div>
+          <div class="more">최신순 ▾</div>
+        </div>
+
+        <div class="review-card" onclick="showScreen('device1','detail')">
+          <div class="review-head">
+            <div class="avatar" style="background:#1F4FE0">박</div>
+            <div class="who">
+              <div class="name">박OO 책임 <span class="badge king">🏆 리뷰왕</span></div>
+              <div class="meta">조천 휴양소 · 2일 전</div>
+            </div>
+            <span class="fav-btn inline" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star" style="font-size:18px"></i></span>
+          </div>
+          <div class="rating-line"><span class="stars">★★★★★</span><span class="rating-num">4.8</span></div>
+          <div class="photo-row">
+            <div class="ph" data-img="view1"></div>
+            <div class="ph" data-img="view2"></div>
+            <div class="ph" data-img="view3"></div>
+          </div>
+          <div class="review-text">바다 뷰가 정말 환상이에요. 아이들이랑 가기 좋고 청결도도 만족스러웠어요. 다만 마트가 차로 10분...</div>
+          <div class="review-actions">
+            <span class="action-btn" data-like="rv1" onclick="toggleLike(event,'rv1')">
+              <i class="ti ti-heart"></i> 좋아요 <b class="like-count">24</b>
+            </span>
+            <span class="action-btn" data-comment="rv1" onclick="openComments(event,'rv1')">
+              <i class="ti ti-message-circle"></i> 댓글 <b class="comment-count">2</b>
+            </span>
+          </div>
+        </div>
+
+        <div class="review-card" onclick="showScreen('device1','detail')">
+          <div class="review-head">
+            <div class="avatar" style="background:#F59E0B">이</div>
+            <div class="who">
+              <div class="name">이OO 선임</div>
+              <div class="meta">속초 (힐스) · 3일 전</div>
+            </div>
+          </div>
+          <div class="rating-line"><span class="stars">★★★★</span><span class="stars empty">★</span><span class="rating-num">4.2</span></div>
+          <div class="review-text">시설은 정말 좋은데 주차가 좀 협소합니다. 미리 가시는 거 추천드려요. 바베큐 시설도 잘 갖춰져있어요.</div>
+          <div class="review-actions">
+            <span class="action-btn" data-like="rv2" onclick="toggleLike(event,'rv2')">
+              <i class="ti ti-heart"></i> 좋아요 <b class="like-count">18</b>
+            </span>
+            <span class="action-btn" data-comment="rv2" onclick="openComments(event,'rv2')">
+              <i class="ti ti-message-circle"></i> 댓글 <b class="comment-count">1</b>
+            </span>
+          </div>
+        </div>
+
+        <div class="review-card" onclick="showScreen('device1','detail')">
+          <div class="review-head">
+            <div class="avatar" style="background:#047857">최</div>
+            <div class="who">
+              <div class="name">최OO 매니저 <span class="badge verified">제주 전문가</span></div>
+              <div class="meta">애월 2호점 · 5일 전</div>
+            </div>
+          </div>
+          <div class="rating-line"><span class="stars">★★★★★</span><span class="rating-num">4.9</span></div>
+          <div class="review-text">애월 1호점보다 신축이라 시설이 훨씬 좋아요! 거실 통창에서 보이는 바다가 진짜 그림 같아요.</div>
+          <div class="review-actions">
+            <span class="action-btn" data-like="rv3" onclick="toggleLike(event,'rv3')">
+              <i class="ti ti-heart"></i> 좋아요 <b class="like-count">12</b>
+            </span>
+            <span class="action-btn" data-comment="rv3" onclick="openComments(event,'rv3')">
+              <i class="ti ti-message-circle"></i> 댓글 <b class="comment-count">0</b>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabbar">
+        <div class="tab-item active" onclick="showScreen('device1','home')">
+          <i class="ti ti-home"></i><span>홈</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','tips')">
+          <i class="ti ti-speakerphone"></i><span>공지</span>
+        </div>
+        <div class="tab-item center" onclick="showScreen('device1','write')">
+          <div class="tab-fab"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','fav')">
+          <i class="ti ti-star"></i><span>즐겨찾기</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','my')">
+          <i class="ti ti-user"></i><span>나의페이지</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAIL -->
+    <div class="screen" data-screen="detail">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')"></i>
+        <div class="title">조천 휴양소</div>
+        <div class="actions"><i class="ti ti-share"></i><span class="fav-btn inline header-style" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></span></div>
+      </div>
+      <div class="content">
+        <div class="hero" data-img="hero-jocheon">
+          <div class="hero-tag">정규 휴양소</div>
+        </div>
+        <div class="place-detail-head">
+          <h2>조천 휴양소</h2>
+          <div class="loc"><i class="ti ti-map-pin"></i> 제주 제주시 조천읍 · 4인실 · 정원 4명</div>
+        </div>
+        <div class="score-board">
+          <div class="score-main">
+            <div class="big-num">4.8</div>
+            <div class="main-meta">
+              <div class="stars">★★★★★</div>
+              <div class="review-count">전체 <b>32개</b> 리뷰의 평균</div>
+            </div>
+          </div>
+          <div class="score-breakdown">
+            <div class="score-item">
+              <i class="ti ti-map-pin"></i>
+              <div class="bl">위치</div>
+              <div class="bn">4.7</div>
+              <div class="bbar"><span style="width:94%"></span></div>
+            </div>
+            <div class="score-item">
+              <i class="ti ti-building-cottage"></i>
+              <div class="bl">시설</div>
+              <div class="bn">4.9</div>
+              <div class="bbar"><span style="width:98%"></span></div>
+            </div>
+            <div class="score-item">
+              <i class="ti ti-sparkles"></i>
+              <div class="bl">청결</div>
+              <div class="bn">4.8</div>
+              <div class="bbar"><span style="width:96%"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-nav">
+          <div class="tnav active" onclick="showDetailTab(this,'tips')">편의시설</div>
+          <div class="tnav" onclick="showDetailTab(this,'reviews')">리뷰 32</div>
+          <div class="tnav" onclick="showDetailTab(this,'qna')">Q&A 8</div>
+        </div>
+
+        <!-- REVIEW 탭 -->
+        <div class="dtab-pane" data-dtab="reviews" style="padding: 16px 18px;">
+          <div class="rev-section-head">
+            <div class="rev-title">
+              <span>리뷰</span><em class="rev-count">32</em>
+              <button class="rev-info" aria-label="안내"><i class="ti ti-help"></i></button>
+            </div>
+            <label class="rev-filter-toggle">
+              <input type="checkbox"> 사진 있는 리뷰만
+            </label>
+          </div>
+
+          <div class="rev-filter-row">
+            <span class="rev-filter-label">동행</span>
+            <div class="rev-chips">
+              <button class="rev-chip active" onclick="toggleRevChip(this)">가족<em>18</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">친구<em>8</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">부부<em>6</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">아이와<em>5</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">동료<em>3</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">혼자<em>2</em></button>
+            </div>
+          </div>
+          <div class="rev-filter-row">
+            <span class="rev-filter-label">특징</span>
+            <div class="rev-chips">
+              <button class="rev-chip" onclick="toggleRevChip(this)">바다뷰<em>28</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">깨끗해요<em>24</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">친절해요<em>19</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">가성비<em>14</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">조용해요<em>12</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">주차편해요<em>8</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">시설최고<em>6</em></button>
+              <button class="rev-chip" onclick="toggleRevChip(this)">야경<em>4</em></button>
+            </div>
+          </div>
+
+          <div class="rev-divider"></div>
+
+          <div class="review-head">
+            <div class="avatar" style="background:#1F4FE0">박</div>
+            <div class="who">
+              <div class="name">박OO 책임 <span class="badge king">🏆 리뷰왕</span></div>
+              <div class="meta">2025.05.10 방문 · 가족과 함께</div>
+            </div>
+            <span class="badge verified"><i class="ti ti-check"></i> 인증</span>
+          </div>
+          <div class="rating-line" style="margin-top:10px"><span class="stars">★★★★★</span><span class="rating-num">4.8</span></div>
+
+          <div style="background:#F1F3F6;padding:12px 14px;border-radius:12px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#475569"><span>위치</span><span style="color:#0F172A;font-weight:700">4.7</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#475569"><span>시설</span><span style="color:#0F172A;font-weight:700">5.0</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#475569"><span>청결도</span><span style="color:#0F172A;font-weight:700">4.8</span></div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:12px">
+            <div class="ph" data-img="view1" style="aspect-ratio:1"></div>
+            <div class="ph" data-img="view4" style="aspect-ratio:1"></div>
+            <div class="ph" data-img="view2" style="aspect-ratio:1"></div>
+            <div class="ph" data-img="view3" style="aspect-ratio:1"></div>
+          </div>
+
+          <div style="font-size:13px;color:#0F172A;line-height:1.7">
+            <b>👍 좋았던 점</b><br>
+            바다 뷰가 정말 환상이에요. 거실이 넓어서 4명이 편하게 쉬었고, 주방 도구도 잘 구비되어 있습니다.
+            <br><br>
+            <b>⚠️ 아쉬웠던 점</b><br>
+            마트가 차로 10분 거리예요. 미리 장 봐가시는 거 추천드립니다.
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <div class="detail-action" data-like="rv1" onclick="toggleLike(event,'rv1')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-heart" style="vertical-align:-2px"></i> 좋아요 <b class="like-count" style="color:#0F172A">24</b>
+            </div>
+            <div data-comment="rv1" onclick="openComments(event,'rv1')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-message-circle" style="vertical-align:-2px"></i> 댓글 <b class="comment-count" style="color:#0F172A">2</b>
+            </div>
+          </div>
+
+          <!-- 두 번째 리뷰 -->
+          <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>
+
+          <div class="review-head">
+            <div class="avatar" style="background:#047857">김</div>
+            <div class="who">
+              <div class="name">김OO 선임</div>
+              <div class="meta">2025.04.22 방문 · 친구와 함께</div>
+            </div>
+            <span class="badge verified"><i class="ti ti-check"></i> 인증</span>
+          </div>
+          <div class="rating-line" style="margin-top:10px"><span class="stars">★★★★</span><span class="stars empty">★</span><span class="rating-num">4.5</span></div>
+
+          <div style="font-size:13px;color:#0F172A;line-height:1.7;margin-top:8px">
+            <b>👍 좋았던 점</b><br>
+            조용하고 한적해서 힐링하기 좋아요. 일출 명소가 가까워서 새벽에 다녀왔는데 정말 좋았습니다.
+            <br><br>
+            <b>⚠️ 아쉬웠던 점</b><br>
+            샤워 수압이 약간 약한 편이에요.
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <div class="detail-action" data-like="rv4" onclick="toggleLike(event,'rv4')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-heart" style="vertical-align:-2px"></i> 좋아요 <b class="like-count" style="color:#0F172A">9</b>
+            </div>
+            <div data-comment="rv4" onclick="openComments(event,'rv4')" style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
+              <i class="ti ti-message-circle" style="vertical-align:-2px"></i> 댓글 <b class="comment-count" style="color:#0F172A">0</b>
+            </div>
+          </div>
+        </div>
+
+        <!-- 편의시설 탭 -->
+        <div class="dtab-pane active" data-dtab="tips" style="padding: 14px 0;">
+
+          <div class="feature-section">
+            <div class="fs-title">환경</div>
+            <div class="fs-chips">
+              <div class="feat-chip active"><div class="fc-icon tone-mint"><i class="ti ti-forest"></i></div><div class="fc-name">바다</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-teal"><i class="ti ti-landscape"></i></div><div class="fc-name">산</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-sky"><i class="ti ti-apartment"></i></div><div class="fc-name">도시</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-peach"><i class="ti ti-park"></i></div><div class="fc-name">전원</div></div>
+            </div>
+          </div>
+
+          <div class="feature-section">
+            <div class="fs-title">숙소 유형</div>
+            <div class="fs-chips">
+              <div class="feat-chip active"><div class="fc-icon tone-lilac"><i class="ti ti-villa"></i></div><div class="fc-name">독채</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-pink"><i class="ti ti-cottage"></i></div><div class="fc-name">펜션</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-cream"><i class="ti ti-apartment"></i></div><div class="fc-name">콘도</div></div>
+            </div>
+          </div>
+
+          <div class="feature-section">
+            <div class="fs-title">편의시설</div>
+            <div class="fs-chips">
+              <div class="feat-chip active"><div class="fc-icon tone-sky"><i class="ti ti-wifi"></i></div><div class="fc-name">와이파이</div></div>
+              <div class="feat-chip active"><div class="fc-icon tone-peach"><i class="ti ti-soup-kitchen"></i></div><div class="fc-name">주방</div></div>
+              <div class="feat-chip active"><div class="fc-icon tone-coral"><i class="ti ti-outdoor-grill"></i></div><div class="fc-name">바베큐</div></div>
+              <div class="feat-chip active"><div class="fc-icon tone-mint"><i class="ti ti-local-parking"></i></div><div class="fc-name">주차</div></div>
+              <div class="feat-chip active"><div class="fc-icon tone-teal"><i class="ti ti-local-laundry-service"></i></div><div class="fc-name">세탁기</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-lilac"><i class="ti ti-hot-tub"></i></div><div class="fc-name">스파</div></div>
+            </div>
+          </div>
+
+          <div class="feature-section">
+            <div class="fs-title">주변 활동</div>
+            <div class="fs-chips">
+              <div class="feat-chip active"><div class="fc-icon tone-sky"><i class="ti ti-pool"></i></div><div class="fc-name">해수욕</div></div>
+              <div class="feat-chip active"><div class="fc-icon tone-peach"><i class="ti ti-hiking"></i></div><div class="fc-name">트레킹</div></div>
+              <div class="feat-chip active"><div class="fc-icon tone-cream"><i class="ti ti-wb-sunny"></i></div><div class="fc-name">일출</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-mint"><i class="ti ti-directions-bike"></i></div><div class="fc-name">자전거</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-lilac"><i class="ti ti-photo-camera"></i></div><div class="fc-name">포토스팟</div></div>
+            </div>
+          </div>
+
+          <div class="feature-section">
+            <div class="fs-title">추천 동행</div>
+            <div class="fs-chips">
+              <div class="feat-chip active"><div class="fc-icon tone-pink"><i class="ti ti-family-restroom"></i></div><div class="fc-name">가족</div></div>
+              <div class="feat-chip active"><div class="fc-icon tone-coral"><i class="ti ti-favorite"></i></div><div class="fc-name">연인</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-sky"><i class="ti ti-groups"></i></div><div class="fc-name">친구</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-teal"><i class="ti ti-work"></i></div><div class="fc-name">동료</div></div>
+              <div class="feat-chip"><div class="fc-icon tone-lilac"><i class="ti ti-self-improvement"></i></div><div class="fc-name">혼자</div></div>
+            </div>
+          </div>
+
+          <div class="feature-divider"></div>
+
+          <div style="padding:0 18px 12px;font-size:11px;color:#475569">💡 다녀온 동료들의 꿀팁</div>
+
+          <div class="swipe-row">
+          <div class="tip-card">
+            <div class="tag-row">
+              <span class="tag tone-coral">HOT</span>
+              <span class="tag tone-peach">주차</span>
+            </div>
+            <div class="ttitle">조천 휴양소 주차장 꿀팁</div>
+            <div class="tcontent">정문 주차장은 협소하니 후문 공용 주차장 이용 추천! 도보 3분, 무료입니다.</div>
+            <div class="tfoot">
+              <span>박OO 책임 · 1주 전</span>
+              <span>👁 142 · 👍 28</span>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tag-row">
+              <span class="tag tone-teal">마트</span>
+            </div>
+            <div class="ttitle">근처 마트는 GS25 + 농협하나로마트</div>
+            <div class="tcontent">차로 10분 거리 농협하나로마트가 가격 좋아요. 도착 전 미리 장보고 가는 게 베스트!</div>
+            <div class="tfoot">
+              <span>최OO 매니저 · 2주 전</span>
+              <span>👁 89 · 👍 17</span>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tag-row">
+              <span class="tag tone-coral">HOT</span>
+              <span class="tag tone-pink">맛집</span>
+            </div>
+            <div class="ttitle">조천 흑돼지 맛집 BEST 3</div>
+            <div class="tcontent">1. 돈사돈 (현지인 추천) <br>2. 흑돈가 (가성비) <br>3. 제주아침 (포장 가능)</div>
+            <div class="tfoot">
+              <span>이OO 선임 · 3주 전</span>
+              <span>👁 234 · 👍 45</span>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tag-row">
+              <span class="tag tone-lilac">준비물</span>
+            </div>
+            <div class="ttitle">꼭 챙겨가세요 - 비치타올 & 모기약</div>
+            <div class="tcontent">바다 가까워서 비치타올 필수! 여름엔 모기가 좀 있어서 모기약도 챙기시면 좋아요.</div>
+            <div class="tfoot">
+              <span>정OO 책임 · 1개월 전</span>
+              <span>👁 67 · 👍 12</span>
+            </div>
+          </div>
+
+          </div>
+          <button class="qna-write-btn" style="margin:0 18px;width:calc(100% - 36px)">+ 나도 꿀팁 공유하기</button>
+        </div>
+
+        <!-- Q&A 탭 -->
+        <div class="dtab-pane" data-dtab="qna" style="padding: 14px 18px;">
+          <button class="qna-write-btn">❓ 궁금한 점을 물어보세요</button>
+
+          <div class="qna-item">
+            <div class="qhead">
+              <div class="qavatar" style="background:#F59E0B">최</div>
+              <div class="qname">최OO 매니저</div>
+              <div class="qdate">1일 전</div>
+            </div>
+            <div class="qtext">Q. 유아 식기는 있나요?</div>
+            <div class="answer">
+              <div class="ahead">
+                <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
+                박OO 책임 <span style="color:#475569;font-weight:400;font-size:10px">· 1일 전</span>
+              </div>
+              <div class="atext">네, 아기 의자와 어린이 식기 모두 구비되어 있어요! 분유 포트도 있습니다.</div>
+            </div>
+          </div>
+
+          <div class="qna-item">
+            <div class="qhead">
+              <div class="qavatar" style="background:#047857">김</div>
+              <div class="qname">김OO 선임</div>
+              <div class="qdate">3일 전</div>
+            </div>
+            <div class="qtext">Q. 와이파이 속도 어떤가요? 재택 가능한가요?</div>
+            <div class="answer">
+              <div class="ahead">
+                <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
+                이OO 선임 <span style="color:#475569;font-weight:400;font-size:10px">· 2일 전</span>
+              </div>
+              <div class="atext">500Mbps 정도로 빨라요. 화상회의나 일하기에 충분합니다.</div>
+            </div>
+          </div>
+
+          <div class="qna-item">
+            <div class="qhead">
+              <div class="qavatar" style="background:#1F4FE0">정</div>
+              <div class="qname">정OO 책임</div>
+              <div class="qdate">5일 전</div>
+            </div>
+            <div class="qtext">Q. 체크인 시간보다 일찍 가도 짐 보관 가능한가요?</div>
+            <div class="answer">
+              <div class="ahead">
+                <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
+                관리사무소 <span class="badge verified" style="margin-left:4px">공식</span>
+              </div>
+              <div class="atext">관리실에서 보관 가능합니다. 도착 시 연락 주세요 (064-XXX-XXXX).</div>
+            </div>
+          </div>
+
+          <div class="qna-item unanswered" id="qna-q1">
+            <div class="qhead">
+              <div class="qavatar" style="background:#804A1F">홍</div>
+              <div class="qname">홍OO 선임</div>
+              <div class="qdate">방금 전</div>
+            </div>
+            <div class="qtext">Q. 반려동물 동반 가능한가요?</div>
+            <div class="answer-cta" id="qna-q1-cta" onclick="openAnswerInput('qna-q1')">아직 답변이 없어요. 답변을 남겨주세요 →</div>
+            <div class="answer-form" id="qna-q1-form" style="display:none">
+              <textarea id="qna-q1-input" placeholder="답변을 입력하세요..."></textarea>
+              <div class="answer-form-actions">
+                <button class="cancel-btn" onclick="cancelAnswer('qna-q1')">취소</button>
+                <button class="submit-btn" onclick="submitAnswer('qna-q1')">답변 등록</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WRITE -->
+    <div class="screen" data-screen="write">
+      <div class="app-header">
+        <i class="ti ti-x back" onclick="showScreen('device1','home')"></i>
+        <div class="title">리뷰 작성</div>
+        <div class="actions" style="visibility:hidden"><i class="ti ti-x"></i></div>
+      </div>
+      <div class="content">
+        <div class="write-encourage">
+          <img class="seni-mini" src="assets/seni-laptop.png" alt="세니 작업 중">
+          <div>
+            <div class="tx-title">세니가 응원해요</div>
+            <div class="tx-sub">사진 4장 + 상세 후기를 작성하면<br><b>300P</b>가 적립돼요</div>
+          </div>
+        </div>
+
+        <div class="verify-row">
+          <i class="ti ti-shield-check"></i>
+          <div>
+            <div class="vmain">사번 인증 완료</div>
+            <div class="vsub">2025.05.08 ~ 05.10 이용 내역 확인됨</div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">어느 휴양소였나요?</div>
+          <div class="select-box">
+            <span>조천 휴양소</span>
+            <i class="ti ti-chevron-down" style="color:#475569"></i>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">항목별 평점 <span class="req">*</span></div>
+          <div class="rate-row">
+            <span class="rname">위치 (접근성)</span>
+            <span class="rate-stars stars">★★★★★</span>
+          </div>
+          <div class="rate-row">
+            <span class="rname">시설 (편의)</span>
+            <span class="rate-stars stars">★★★★★</span>
+          </div>
+          <div class="rate-row">
+            <span class="rname">청결도</span>
+            <span class="rate-stars"><span class="stars">★★★★</span><span class="stars empty">★</span></span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">사진 첨부 <span class="req">*</span><span class="hint">최소 1장</span></div>
+          <div class="photo-grid">
+            <div class="pcell add">
+              <i class="ti ti-camera"></i>
+              <span class="cnt">3/10</span>
+            </div>
+            <div class="pcell bg-mt"></div>
+            <div class="pcell bg-beach"></div>
+            <div class="pcell bg-sunset"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">누구와 함께? <span class="hint">선택</span></div>
+          <div class="chip-row">
+            <div class="chip active">가족</div>
+            <div class="chip">친구</div>
+            <div class="chip">혼자</div>
+            <div class="chip">동료</div>
+            <div class="chip">연인</div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">상세 후기</div>
+          <textarea class="textarea" placeholder="이런 점이 좋았어요 / 아쉬웠어요…&#10;💡 위치·시설·청결 외에 분위기, 가성비 후기도 좋아요"></textarea>
+        </div>
+
+        <button class="write-submit" onclick="submitReview('device1')">리뷰 등록하기 (+300P)</button>
+      </div>
+
+      <!-- 포인트 적립 모달 -->
+      <div class="modal-backdrop" id="modal-device1">
+        <div class="point-modal">
+          <img class="seni-jump" src="assets/seni-desk.png" alt="세니 체크">
+          <h3>리뷰 등록 완료!</h3>
+          <div class="pmsub">박OO님의 소중한 후기는<br>다른 동료들의 휴가를 더 빛나게 해요</div>
+          <div class="gain">+300P</div>
+          <button onclick="closeModal('device1')">확인</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTICE -->
+    <div class="screen" data-screen="tips">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
+        <div class="title">공지사항</div>
+        <div class="actions"><i class="ti ti-search"></i></div>
+      </div>
+      <div class="content">
+        <div class="notice-cats">
+          <span class="notice-cat active" onclick="selectNoticeCat(this)">전체</span>
+          <span class="notice-cat" onclick="selectNoticeCat(this)">이용수칙</span>
+          <span class="notice-cat" onclick="selectNoticeCat(this)">예약</span>
+          <span class="notice-cat" onclick="selectNoticeCat(this)">복지포인트</span>
+          <span class="notice-cat" onclick="selectNoticeCat(this)">이벤트</span>
+          <span class="notice-cat" onclick="selectNoticeCat(this)">시설</span>
+        </div>
+
+        <div class="notice-card" onclick="openNoticeDetail('n1')">
+          <div class="notice-meta">
+            <span class="pin"><i class="ti ti-pin"></i> 고정</span>
+            <span class="tag tone-sky">예약</span>
+          </div>
+          <div class="notice-title">2026년 하계 휴양소 예약이 오픈됩니다</div>
+          <div class="notice-body">
+            5/27(화) 오전 10시부터 7~8월 예약이 오픈됩니다. 인기 시즌(8월 1주차)은 추첨제로 진행되며, 추첨 결과는 6/3 사내 메일로 안내드립니다.
+          </div>
+          <div class="notice-foot">
+            <span>인사복지팀 · 어제</span>
+            <span class="views"><i class="ti ti-eye"></i> 2,184</span>
+          </div>
+        </div>
+
+        <div class="notice-card" onclick="openNoticeDetail('n2')">
+          <div class="notice-meta">
+            <span class="pin"><i class="ti ti-pin"></i> 고정</span>
+            <span class="tag tone-mint">복지포인트</span>
+          </div>
+          <div class="notice-title">2분기 복지포인트 적립 안내 (+50,000P)</div>
+          <div class="notice-body">
+            4월 1일자로 분기 복지포인트 5만 P가 일괄 적립되었습니다. 휴양소 예약, 사내 카페테리아, 도서구입 등에 사용 가능하며 미사용분은 연말 소멸됩니다.
+          </div>
+          <div class="notice-foot">
+            <span>총무팀 · 3일 전</span>
+            <span class="views"><i class="ti ti-eye"></i> 1,756</span>
+          </div>
+        </div>
+
+        <div class="notice-card" onclick="openNoticeDetail('n3')">
+          <div class="notice-meta">
+            <span class="tag tone-peach">이용수칙</span>
+          </div>
+          <div class="notice-title">휴양소 이용 수칙 개정 안내 (5/15 시행)</div>
+          <div class="notice-body">
+            반려동물 동반 가능 휴양소가 확대되었습니다. (조천, 가평 추가) 흡연 가능 구역은 외부 흡연 부스로 일원화되었으니 이용 시 참고 바랍니다.
+          </div>
+          <div class="notice-foot">
+            <span>총무팀 · 5일 전</span>
+            <span class="views"><i class="ti ti-eye"></i> 982</span>
+          </div>
+        </div>
+
+        <div class="notice-card" onclick="openNoticeDetail('n4')">
+          <div class="notice-meta">
+            <span class="tag tone-coral">이벤트</span>
+          </div>
+          <div class="notice-title">첫 리뷰 작성하고 +500P 받기 이벤트</div>
+          <div class="notice-body">
+            아직 리뷰를 작성하지 않으셨다면 지금이 기회! 사진 4장 + 상세 후기 작성 시 첫 1회에 한해 추가 500P가 적립됩니다. ~6/30까지.
+          </div>
+          <div class="notice-foot">
+            <span>인사복지팀 · 1주 전</span>
+            <span class="views"><i class="ti ti-eye"></i> 1,341</span>
+          </div>
+        </div>
+
+        <div class="notice-card" onclick="openNoticeDetail('n5')">
+          <div class="notice-meta">
+            <span class="tag tone-lilac">시설</span>
+          </div>
+          <div class="notice-title">조천 휴양소 정기 시설 점검 (5/22 ~ 5/24)</div>
+          <div class="notice-body">
+            보일러·에어컨 정기 점검으로 해당 기간 예약이 일시 중단됩니다. 기존 예약자께는 개별 안내드렸으며, 일정 변경 시 +1,000P 보상이 지급됩니다.
+          </div>
+          <div class="notice-foot">
+            <span>시설관리팀 · 1주 전</span>
+            <span class="views"><i class="ti ti-eye"></i> 614</span>
+          </div>
+        </div>
+
+        <div class="notice-card" onclick="openNoticeDetail('n6')">
+          <div class="notice-meta">
+            <span class="tag tone-sky">예약</span>
+          </div>
+          <div class="notice-title">추석 연휴 휴양소 예약 가이드</div>
+          <div class="notice-body">
+            추석 연휴(9/26~9/29) 예약은 사번 기준 추첨제로 진행됩니다. 가족 동반 신청자 우선 배정되며 신청 기간은 7월 한 달간입니다.
+          </div>
+          <div class="notice-foot">
+            <span>인사복지팀 · 2주 전</span>
+            <span class="views"><i class="ti ti-eye"></i> 1,108</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabbar">
+        <div class="tab-item" onclick="showScreen('device1','home')">
+          <i class="ti ti-home"></i><span>홈</span>
+        </div>
+        <div class="tab-item active" onclick="showScreen('device1','tips')">
+          <i class="ti ti-speakerphone"></i><span>공지</span>
+        </div>
+        <div class="tab-item center" onclick="showScreen('device1','write')">
+          <div class="tab-fab"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','fav')">
+          <i class="ti ti-star"></i><span>즐겨찾기</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','my')">
+          <i class="ti ti-user"></i><span>나의페이지</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTICE DETAIL -->
+    <div class="screen" data-screen-label="공지 상세" data-screen="notice-detail">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="showScreen('device1','tips')"></i>
+        <div class="title">공지사항</div>
+        <div class="actions">
+          <i class="ti ti-share-2"></i>
+          <i class="ti ti-bookmark"></i>
+        </div>
+      </div>
+      <div class="content">
+
+        <div class="notice-detail-hero">
+          <div class="nd-tags" id="nd-tags"></div>
+          <div class="nd-title" id="nd-title"></div>
+          <div class="nd-meta">
+            <span class="author">
+              <span class="author-dot" id="nd-author-initial">인</span>
+              <span id="nd-author">인사복지팀</span>
+            </span>
+            <span class="stat-group">
+              <span><i class="ti ti-clock"></i> <span id="nd-date">어제</span></span>
+              <span><i class="ti ti-eye"></i> <span id="nd-views">2,184</span></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="notice-body" id="nd-body"></div>
+
+        <div class="notice-attachments" id="nd-attachments">
+          <div class="attach-header">
+            <span class="ah-title"><i class="ti ti-paperclip"></i> 첨부파일 <span class="ah-count" id="nd-attach-count">3개</span></span>
+            <span class="ah-all" onclick="downloadAllFiles()">전체 받기 <i class="ti ti-cloud-download"></i></span>
+          </div>
+          <div class="attach-list" id="nd-attach-list"></div>
+        </div>
+
+        <div class="notice-actions">
+          <button class="na-btn" onclick="showToast('인쇄 미리보기 준비 중...')"><i class="ti ti-printer"></i> 인쇄</button>
+          <button class="na-btn primary" onclick="downloadAllFiles()"><i class="ti ti-download"></i> 전체 다운로드</button>
+        </div>
+
+      </div>
+
+      <!-- Download toast -->
+      <div class="toast" id="nd-toast"><i class="ti ti-circle-check"></i> <span id="nd-toast-msg">파일을 받았어요</span></div>
+    </div>
+
+
+    <!-- FAV -->
+    <div class="screen" data-screen="fav">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
+        <div class="title">⭐ 즐겨찾기</div>
+        <div class="actions"><i class="ti ti-dots-vertical"></i></div>
+      </div>
+      <div class="content">
+        <div style="padding:14px 18px 4px;font-size:11px;color:#475569">총 <span id="fav-count">4</span>곳을 즐겨찾기했어요</div>
+        <div class="fav-grid" id="fav-grid">
+          <div class="fav-card" data-fav-card="sokcho" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="sokcho" onclick="toggleFavorite(event,'sokcho')"><i class="ti ti-star"></i></div>
+            <div class="fthumb" data-img="sokcho"></div>
+            <div class="finfo">
+              <div class="fname">속초 (힐스)</div>
+              <div class="fmeta"><span style="color:#F59E0B">★</span> 4.8 · 강원</div>
+            </div>
+          </div>
+          <div class="fav-card" data-fav-card="aewol" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="aewol" onclick="toggleFavorite(event,'aewol')"><i class="ti ti-star"></i></div>
+            <div class="fthumb" data-img="aewol"></div>
+            <div class="finfo">
+              <div class="fname">애월 1호점</div>
+              <div class="fmeta"><span style="color:#F59E0B">★</span> 4.7 · 제주</div>
+            </div>
+          </div>
+          <div class="fav-card" data-fav-card="yeosu" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="yeosu" onclick="toggleFavorite(event,'yeosu')"><i class="ti ti-star"></i></div>
+            <div class="fthumb" data-img="yeosu"></div>
+            <div class="finfo">
+              <div class="fname">여수 휴양소</div>
+              <div class="fmeta"><span style="color:#F59E0B">★</span> 4.6 · 전남</div>
+            </div>
+          </div>
+          <div class="fav-card" data-fav-card="jocheon" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i class="ti ti-star"></i></div>
+            <div class="fthumb" data-img="jocheon"></div>
+            <div class="finfo">
+              <div class="fname">조천 휴양소</div>
+              <div class="fmeta"><span style="color:#F59E0B">★</span> 4.8 · 제주</div>
+            </div>
+          </div>
+          <div class="fav-card" data-fav-card="gwacheon" onclick="showScreen('device1','detail')">
+            <div class="fav-btn absolute" data-fav="gwacheon" onclick="toggleFavorite(event,'gwacheon')"><i class="ti ti-star"></i></div>
+            <div class="fthumb" data-img="gwacheon"></div>
+            <div class="finfo">
+              <div class="fname">과천 1001호</div>
+              <div class="fmeta"><span style="color:#F59E0B">★</span> 4.5 · 경기</div>
+            </div>
+          </div>
+        </div>
+        <div id="fav-empty" style="display:none;text-align:center;padding:40px 20px;color:#475569;font-size:13px">
+          ⭐ 즐겨찾기한 휴양소가 없어요.<br><br>
+          <span style="font-size:11px">홈에서 별표 ⭐ 를 눌러 즐겨찾기에 추가해보세요!</span>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab-item" onclick="showScreen('device1','home')">
+          <i class="ti ti-home"></i><span>홈</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','tips')">
+          <i class="ti ti-speakerphone"></i><span>공지</span>
+        </div>
+        <div class="tab-item center" onclick="showScreen('device1','write')">
+          <div class="tab-fab"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="tab-item active" onclick="showScreen('device1','fav')">
+          <i class="ti ti-star"></i><span>즐겨찾기</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','my')">
+          <i class="ti ti-user"></i><span>나의페이지</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY -->
+    <div class="screen" data-screen="my">
+      <div class="content">
+        <div class="my-header">
+          <div class="name">박OO 책임</div>
+          <div class="role">전략기획팀 · 사번 인증 완료</div>
+          <img class="seni-mascot" src="assets/seni-laptop.png" alt="세니 작업 중">
+        </div>
+
+        <div class="point-card">
+          <div class="row1">
+            <div>
+              <div class="plabel">내 포인트</div>
+              <div class="pnum">2,840 <span>P</span></div>
+            </div>
+            <button class="use-btn">사용내역조회 →</button>
+          </div>
+          <div class="ranking">🏆 이번 달 사내 <b>리뷰왕 3위</b>까지 480P 남았어요!</div>
+        </div>
+
+        <div class="section-head" style="padding-top:0">
+          <div class="title">내 활동</div>
+        </div>
+        <div class="menu-list" style="margin-bottom:16px">
+          <div class="menu-row" onclick="showScreen('device1','badges')">
+            <div class="micon tone-cream"><i class="ti ti-award"></i></div>
+            <div class="mlabel">내 배지 컬렉션</div>
+            <div class="mext">7 / 12</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
+          <div class="menu-row">
+            <div class="micon tone-mint"><i class="ti ti-pencil"></i></div>
+            <div class="mlabel">내가 쓴 리뷰</div>
+            <div class="mext">14건</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
+          <div class="menu-row">
+            <div class="micon tone-sky"><i class="ti ti-bulb"></i></div>
+            <div class="mlabel">내가 쓴 꿀팁</div>
+            <div class="mext">6건</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
+          <div class="menu-row">
+            <div class="micon"><i class="ti ti-history"></i></div>
+            <div class="mlabel">이용 이력</div>
+            <div class="mext">8회 이용</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div class="title">설정</div>
+        </div>
+        <div class="menu-list" style="margin-bottom:30px">
+          <div class="menu-row">
+            <div class="micon"><i class="ti ti-bell"></i></div>
+            <div class="mlabel">알림 설정</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
+          <div class="menu-row">
+            <div class="micon"><i class="ti ti-text-size"></i></div>
+            <div class="mlabel">글자 크기</div>
+            <div class="mext">보통</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
+          <div class="menu-row">
+            <div class="micon"><i class="ti ti-help"></i></div>
+            <div class="mlabel">고객센터 / FAQ</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab-item" onclick="showScreen('device1','home')">
+          <i class="ti ti-home"></i><span>홈</span>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','tips')">
+          <i class="ti ti-speakerphone"></i><span>공지</span>
+        </div>
+        <div class="tab-item center" onclick="showScreen('device1','write')">
+          <div class="tab-fab"><i class="ti ti-plus"></i></div>
+        </div>
+        <div class="tab-item" onclick="showScreen('device1','fav')">
+          <i class="ti ti-star"></i><span>즐겨찾기</span>
+        </div>
+        <div class="tab-item active" onclick="showScreen('device1','my')">
+          <i class="ti ti-user"></i><span>나의페이지</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BADGES -->
+    <div class="screen" data-screen="badges">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+        <div class="title">🏅 내 배지</div>
+        <div class="actions"><i class="ti ti-share"></i></div>
+      </div>
+      <div class="content">
+        <div class="badge-stat">
+          <div class="bcell"><div class="bn">7</div><div class="bl">획득 배지</div></div>
+          <div class="bcell"><div class="bn">14</div><div class="bl">작성 리뷰</div></div>
+          <div class="bcell"><div class="bn">312</div><div class="bl">받은 도움</div></div>
+        </div>
+
+        <div class="section-head"><div class="title">획득한 배지</div></div>
+        <div class="badge-grid">
+          <div class="badge-item">
+            <div class="b-icon tone-cream"><i class="ti ti-trophy"></i></div>
+            <div class="bname">리뷰왕</div>
+            <div class="bdesc">월 TOP 5</div>
+          </div>
+          <div class="badge-item">
+            <div class="b-icon tone-mint"><i class="ti ti-thumb-up"></i></div>
+            <div class="bname">베스트 리뷰어</div>
+            <div class="bdesc">도움 50+</div>
+          </div>
+          <div class="badge-item">
+            <div class="b-icon tone-sky"><i class="ti ti-bulb"></i></div>
+            <div class="bname">꿀팁 마스터</div>
+            <div class="bdesc">꿀팁 6편</div>
+          </div>
+          <div class="badge-item">
+            <div class="b-icon tone-coral"><i class="ti ti-map"></i></div>
+            <div class="bname">제주 전문가</div>
+            <div class="bdesc">제주 5회</div>
+          </div>
+          <div class="badge-item">
+            <div class="b-icon tone-lilac"><i class="ti ti-camera"></i></div>
+            <div class="bname">사진작가</div>
+            <div class="bdesc">사진 100장</div>
+          </div>
+          <div class="badge-item">
+            <div class="b-icon tone-peach"><i class="ti ti-rocket"></i></div>
+            <div class="bname">개척자</div>
+            <div class="bdesc">신규 1호</div>
+          </div>
+          <div class="badge-item">
+            <div class="b-icon tone-teal"><i class="ti ti-messages"></i></div>
+            <div class="bname">친절왕</div>
+            <div class="bdesc">Q&A 답변 10</div>
+          </div>
+
+          <div class="badge-item locked">
+            <div class="b-icon" style="background:#E8EAEE"><i class="ti ti-lock" style="color:#475569"></i></div>
+            <div class="bname">정복자</div>
+            <div class="bdesc">10곳 리뷰</div>
+          </div>
+          <div class="badge-item locked">
+            <div class="b-icon" style="background:#E8EAEE"><i class="ti ti-lock" style="color:#475569"></i></div>
+            <div class="bname">속초 전문가</div>
+            <div class="bdesc">속초 5회</div>
+          </div>
+          <div class="badge-item locked">
+            <div class="b-icon" style="background:#E8EAEE"><i class="ti ti-lock" style="color:#475569"></i></div>
+            <div class="bname">사계절</div>
+            <div class="bdesc">4계절 방문</div>
+          </div>
+          <div class="badge-item locked">
+            <div class="b-icon" style="background:#E8EAEE"><i class="ti ti-lock" style="color:#475569"></i></div>
+            <div class="bname">새벽 작성</div>
+            <div class="bdesc">새벽 리뷰</div>
+          </div>
+          <div class="badge-item locked">
+            <div class="b-icon" style="background:#E8EAEE"><i class="ti ti-lock" style="color:#475569"></i></div>
+            <div class="bname">레전드</div>
+            <div class="bdesc">100 리뷰</div>
+          </div>
+        </div>
+        <div style="height:30px"></div>
+      </div>
+    </div>
+
+    <!-- 댓글 모달 -->
+    <div class="comment-modal" id="comment-modal" onclick="closeCommentModal(event)">
+      <div class="comment-sheet" onclick="event.stopPropagation()">
+        <div class="comment-sheet-handle"></div>
+        <div class="comment-sheet-header">
+          <div class="ct">💬 댓글 <span id="comment-count-label" style="color:#1F4FE0">0</span></div>
+          <i class="ti ti-x" onclick="closeCommentModal()"></i>
+        </div>
+        <div class="comment-list-area" id="comment-list"></div>
+        <div class="comment-input-area">
+          <input id="comment-input" placeholder="댓글을 입력하세요..." onkeypress="if(event.key==='Enter')addComment()">
+          <button onclick="addComment()">등록</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ===== Tabler → Material Symbols 변환 =====
+  const TI_TO_MS = {
+    'ti-search':'search','ti-bell':'notifications',
+    'ti-star':'star','ti-star-filled':'star',
+    'ti-heart':'favorite','ti-heart-filled':'favorite',
+    'ti-message-circle':'chat_bubble',
+    'ti-home':'home','ti-speakerphone':'campaign','ti-plus':'add','ti-user':'person',
+    'ti-arrow-left':'arrow_back','ti-share':'share',
+    'ti-map-pin':'location_on','ti-building-cottage':'cottage','ti-sparkles':'auto_awesome',
+    'ti-check':'check','ti-corner-down-right':'subdirectory_arrow_right',
+    'ti-x':'close','ti-shield-check':'verified_user',
+    'ti-chevron-down':'expand_more','ti-chevron-right':'chevron_right',
+    'ti-camera':'photo_camera',
+    'ti-soup':'ramen_dining','ti-parking':'local_parking','ti-luggage':'luggage',
+    'ti-train':'train','ti-baby-carriage':'child_friendly','ti-paw':'pets',
+    'ti-thumb-up':'thumb_up','ti-dots-vertical':'more_vert',
+    'ti-award':'workspace_premium','ti-pencil':'edit','ti-bulb':'lightbulb',
+    'ti-history':'history','ti-text-size':'format_size','ti-help':'help',
+    'ti-trophy':'emoji_events','ti-map':'map','ti-rocket':'rocket_launch',
+    'ti-messages':'forum','ti-lock':'lock',
+    'ti-photo':'image','ti-mountain':'landscape','ti-beach':'beach_access',
+    'ti-sunset':'wb_twilight','ti-sun':'wb_sunny','ti-building':'apartment',
+    'ti-bookmark':'bookmark',
+    // 편의시설 아이콘
+    'ti-forest':'forest','ti-landscape':'landscape','ti-apartment':'apartment',
+    'ti-park':'park','ti-villa':'villa','ti-cottage':'cottage',
+    'ti-wifi':'wifi','ti-soup-kitchen':'soup_kitchen','ti-outdoor-grill':'outdoor_grill',
+    'ti-local-parking':'local_parking','ti-local-laundry-service':'local_laundry_service',
+    'ti-hot-tub':'hot_tub','ti-pool':'pool','ti-hiking':'hiking',
+    'ti-wb-sunny':'wb_sunny','ti-directions-bike':'directions_bike',
+    'ti-photo-camera':'photo_camera','ti-family-restroom':'family_restroom',
+    'ti-favorite':'favorite','ti-groups':'groups','ti-work':'work',
+    'ti-self-improvement':'self_improvement',
+    // 공지사항
+    'ti-pin':'push_pin','ti-eye':'visibility',
+    // 파일 다운로드 & 공지 상세
+    'ti-download':'download','ti-file':'description','ti-file-pdf':'picture_as_pdf',
+    'ti-file-zip':'folder_zip','ti-file-image':'image','ti-file-text':'description',
+    'ti-file-spreadsheet':'table_chart','ti-paperclip':'attach_file',
+    'ti-share-2':'share','ti-printer':'print','ti-clock':'schedule',
+    'ti-circle-check':'check_circle','ti-cloud-download':'cloud_download'
+  };
+  function tiToMs(el) {
+    const tiClass = Array.from(el.classList).find(c => c.startsWith('ti-'));
+    if (!tiClass || !TI_TO_MS[tiClass]) return;
+    const other = Array.from(el.classList).filter(c => c !== 'ti' && !c.startsWith('ti-'));
+    const OUTLINE_DEFAULT = new Set(['ti-star','ti-heart','ti-message-circle','ti-bell','ti-bookmark','ti-bulb']);
+    const outline = tiClass.endsWith('-filled') ? false : OUTLINE_DEFAULT.has(tiClass);
+    el.className = ['ms', ...other, outline ? 'outline' : ''].filter(Boolean).join(' ');
+    el.textContent = TI_TO_MS[tiClass];
+  }
+  document.querySelectorAll('i.ti, span.ti').forEach(tiToMs);
+
+  function showScreen(deviceId, screenName) {
+    const device = document.getElementById(deviceId);
+    const screens = device.querySelectorAll('.screen');
+    screens.forEach(s => s.classList.remove('active'));
+    const target = device.querySelector(`[data-screen="${screenName}"]`);
+    if (target) {
+      target.classList.add('active');
+      target.scrollTop = 0;
+    }
+  }
+
+  function submitReview(deviceId) {
+    document.getElementById('modal-' + deviceId).classList.add('show');
+  }
+  function closeModal(deviceId) {
+    document.getElementById('modal-' + deviceId).classList.remove('show');
+    showScreen(deviceId, 'home');
+  }
+
+  // 별점 인터랙션 (간단)
+  document.querySelectorAll('.rate-stars').forEach(el => {
+    el.style.cursor = 'pointer';
+  });
+
+  // ===== 좋아요 / 댓글 기능 =====
+  const reviewState = {
+    rv1: { liked: false, likes: 24, comments: [
+      { author: '김OO 선임', color: '#1F4FE0', text: '저도 다음주에 가요! 정보 감사해요 😊' },
+      { author: '이OO 책임', color: '#F59E0B', text: '마트 정보 진짜 도움됐어요. 미리 장 봐서 갈게요!' }
+    ]},
+    rv2: { liked: false, likes: 18, comments: [
+      { author: '박OO 책임', color: '#1F4FE0', text: '주차 정보 감사합니다 👍 평일에 가야겠네요' }
+    ]},
+    rv3: { liked: false, likes: 12, comments: [] },
+    rv4: { liked: false, likes: 9, comments: [] }
+  };
+  let currentReviewId = null;
+
+  function toggleLike(event, id) {
+    event.stopPropagation();
+    const s = reviewState[id];
+    if (!s) return;
+    s.liked = !s.liked;
+    s.likes += s.liked ? 1 : -1;
+    document.querySelectorAll(`[data-like="${id}"]`).forEach(btn => {
+      btn.classList.toggle('liked', s.liked);
+      const ico = btn.querySelector('i.ms, i.ti');
+      if (ico) {
+        ico.className = s.liked ? 'ms' : 'ms outline';
+        ico.textContent = 'favorite';
+      }
+      const cnt = btn.querySelector('.like-count');
+      if (cnt) cnt.textContent = s.likes;
+      // 상세 화면 인라인 스타일 버튼 컬러 동기화
+      if (btn.classList.contains('detail-action') || btn.hasAttribute('style')) {
+        if (s.liked) {
+          btn.style.background = '#FFE8EC';
+          btn.style.borderColor = '#FFC4CC';
+          btn.style.color = '#E94A4A';
+          if (cnt) cnt.style.color = '#E94A4A';
+        } else {
+          btn.style.background = '#FFFFFF';
+          btn.style.borderColor = '#E8EAEE';
+          btn.style.color = '#475569';
+          if (cnt) cnt.style.color = '#0F172A';
+        }
+      }
+    });
+  }
+
+  function openComments(event, id) {
+    if (event) event.stopPropagation();
+    currentReviewId = id;
+    renderComments();
+    document.getElementById('comment-modal').classList.add('show');
+    setTimeout(() => document.getElementById('comment-input').focus(), 300);
+  }
+
+  function closeCommentModal(event) {
+    if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+    document.getElementById('comment-modal').classList.remove('show');
+  }
+
+  function renderComments() {
+    const list = document.getElementById('comment-list');
+    const comments = reviewState[currentReviewId].comments;
+    document.getElementById('comment-count-label').textContent = comments.length;
+    if (comments.length === 0) {
+      list.innerHTML = '<div class="comment-empty">아직 댓글이 없어요.<br>첫 댓글을 남겨보세요! ✨</div>';
+      return;
+    }
+    list.innerHTML = comments.map(c => `
+      <div class="comment-row">
+        <div class="ch">
+          <div class="cavatar" style="background:${c.color || '#1F4FE0'}">${c.author[0]}</div>
+          <div class="cname">${escapeHtml(c.author)}</div>
+        </div>
+        <div class="cbody">${escapeHtml(c.text)}</div>
+      </div>
+    `).join('');
+  }
+
+  function addComment() {
+    const input = document.getElementById('comment-input');
+    const text = input.value.trim();
+    if (!text || !currentReviewId) return;
+    reviewState[currentReviewId].comments.push({ author: '나', color: '#047857', text });
+    input.value = '';
+    renderComments();
+    updateCommentCounts();
+    const list = document.getElementById('comment-list');
+    list.scrollTop = list.scrollHeight;
+  }
+
+  function updateCommentCounts() {
+    Object.entries(reviewState).forEach(([id, s]) => {
+      document.querySelectorAll(`[data-comment="${id}"] .comment-count`).forEach(el => {
+        el.textContent = s.comments.length;
+      });
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ===== 홈 메인 탭 (정기 / 이벤트 / 인기) =====
+  function switchMainTab(el, idx) {
+    el.parentElement.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ===== 지역 칩 선택 =====
+  function selectRegion(el) {
+    el.parentElement.querySelectorAll('.region-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ===== 리뷰 필터 칩 토글 (다중 선택) =====
+  function toggleRevChip(el) {
+    el.classList.toggle('active');
+  }
+
+  // ===== 공지사항 카테고리 칩 (단일 선택) =====
+  function selectNoticeCat(el) {
+    el.parentElement.querySelectorAll('.notice-cat').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ===== 상세 화면 탭 (리뷰 / 꿀팁 / Q&A) =====
+  function showDetailTab(trigger, name) {
+    const navParent = trigger.parentElement;
+    navParent.querySelectorAll('.tnav').forEach(t => t.classList.remove('active'));
+    trigger.classList.add('active');
+    const detail = trigger.closest('[data-screen="detail"]');
+    detail.querySelectorAll('.dtab-pane').forEach(p => p.classList.remove('active'));
+    const target = detail.querySelector(`.dtab-pane[data-dtab="${name}"]`);
+    if (target) target.classList.add('active');
+    const screen = trigger.closest('.screen');
+    if (screen) screen.scrollTop = 0;
+  }
+
+  // ===== 즐겨찾기 (찜) 기능 =====
+  const favoriteState = {
+    sokcho: true,
+    aewol: true,
+    yeosu: true,
+    jocheon: true,
+    gwacheon: false
+  };
+
+  function toggleFavorite(event, id) {
+    if (event) event.stopPropagation();
+    favoriteState[id] = !favoriteState[id];
+    syncFavoriteUI(id);
+    renderFavoriteList();
+  }
+
+  function syncFavoriteUI(id) {
+    const on = !!favoriteState[id];
+    document.querySelectorAll(`[data-fav="${id}"]`).forEach(el => {
+      el.classList.toggle('favorited', on);
+      const ico = el.querySelector('i.ms, i.ti');
+      if (ico) {
+        const sizeStyle = ico.getAttribute('style') || '';
+        ico.className = on ? 'ms' : 'ms outline';
+        ico.textContent = 'star';
+        if (sizeStyle) ico.setAttribute('style', sizeStyle);
+      }
+    });
+  }
+
+  function renderFavoriteList() {
+    const grid = document.getElementById('fav-grid');
+    const empty = document.getElementById('fav-empty');
+    const countEl = document.getElementById('fav-count');
+    if (!grid) return;
+    let visible = 0;
+    grid.querySelectorAll('[data-fav-card]').forEach(card => {
+      const id = card.getAttribute('data-fav-card');
+      if (favoriteState[id]) {
+        card.style.display = '';
+        visible++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    if (countEl) countEl.textContent = visible;
+    if (empty) {
+      empty.style.display = visible === 0 ? 'block' : 'none';
+      grid.style.display = visible === 0 ? 'none' : '';
+    }
+  }
+
+  // 초기 상태 반영
+  Object.keys(favoriteState).forEach(syncFavoriteUI);
+  renderFavoriteList();
+
+  // ===== 이미지 적용 (로컬 파일 우선, 없으면 fallback) =====
+  // 폴더에 동일한 파일명을 넣으면 자동으로 그 이미지가 적용됨
+  const IMG = {
+    sokcho:   { local: 'resort-sokcho.jpg',   fallback: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500&q=75' },
+    aewol:    { local: 'resort-aewol.jpg',    fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=75' },
+    yeosu:    { local: 'resort-yeosu.jpg',    fallback: 'https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?w=500&q=75' },
+    jocheon:  { local: 'resort-jocheon.jpg',  fallback: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?w=500&q=75' },
+    gwacheon: { local: 'resort-gwacheon.jpg', fallback: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=500&q=75' },
+    view1:    { local: 'review-1.jpg',        fallback: 'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=400&q=75' },
+    view2:    { local: 'review-2.jpg',        fallback: 'https://images.unsplash.com/photo-1493558103817-58b2924bce98?w=400&q=75' },
+    view3:    { local: 'review-3.jpg',        fallback: 'https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=400&q=75' },
+    view4:    { local: 'review-4.jpg',        fallback: 'https://images.unsplash.com/photo-1571508601891-ca5e7a713859?w=400&q=75' },
+    'hero-jocheon': { local: 'hero-jocheon.jpg', fallback: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=900&q=85' }
+  };
+  function setBg(el, url) {
+    el.style.backgroundImage = `url("${url}")`;
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.style.backgroundRepeat = 'no-repeat';
+  }
+  document.querySelectorAll('[data-img]').forEach(el => {
+    const cfg = IMG[el.getAttribute('data-img')];
+    if (!cfg) return;
+    const probe = new Image();
+    probe.onload  = () => setBg(el, cfg.local);
+    probe.onerror = () => setBg(el, cfg.fallback);
+    probe.src = cfg.local;
+  });
+
+  // ===== Q&A 답변 작성 =====
+  function openAnswerInput(qnaId) {
+    document.getElementById(qnaId + '-cta').style.display = 'none';
+    const form = document.getElementById(qnaId + '-form');
+    form.style.display = 'block';
+    setTimeout(() => document.getElementById(qnaId + '-input').focus(), 50);
+  }
+
+  function cancelAnswer(qnaId) {
+    document.getElementById(qnaId + '-cta').style.display = '';
+    document.getElementById(qnaId + '-form').style.display = 'none';
+    document.getElementById(qnaId + '-input').value = '';
+  }
+
+  function submitAnswer(qnaId) {
+    const input = document.getElementById(qnaId + '-input');
+    const text = input.value.trim();
+    if (!text) {
+      input.focus();
+      return;
+    }
+    const item = document.getElementById(qnaId);
+    item.classList.remove('unanswered');
+    document.getElementById(qnaId + '-cta').remove();
+    document.getElementById(qnaId + '-form').remove();
+    const html = `
+      <div class="answer">
+        <div class="ahead">
+          <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
+          박OO 책임 (나) <span style="color:#475569;font-weight:400;font-size:10px">· 방금 전</span>
+        </div>
+        <div class="atext">${escapeHtml(text)}</div>
+      </div>
+    `;
+    item.insertAdjacentHTML('beforeend', html);
+  }
+
+  // ===== 공지 상세 =====
+  const NOTICES = {
+    n1: {
+      title: '2026년 하계 휴양소 예약이 오픈됩니다',
+      author: '인사복지팀', authorInitial: '인',
+      date: '2026.05.19 (어제)', views: '2,184',
+      tags: [{ pin: true }, { text: '예약', cls: 'tag tone-sky' }],
+      body: [
+        '<p>임직원 여러분 안녕하세요.<br>2026년 하계(7~8월) 휴양소 예약이 아래와 같이 오픈됩니다.</p>',
+        '<h4>📅 예약 일정</h4>',
+        '<ul>',
+        '  <li><strong>일반 시즌(7월 전체, 8월 2~4주차)</strong> — 5/27(화) 오전 10시부터 선착순</li>',
+        '  <li><strong>인기 시즌(8월 1주차)</strong> — 5/27~5/29 신청, <strong>추첨제</strong></li>',
+        '</ul>',
+        '<h4>🎯 추첨 결과 안내</h4>',
+        '<ul>',
+        '  <li>6/3(화) 사내 메일로 개별 발송</li>',
+        '  <li>당첨자는 6/5까지 결제 완료해야 확정</li>',
+        '  <li>미결제 시 자동 대기자에게 순차 이전</li>',
+        '</ul>',
+        '<div class="callout"><strong>💡 TIP</strong>  가족 동반(2인 이상) 신청자가 추첨 시 가점을 받습니다. 첨부의 신청서를 작성해 6/30까지 제출해 주세요.</div>',
+        '<p>문의: 인사복지팀 김선임 (내선 5732)</p>'
+      ].join(''),
+      files: [
+        { name: '2026 하계 휴양소 예약 안내.pdf', size: '1.2 MB', type: 'pdf', date: '2026.05.19' },
+        { name: '하계 예약 신청서.docx', size: '184 KB', type: 'doc', date: '2026.05.19' },
+        { name: '휴양소별 시설 정보.xlsx', size: '436 KB', type: 'xls', date: '2026.05.19' }
+      ]
+    },
+    n2: {
+      title: '2분기 복지포인트 적립 안내 (+50,000P)',
+      author: '총무팀', authorInitial: '총',
+      date: '2026.05.17', views: '1,756',
+      tags: [{ pin: true }, { text: '복지포인트', cls: 'tag tone-mint' }],
+      body: [
+        '<p>4월 1일자로 임직원 전원에게 <strong>분기 복지포인트 50,000P</strong>가 일괄 적립되었습니다.</p>',
+        '<h4>💸 사용처</h4>',
+        '<ul>',
+        '  <li>휴양소 예약 시 결제 차감</li>',
+        '  <li>사내 카페테리아 결제</li>',
+        '  <li>도서구입 영수증 처리</li>',
+        '  <li>제휴 헬스장 / 마사지샵</li>',
+        '</ul>',
+        '<div class="callout"><strong>⚠️ 유의사항</strong>  미사용분은 연말(12/31)에 자동 소멸됩니다. 미리 사용 계획을 세워 주세요.</div>',
+        '<p>적립 내역은 마이페이지 > 포인트 사용 내역에서 확인할 수 있습니다.</p>'
+      ].join(''),
+      files: [
+        { name: '복지포인트 사용 가이드.pdf', size: '892 KB', type: 'pdf', date: '2026.04.01' },
+        { name: '제휴처 리스트(2분기).xlsx', size: '312 KB', type: 'xls', date: '2026.04.01' }
+      ]
+    },
+    n3: {
+      title: '휴양소 이용 수칙 개정 안내 (5/15 시행)',
+      author: '총무팀', authorInitial: '총',
+      date: '2026.05.15', views: '982',
+      tags: [{ text: '이용수칙', cls: 'tag tone-peach' }],
+      body: [
+        '<p>2026년 5월 15일부터 휴양소 이용 수칙이 일부 개정됩니다.</p>',
+        '<h4>🐾 반려동물 동반 가능 휴양소 확대</h4>',
+        '<ul>',
+        '  <li>기존: 가평, 양평 (2곳)</li>',
+        '  <li><strong>추가: 조천, 거제 (총 4곳)</strong></li>',
+        '  <li>1박당 위생 관리비 30,000원 별도</li>',
+        '</ul>',
+        '<h4>🚭 흡연 구역 일원화</h4>',
+        '<ul>',
+        '  <li>객실 내·발코니 흡연 전면 금지</li>',
+        '  <li>지정된 외부 흡연 부스 이용</li>',
+        '  <li>위반 시 청소비 500,000원 청구</li>',
+        '</ul>',
+        '<div class="callout"><strong>개정 전문</strong>  첨부된 PDF에서 전체 개정 내용을 확인해 주세요.</div>'
+      ].join(''),
+      files: [
+        { name: '휴양소 이용수칙 (2026.05 개정).pdf', size: '2.1 MB', type: 'pdf', date: '2026.05.15' },
+        { name: '개정 사항 요약.hwp', size: '76 KB', type: 'hwp', date: '2026.05.15' }
+      ]
+    },
+    n4: {
+      title: '첫 리뷰 작성하고 +500P 받기 이벤트',
+      author: '인사복지팀', authorInitial: '인',
+      date: '2026.05.13', views: '1,341',
+      tags: [{ text: '이벤트', cls: 'tag tone-coral' }],
+      body: [
+        '<p>아직 리뷰를 작성하지 않으셨나요? 지금이 기회입니다.</p>',
+        '<h4>🎁 이벤트 혜택</h4>',
+        '<ul>',
+        '  <li>사진 4장 + 상세 후기 작성 시 <strong>첫 1회에 한해 +500P</strong> 추가 적립</li>',
+        '  <li>기본 작성 포인트 300P + 이벤트 500P = 총 <strong>800P</strong></li>',
+        '</ul>',
+        '<div class="callout"><strong>📅 이벤트 기간</strong>  ~ 2026년 6월 30일까지</div>',
+        '<p>인증 마크가 붙은 리뷰만 인정되며, 사진 1장 + 50자 미만 후기는 제외됩니다.</p>'
+      ].join(''),
+      files: [
+        { name: '이벤트 포스터.png', size: '1.8 MB', type: 'img', date: '2026.05.13' }
+      ]
+    },
+    n5: {
+      title: '조천 휴양소 정기 시설 점검 (5/22 ~ 5/24)',
+      author: '시설관리팀', authorInitial: '시',
+      date: '2026.05.13', views: '614',
+      tags: [{ text: '시설', cls: 'tag tone-lilac' }],
+      body: [
+        '<p>조천 휴양소의 정기 시설 점검이 진행됩니다.</p>',
+        '<h4>🛠 점검 일정</h4>',
+        '<ul>',
+        '  <li><strong>일시</strong>: 2026년 5월 22일(목) ~ 5월 24일(토)</li>',
+        '  <li><strong>범위</strong>: 보일러, 에어컨, 정수기, 가전 전반</li>',
+        '</ul>',
+        '<h4>📌 영향</h4>',
+        '<ul>',
+        '  <li>해당 기간 신규 예약 일시 중단</li>',
+        '  <li>기존 예약자께는 개별 안내 발송 완료</li>',
+        '  <li>일정 변경 시 <strong>+1,000P 보상</strong> 지급</li>',
+        '</ul>',
+        '<div class="callout"><strong>문의</strong>  시설관리팀 박매니저 (내선 4821)</div>'
+      ].join(''),
+      files: [
+        { name: '시설 점검 일정 안내.pdf', size: '742 KB', type: 'pdf', date: '2026.05.13' }
+      ]
+    },
+    n6: {
+      title: '추석 연휴 휴양소 예약 가이드',
+      author: '인사복지팀', authorInitial: '인',
+      date: '2026.05.06', views: '1,108',
+      tags: [{ text: '예약', cls: 'tag tone-sky' }],
+      body: [
+        '<p>2026년 추석 연휴(9/26 ~ 9/29) 휴양소 예약 안내입니다.</p>',
+        '<h4>📅 신청 방법</h4>',
+        '<ul>',
+        '  <li>신청 기간: 2026년 7월 1일 ~ 7월 31일</li>',
+        '  <li>방식: <strong>사번 기준 추첨제</strong></li>',
+        '  <li>가족 동반 신청자 우선 배정</li>',
+        '</ul>',
+        '<h4>🏆 우대 사항</h4>',
+        '<ul>',
+        '  <li>최근 2년간 미당첨자 가점</li>',
+        '  <li>3인 이상 가족 동반 가점</li>',
+        '</ul>',
+        '<div class="callout"><strong>📎 신청서 양식</strong>  첨부 파일을 다운로드받아 작성 후 사내 메일로 제출</div>'
+      ].join(''),
+      files: [
+        { name: '추석 휴양소 신청서.docx', size: '208 KB', type: 'doc', date: '2026.05.06' },
+        { name: '휴양소별 위치도.pdf', size: '3.2 MB', type: 'pdf', date: '2026.05.06' },
+        { name: '연휴 일정표.xlsx', size: '94 KB', type: 'xls', date: '2026.05.06' }
+      ]
+    }
+  };
+
+  const FILE_TYPE_META = {
+    pdf: { icon: 'ti-file-pdf',         cls: 'pdf', label: 'PDF' },
+    doc: { icon: 'ti-file-text',        cls: 'doc', label: 'DOC' },
+    xls: { icon: 'ti-file-spreadsheet', cls: 'xls', label: 'XLSX' },
+    zip: { icon: 'ti-file-zip',         cls: 'zip', label: 'ZIP' },
+    img: { icon: 'ti-file-image',       cls: 'img', label: 'IMG' },
+    hwp: { icon: 'ti-file-text',        cls: 'hwp', label: 'HWP' }
+  };
+
+  let currentNoticeFiles = [];
+
+  function _escAttr(s) { return String(s).replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
+  function _esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function openNoticeDetail(id) {
+    const n = NOTICES[id];
+    if (!n) return;
+    document.getElementById('nd-title').textContent = n.title;
+
+    const tagsEl = document.getElementById('nd-tags');
+    tagsEl.innerHTML = n.tags.map(t => {
+      if (t.pin) return '<span class="pin"><i class="ti ti-pin"></i> 고정</span>';
+      return '<span class="' + t.cls + '">' + _esc(t.text) + '</span>';
+    }).join('');
+
+    document.getElementById('nd-author').textContent = n.author;
+    document.getElementById('nd-author-initial').textContent = n.authorInitial;
+    document.getElementById('nd-date').textContent = n.date;
+    document.getElementById('nd-views').textContent = n.views;
+    document.getElementById('nd-body').innerHTML = n.body;
+
+    currentNoticeFiles = n.files || [];
+    const list = document.getElementById('nd-attach-list');
+    const cnt = document.getElementById('nd-attach-count');
+    const wrap = document.getElementById('nd-attachments');
+    if (currentNoticeFiles.length === 0) {
+      wrap.style.display = 'none';
+    } else {
+      wrap.style.display = '';
+      cnt.textContent = currentNoticeFiles.length + '개';
+      list.innerHTML = currentNoticeFiles.map(f => {
+        const m = FILE_TYPE_META[f.type] || FILE_TYPE_META.doc;
+        const nameAttr = _escAttr(f.name);
+        return '<div class="attach-row" onclick="downloadFile(\'' + nameAttr + '\')">' +
+          '  <div class="file-icon ' + m.cls + '"><i class="ti ' + m.icon + '"></i></div>' +
+          '  <div class="file-info">' +
+          '    <div class="file-name">' + _esc(f.name) + '</div>' +
+          '    <div class="file-meta">' +
+          '      <span>' + m.label + '</span><span class="sep"></span>' +
+          '      <span>' + _esc(f.size) + '</span><span class="sep"></span>' +
+          '      <span>' + _esc(f.date) + '</span>' +
+          '    </div>' +
+          '  </div>' +
+          '  <div class="file-actions" onclick="event.stopPropagation()">' +
+          '    <button title="미리보기" onclick="showToast(\'미리보기 준비 중...\')"><i class="ti ti-eye"></i></button>' +
+          '    <button class="primary" title="다운로드" onclick="downloadFile(\'' + nameAttr + '\')"><i class="ti ti-download"></i></button>' +
+          '  </div>' +
+          '</div>';
+      }).join('');
+    }
+
+    // Convert tabler icons we just rendered
+    if (typeof tiToMs === 'function') {
+      document.querySelectorAll('[data-screen="notice-detail"] i.ti').forEach(tiToMs);
+    }
+    showScreen('device1', 'notice-detail');
+  }
+
+  function downloadFile(name) {
+    showToast(name + ' 다운로드 시작');
+  }
+  function downloadAllFiles() {
+    if (!currentNoticeFiles || currentNoticeFiles.length === 0) return;
+    showToast(currentNoticeFiles.length + '개 파일을 ZIP으로 받았어요');
+  }
+
+  let _toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('nd-toast');
+    if (!t) return;
+    document.getElementById('nd-toast-msg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+</script>
+
+</body>
+</html>

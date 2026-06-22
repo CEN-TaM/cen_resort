@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회사 휴양소 정보 및 후기</title>
+  <style>
+    :root {
+      --bg: #f4fbff;
+      --card: #ffffff;
+      --primary: #31a7e8;
+      --primary-dark: #1688c5;
+      --mint: #42d8c4;
+      --soft-blue: #e8f7ff;
+      --soft-mint: #e9fbf8;
+      --text: #1e3445;
+      --muted: #718493;
+      --line: #e3eef5;
+      --danger: #ff7b85;
+      --yellow: #ffd56a;
+      --shadow: 0 10px 30px rgba(27, 101, 142, 0.12);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: linear-gradient(180deg, #eaf8ff 0%, #f7fcff 42%, #ffffff 100%); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif; }
+    body { height: 100vh; overflow: hidden; padding: 20px 0; display: flex; align-items: center; justify-content: center; }
+    button, input, textarea, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
+
+    .app-shell {
+      width: 100%;
+      max-width: 390px;
+      height: 100%;
+      max-height: calc(100vh - 40px);
+      margin: 0 auto;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border-radius: 28px;
+      box-shadow: 0 16px 42px -10px rgba(20,80,120,.18), 0 0 0 1px rgba(20,80,120,.04);
+    }
+
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+      animation: fadeIn .18s ease;
+    }
+    .screen.active { display: flex; }
+    .scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 14px 18px;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(20,80,120,0.22) transparent;
+    }
+    .scroll-body::-webkit-scrollbar { width: 3px; }
+    .scroll-body::-webkit-scrollbar-thumb { background: rgba(20,80,120,0.22); border-radius: 999px; }
+    .scroll-body::-webkit-scrollbar-track { background: transparent; }
+    /* 스크롤 안내 카드 — viewport 고정 */
+    .scroll-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;width:132px;height:132px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(15,40,60,0.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;cursor:pointer;transition:opacity 0.3s ease,visibility 0.3s ease,transform 0.3s ease;border-radius:18px;padding:12px;text-align:center;box-shadow:0 12px 30px -10px rgba(0,0,0,0.4)}
+    .scroll-hint.hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,calc(-50% + 8px))}
+    .scroll-hint-icon{width:42px;height:42px;display:flex;align-items:center;justify-content:center;animation:swipe-up 1.6s ease-in-out infinite}
+    .scroll-hint-icon svg{display:block}
+    @keyframes swipe-up{0%{transform:translateY(10px);opacity:0.55}45%{transform:translateY(-8px);opacity:1}55%{transform:translateY(-8px);opacity:1}100%{transform:translateY(10px);opacity:0.55}}
+    .scroll-hint-text{font-size:12px;font-weight:700;letter-spacing:-0.01em;line-height:1.35}
+    .scroll-hint-sub{font-size:10px;opacity:0.7;letter-spacing:0.02em;margin-top:-2px}
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .top-area { flex-shrink: 0; z-index: 8; padding: 14px 16px 12px; background: var(--bg); border-radius: 28px 28px 0 0; border-bottom: 1px solid rgba(210,230,240,.7); }
+    .brand-row, .header-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), var(--mint)); color: #fff; font-size: 20px; box-shadow: var(--shadow); }
+    .brand-title { margin: 0; font-size: 17px; letter-spacing: -0.04em; }
+    .brand-sub { margin: 2px 0 0; color: var(--muted); font-size: 11.5px; }
+
+    .icon-btn { width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center; background: #fff; color: var(--text); box-shadow: 0 6px 16px rgba(31, 88, 128, 0.08); font-size: 17px; }
+    .back-btn { width: 40px; height: 40px; border-radius: 15px; background: #fff; display: grid; place-items: center; color: var(--text); box-shadow: 0 6px 16px rgba(31, 88, 128, 0.08); }
+    .page-title { margin: 0; font-size: 17px; letter-spacing: -0.04em; flex: 1; }
+
+    .search-wrap { margin-top: 14px; display: flex; gap: 8px; align-items: center; }
+    .search-box { flex: 1; position: relative; }
+    .search-box span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--muted); }
+    .search-box input { width: 100%; height: 46px; border: 1px solid var(--line); background: #fff; border-radius: 18px; padding: 0 14px 0 40px; outline: 0; color: var(--text); box-shadow: 0 6px 16px rgba(31,88,128,.05); }
+    .search-box input:focus { border-color: rgba(49,167,232,.55); box-shadow: 0 0 0 4px rgba(49,167,232,.11); }
+
+    .chip-row { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
+    .chip-row::-webkit-scrollbar { display: none; }
+    .chip { flex: 0 0 auto; padding: 9px 12px; border-radius: 999px; background: #fff; color: var(--muted); border: 1px solid var(--line); font-size: 13px; box-shadow: 0 5px 14px rgba(31,88,128,.04); }
+    .chip.active { background: linear-gradient(135deg, var(--primary), var(--mint)); color: #fff; border-color: transparent; font-weight: 700; }
+    .chip.small { padding: 7px 10px; font-size: 12px; }
+
+    .section { margin-top: 20px; }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .section-title { margin: 0; font-size: 15px; letter-spacing: -0.04em; }
+    .section-desc { margin: 4px 0 0; color: var(--muted); font-size: 11.5px; }
+    .link-btn { background: transparent; color: var(--primary-dark); font-size: 12.5px; font-weight: 700; padding: 6px; }
+
+    .hero-card { border-radius: 28px; overflow: hidden; color: #fff; background: linear-gradient(135deg, rgba(26,148,220,.95), rgba(54,216,196,.95)); box-shadow: var(--shadow); padding: 18px; position: relative; min-height: 146px; }
+    .hero-card:after { content: ""; position: absolute; width: 170px; height: 170px; right: -58px; top: -48px; border-radius: 50%; background: rgba(255,255,255,.23); }
+    .hero-card:before { content: "🏖️"; position: absolute; right: 14px; bottom: 10px; font-size: 44px; filter: drop-shadow(0 10px 16px rgba(0,0,0,.12)); }
+    .hero-card h2 { margin: 0 0 6px; font-size: 18px; line-height: 1.3; letter-spacing: -0.04em; position: relative; z-index: 1; }
+    .hero-card p { margin: 0; width: 70%; font-size: 12px; line-height: 1.55; opacity: .92; position: relative; z-index: 1; }
+    .hero-actions { display: flex; gap: 8px; margin-top: 16px; position: relative; z-index: 1; }
+
+    .btn { min-height: 42px; border-radius: 16px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #fff; color: var(--text); font-weight: 800; box-shadow: 0 8px 18px rgba(31,88,128,.08); }
+    .btn.primary { background: linear-gradient(135deg, var(--primary), var(--mint)); color: #fff; }
+    .btn.ghost { background: rgba(255,255,255,.22); color: #fff; box-shadow: none; border: 1px solid rgba(255,255,255,.35); }
+    .btn.full { width: 100%; }
+    .btn.danger { color: #fff; background: linear-gradient(135deg, #ff8190, #ffad7a); }
+    .btn.outline { background: #fff; border: 1px solid var(--line); color: var(--primary-dark); box-shadow: none; }
+    .btn:active, .icon-btn:active, .chip:active, .back-btn:active { transform: scale(.98); }
+
+    .h-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 2px 0 10px; scrollbar-width: none; }
+    .h-scroll::-webkit-scrollbar { display: none; }
+
+    .rank-card { min-width: 150px; padding: 14px; border-radius: 22px; background: #fff; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .rank-card .rank { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 14px; display: grid; place-items: center; background: var(--soft-blue); color: var(--primary-dark); font-weight: 900; }
+    .rank-card.first { background: linear-gradient(135deg, #fff7dc, #ffffff 50%); }
+    .rank-icon { width: 44px; height: 44px; border-radius: 16px; display: grid; place-items: center; font-size: 22px; margin-bottom: 10px; background: linear-gradient(135deg, #e8f7ff, #e9fbf8); }
+    .rank-card h3 { margin: 0 0 4px; font-size: 13.5px; letter-spacing: -0.04em; }
+    .rank-card p { margin: 0; color: var(--muted); font-size: 11.5px; }
+
+    .card { background: #fff; border: 1px solid rgba(223,237,245,.82); border-radius: var(--radius-xl); box-shadow: 0 9px 24px rgba(31,88,128,.07); overflow: hidden; }
+    .card-pad { padding: 14px; }
+    .mini-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 12px; display: flex; gap: 12px; align-items: center; box-shadow: 0 7px 16px rgba(31,88,128,.05); }
+    .mini-card + .mini-card, .review-card + .review-card, .resort-card + .resort-card { margin-top: 10px; }
+
+    .photo { height: 130px; border-radius: 0; position: relative; overflow: hidden; background: linear-gradient(135deg, #d9f4ff, #e8fff6); }
+    .photo.round { width: 74px; height: 74px; border-radius: 22px; flex: 0 0 74px; }
+    .photo.tall { height: 216px; border-radius: 28px; box-shadow: var(--shadow); }
+    .photo.gallery { min-width: 168px; height: 126px; border-radius: 22px; }
+    .photo:before { content: attr(data-icon); position: absolute; right: 10px; bottom: 5px; font-size: 48px; filter: drop-shadow(0 8px 12px rgba(0,0,0,.12)); }
+    .photo:after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 18% 18%, rgba(255,255,255,.65), transparent 24%), linear-gradient(180deg, transparent, rgba(0,0,0,.06)); }
+    .sea { background: linear-gradient(135deg, #9ee7ff 0%, #64c9f4 50%, #fff2c4 100%); }
+    .jeju { background: linear-gradient(135deg, #9edcff 0%, #8df0d1 50%, #ffdca8 100%); }
+    .mountain { background: linear-gradient(135deg, #bbf7d0 0%, #7dd3fc 60%, #eefdf5 100%); }
+    .city { background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 60%, #fff 100%); }
+    .winter { background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 44%, #bae6fd 100%); }
+
+    .resort-card { overflow: hidden; }
+    .resort-card .content { padding: 13px; }
+    .card-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .resort-card h3, .review-card h3 { margin: 0 0 5px; font-size: 14px; letter-spacing: -0.04em; }
+    .meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; color: var(--muted); font-size: 11.5px; }
+    .desc { color: #526a7c; font-size: 12px; line-height: 1.5; margin: 8px 0 10px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { background: var(--soft-blue); color: #1680bb; border: 1px solid #d7f0ff; border-radius: 999px; padding: 6px 9px; font-size: 12px; font-weight: 700; }
+    .tag.mint { background: var(--soft-mint); color: #0b8f7f; border-color: #d0f6ef; }
+
+    .review-card { padding: 12px; display: grid; grid-template-columns: 82px 1fr; gap: 12px; }
+    .review-card .photo { width: 82px; height: 92px; border-radius: 20px; }
+    .review-card .actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 2px; }
+    .review-card .actions button { min-height: 36px; border-radius: 14px; background: #f6fbff; color: var(--muted); font-weight: 800; border: 1px solid var(--line); }
+    .review-card .actions button.active { background: linear-gradient(135deg, rgba(49,167,232,.13), rgba(66,216,196,.18)); color: var(--primary-dark); border-color: rgba(49,167,232,.28); }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; background: #fff8dd; color: #9a6b00; font-size: 11px; font-weight: 900; }
+    .badge.blue { background: var(--soft-blue); color: var(--primary-dark); }
+    .badge.green { background: var(--soft-mint); color: #078b7b; }
+    .badge.gray { background: #f2f6f9; color: var(--muted); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat-card { padding: 12px; border-radius: 20px; background: #fff; border: 1px solid var(--line); box-shadow: 0 7px 16px rgba(31,88,128,.05); }
+    .stat-card strong { display: block; font-size: 19px; letter-spacing: -0.04em; }
+    .stat-card span { color: var(--muted); font-size: 12px; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr; gap: 9px; }
+    .info-row { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 18px; background: #fff; border: 1px solid var(--line); }
+    .info-row b { display: block; font-size: 13px; margin-bottom: 3px; }
+    .info-row span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    .sort-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .sort-row select, .form-select, .form-input, .form-textarea { width: 100%; border: 1px solid var(--line); border-radius: 16px; background: #fff; outline: 0; color: var(--text); box-shadow: 0 5px 14px rgba(31,88,128,.04); }
+    .sort-row select, .form-select, .form-input { height: 44px; padding: 0 12px; }
+    .form-textarea { min-height: 128px; padding: 12px; resize: vertical; line-height: 1.55; }
+    .form-label { display: block; margin: 15px 0 7px; font-size: 13px; font-weight: 900; }
+    .upload-box { height: 118px; display: grid; place-items: center; text-align: center; color: var(--muted); border: 2px dashed #bfe7fb; background: #f8fdff; border-radius: 22px; }
+    .radio-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .radio-pill { padding: 10px 12px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--muted); font-weight: 800; font-size: 13px; }
+    .radio-pill.active { color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--primary), var(--mint)); }
+
+    .detail-title { margin: 12px 0 6px; font-size: 24px; letter-spacing: -0.06em; line-height: 1.25; }
+    .detail-body { background: #fff; border-radius: 24px; padding: 16px; border: 1px solid var(--line); line-height: 1.72; color: #435b6d; font-size: 14px; }
+    .gallery-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+    .gallery-row::-webkit-scrollbar { display: none; }
+
+    .comment { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 12px; margin-top: 8px; }
+    .comment-head { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    .comment p { margin: 0; font-size: 13px; line-height: 1.55; }
+
+    .bottom-nav { position: relative; width: 100%; z-index: 20; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 10px 12px 18px; background: rgba(255,255,255,.94); backdrop-filter: blur(16px); border-top: 1px solid rgba(210,230,240,.85); border-radius: 0 0 28px 28px; flex-shrink: 0; }
+    .nav-item { min-height: 56px; border-radius: 18px; background: transparent; color: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 800; }
+    .nav-item .ico { font-size: 20px; line-height: 1; }
+    .nav-item.active { color: var(--primary-dark); background: linear-gradient(135deg, rgba(49,167,232,.12), rgba(66,216,196,.14)); }
+
+    .toast { position: fixed; left: 50%; bottom: 92px; transform: translate(-50%, 20px); min-width: 230px; max-width: 350px; padding: 13px 16px; border-radius: 18px; background: rgba(23, 47, 64, .94); color: #fff; text-align: center; font-weight: 800; z-index: 50; opacity: 0; pointer-events: none; transition: .22s ease; box-shadow: 0 12px 30px rgba(0,0,0,.18); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .profile { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 26px; background: linear-gradient(135deg, #ffffff, #effaff); box-shadow: var(--shadow); }
+    .avatar { width: 64px; height: 64px; border-radius: 24px; background: linear-gradient(135deg, var(--primary), var(--mint)); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 20px; }
+    .menu-list { background: #fff; border: 1px solid var(--line); border-radius: 24px; overflow: hidden; }
+    .menu-item { width: 100%; display: flex; align-items: center; justify-content: space-between; min-height: 50px; padding: 0 14px; background: #fff; border-bottom: 1px solid #f1f6f9; color: var(--text); }
+    .menu-item:last-child { border-bottom: 0; }
+
+    .stay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stay-card { padding: 13px; border-radius: 20px; background: #fff; border: 1px solid var(--line); box-shadow: 0 7px 16px rgba(31,88,128,.05); }
+    .stay-card .ico { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 14px; background: var(--soft-blue); margin-bottom: 8px; font-size: 18px; }
+    .stay-card b { display: block; font-size: 13px; margin-bottom: 3px; }
+    .stay-card span { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .stay-note { padding: 12px; border-radius: 18px; background: #fff; border: 1px solid var(--line); margin-top: 8px; color: #526a7c; font-size: 13px; line-height: 1.55; }
+    .progress-row { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 12px; margin-top: 8px; }
+    .progress-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; font-weight: 900; margin-bottom: 8px; }
+    .progress-bar { height: 10px; border-radius: 999px; background: #edf6fb; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; background: linear-gradient(135deg, var(--primary), var(--mint)); }
+    .form-help { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 5px; }
+
+    .empty { text-align: center; padding: 32px 16px; color: var(--muted); background: #fff; border: 1px dashed #cfe5f2; border-radius: 24px; }
+    .empty .big { font-size: 38px; display: block; margin-bottom: 6px; }
+
+    @media (min-width: 431px) {
+      body { background: #dfeef6; }
+      .app-shell { margin-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 스크롤 안내 카드 -->
+  <div class="scroll-hint" id="scrollHint" role="button" aria-label="안내 닫기">
+    <div class="scroll-hint-icon">
+      <svg width="36" height="36" viewBox="0 0 56 56" fill="none">
+        <path d="M22 16V31" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+        <path d="M16 24L22 31L28 24" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+        <path d="M22 31C22 31 22 36 22 40C22 43.3137 24.6863 46 28 46H34C37.3137 46 40 43.3137 40 40V28C40 25.7909 38.2091 24 36 24C33.7909 24 32 25.7909 32 28V34" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M32 28C32 25.7909 30.2091 24 28 24C25.7909 24 24 25.7909 24 28V34" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M24 28C24 25.7909 22.2091 24 20 24C17.7909 24 16 25.7909 16 28V34" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="scroll-hint-text">스크롤 해보세요</div>
+    <div class="scroll-hint-sub">탭하면 닫혀요</div>
+  </div>
+
+  <div class="app-shell">
+    <main id="screen-home" class="screen active"></main>
+    <main id="screen-resorts" class="screen"></main>
+    <main id="screen-resort-detail" class="screen"></main>
+    <main id="screen-stay-info" class="screen"></main>
+    <main id="screen-reviews" class="screen"></main>
+    <main id="screen-review-detail" class="screen"></main>
+    <main id="screen-write" class="screen"></main>
+    <main id="screen-bookmarks" class="screen"></main>
+    <main id="screen-mypage" class="screen"></main>
+
+    <nav class="bottom-nav" aria-label="하단 네비게이션">
+      <button class="nav-item active" data-nav="home"><span class="ico">🏠</span>홈</button>
+      <button class="nav-item" data-nav="resorts"><span class="ico">🏖️</span>휴양소</button>
+      <button class="nav-item" data-nav="write"><span class="ico">✍️</span>후기작성</button>
+      <button class="nav-item" data-nav="bookmarks"><span class="ico">🔖</span>북마크</button>
+      <button class="nav-item" data-nav="mypage"><span class="ico">🙂</span>마이페이지</button>
+    </nav>
+
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script>
+    const resortSeeds = [
+      { id: 1, name: '속초(힐스) 휴양소', type: 'general', location: '강원 속초', region: '속초', category: '바다', icon: '🌊', image: 'sea', desc: '동해 바다와 가까워 가족 여행과 짧은 힐링 여행에 잘 어울리는 휴양소입니다.', room: '패밀리룸, 원룸형', facilities: ['취사 가능', '와이파이', '세탁기', '엘리베이터'], season: '봄·여름·가을', parking: '가능', nearby: ['속초해수욕장', '중앙시장', '영랑호'], audience: '가족추천', tags: ['#오션뷰', '#가족여행', '#주차편함'] },
+      { id: 2, name: '속초(서희) 휴양소', type: 'general', location: '강원 속초', region: '속초', category: '바다', icon: '🐚', image: 'sea', desc: '조용한 숙박 분위기와 편리한 위치가 장점인 속초권 휴양소입니다.', room: '투룸형, 콘도형', facilities: ['취사 가능', '건조대', '주차장', '근처 편의점'], season: '사계절', parking: '가능', nearby: ['아바이마을', '청초호', '대포항'], audience: '커플추천', tags: ['#조용해요', '#가성비좋음', '#힐링'] },
+      { id: 3, name: '조천 휴양소', type: 'general', location: '제주 조천', region: '제주', category: '제주', icon: '🌴', image: 'jeju', desc: '제주의 자연과 바다를 함께 즐길 수 있어 여유로운 가족 여행에 적합합니다.', room: '복층형, 패밀리룸', facilities: ['취사 가능', '테라스', '와이파이', '주차장'], season: '봄·가을', parking: '가능', nearby: ['함덕해수욕장', '비자림', '동문시장'], audience: '가족추천', tags: ['#아이와함께', '#제주여행', '#깨끗해요'] },
+      { id: 4, name: '애월 1호점', type: 'general', location: '제주 애월', region: '제주', category: '제주', icon: '☕', image: 'jeju', desc: '카페 거리와 해안도로 접근성이 좋아 감성적인 제주 여행을 즐길 수 있습니다.', room: '스튜디오형, 커플룸', facilities: ['오션뷰', '주방', '넷플릭스', '주차장'], season: '봄·여름', parking: '가능', nearby: ['애월해안도로', '곽지해수욕장', '한담산책로'], audience: '커플추천', tags: ['#오션뷰', '#커플여행', '#재방문의사'] },
+      { id: 5, name: '애월 2호점', type: 'general', location: '제주 애월', region: '제주', category: '제주', icon: '🍊', image: 'jeju', desc: '넓은 객실과 편안한 분위기로 부모님 동반 여행에도 무난한 휴양소입니다.', room: '패밀리룸, 투룸형', facilities: ['넓은 거실', '취사 가능', '세탁기', '주차장'], season: '사계절', parking: '가능', nearby: ['협재해수욕장', '한림공원', '금오름'], audience: '가족추천', tags: ['#가족여행', '#주차편함', '#힐링'] },
+      { id: 6, name: '보령 휴양소', type: 'general', location: '충남 보령', region: '보령', category: '바다', icon: '🏝️', image: 'sea', desc: '서해 바다와 가까워 주말에 부담 없이 다녀오기 좋은 휴양소입니다.', room: '원룸형, 패밀리룸', facilities: ['취사 가능', '바비큐장', '주차장', '근처 마트'], season: '여름·가을', parking: '가능', nearby: ['대천해수욕장', '보령머드광장', '죽도'], audience: '가족추천', tags: ['#가성비좋음', '#주말여행', '#재방문의사'] },
+      { id: 7, name: '여수휴양소', type: 'general', location: '전남 여수', region: '여수', category: '바다', icon: '🌉', image: 'sea', desc: '야경과 먹거리가 좋아 가족, 커플 모두에게 만족도가 높은 남해권 휴양소입니다.', room: '콘도형, 패밀리룸', facilities: ['오션뷰', '취사 가능', '와이파이', '주차장'], season: '봄·가을·겨울', parking: '가능', nearby: ['낭만포차', '오동도', '해상케이블카'], audience: '커플추천', tags: ['#오션뷰', '#야경좋음', '#힐링'] },
+      { id: 8, name: '부산휴양소', type: 'general', location: '부산 해운대', region: '부산', category: '도심', icon: '🏙️', image: 'city', desc: '도심 접근성과 바다 분위기를 동시에 누릴 수 있는 도시형 휴양소입니다.', room: '스튜디오형, 패밀리룸', facilities: ['와이파이', '주방', '근처 지하철', '주차장'], season: '사계절', parking: '가능', nearby: ['해운대', '광안리', '센텀시티'], audience: '커플추천', tags: ['#도심여행', '#오션뷰', '#편리해요'] },
+      { id: 9, name: '과천휴양소(1001호)', type: 'general', location: '경기 과천', region: '과천', category: '도심', icon: '🌿', image: 'city', desc: '수도권에서 이동 부담이 적어 가족과 가볍게 쉬기 좋은 근교형 휴양소입니다.', room: '아파트형, 투룸형', facilities: ['넓은 거실', '주방', '와이파이', '지하주차'], season: '사계절', parking: '가능', nearby: ['서울랜드', '과천과학관', '관악산'], audience: '가족추천', tags: ['#주말여행', '#아이와함께', '#주차편함'] },
+      { id: 10, name: '과천휴양소(504호)', type: 'general', location: '경기 과천', region: '과천', category: '도심', icon: '🚇', image: 'city', desc: '대중교통 이용이 편하고 조용하게 쉬기 좋은 실속형 휴양소입니다.', room: '원룸형, 아파트형', facilities: ['주방', '와이파이', '근처 공원', '지하주차'], season: '사계절', parking: '가능', nearby: ['서울대공원', '국립현대미술관', '청계산'], audience: '커플추천', tags: ['#가성비좋음', '#조용해요', '#편리해요'] },
+      { id: 11, name: '무주', type: 'winter', location: '전북 무주', region: '무주', category: '동계이벤트', icon: '⛷️', image: 'winter', desc: '스키와 겨울 여행을 함께 즐기기 좋은 동계 이벤트 휴양소입니다.', room: '리조트형, 패밀리룸', facilities: ['난방', '장비보관', '주차장', '근처 식당'], season: '겨울', parking: '가능', nearby: ['무주덕유산리조트', '덕유산', '구천동계곡'], audience: '가족추천', tags: ['#겨울여행', '#가족여행', '#스키'] },
+      { id: 12, name: '고성', type: 'winter', location: '강원 고성', region: '고성', category: '동계이벤트', icon: '❄️', image: 'winter', desc: '겨울 바다와 조용한 휴식을 동시에 즐길 수 있는 이벤트 휴양소입니다.', room: '콘도형, 원룸형', facilities: ['난방', '오션뷰', '주차장', '취사 가능'], season: '겨울·봄', parking: '가능', nearby: ['송지호', '화진포', '고성 통일전망대'], audience: '커플추천', tags: ['#겨울바다', '#조용해요', '#힐링'] },
+      { id: 13, name: '평창', type: 'winter', location: '강원 평창', region: '평창', category: '동계이벤트', icon: '🏔️', image: 'winter', desc: '눈 내린 산 풍경과 리조트 분위기를 즐기기 좋은 겨울 대표 휴양소입니다.', room: '리조트형, 패밀리룸', facilities: ['난방', '사우나 인근', '주차장', '식당가'], season: '겨울', parking: '가능', nearby: ['대관령', '월정사', '발왕산'], audience: '가족추천', tags: ['#겨울여행', '#아이와함께', '#깨끗해요'] },
+      { id: 14, name: '가평', type: 'winter', location: '경기 가평', region: '가평', category: '산/계곡', icon: '🌲', image: 'mountain', desc: '수도권에서 가까운 산과 계곡 분위기의 휴양소로 주말 여행에 적합합니다.', room: '펜션형, 가족룸', facilities: ['바비큐장', '난방', '주차장', '테라스'], season: '사계절', parking: '가능', nearby: ['남이섬', '자라섬', '아침고요수목원'], audience: '가족추천', tags: ['#주말여행', '#가족여행', '#힐링'] },
+      { id: 15, name: '홍천', type: 'winter', location: '강원 홍천', region: '홍천', category: '산/계곡', icon: '🔥', image: 'mountain', desc: '조용한 숲속 분위기와 겨울 레저를 함께 즐길 수 있는 휴양소입니다.', room: '펜션형, 복층형', facilities: ['난방', '바비큐장', '주차장', '취사 가능'], season: '겨울·가을', parking: '가능', nearby: ['비발디파크', '홍천강', '수타사'], audience: '커플추천', tags: ['#겨울여행', '#조용해요', '#재방문의사'] },
+      { id: 16, name: '충남', type: 'winter', location: '충남권', region: '충남', category: '동계이벤트', icon: '🧣', image: 'winter', desc: '가까운 거리와 무난한 시설로 부담 없는 겨울 가족 여행에 적합합니다.', room: '콘도형, 패밀리룸', facilities: ['난방', '취사 가능', '주차장', '근처 마트'], season: '겨울', parking: '가능', nearby: ['서해안 관광지', '지역 온천', '전통시장'], audience: '가족추천', tags: ['#가성비좋음', '#겨울여행', '#주차편함'] }
+    ];
+
+    const reviewTemplates = [
+      { title: '가족과 함께 다녀오기 좋았습니다', body: '아이와 함께 이동하기에도 부담이 적었고 객실이 생각보다 깔끔했습니다. 주변에 들를 곳도 많아서 짧은 일정이었지만 만족스러웠습니다.', tags: ['#가족여행', '#아이와함께', '#깨끗해요'], satisfaction: '매우 만족' },
+      { title: '시설이 깔끔하고 조용했습니다', body: '전체적으로 관리가 잘 되어 있다는 느낌을 받았습니다. 밤에는 조용해서 쉬기 좋았고, 다음에도 예약 가능하면 다시 방문하고 싶습니다.', tags: ['#깨끗해요', '#조용해요', '#재방문의사'], satisfaction: '만족' },
+      { title: '주말에 가볍게 힐링하고 왔어요', body: '회사 복지로 이용하기에 충분히 만족스러웠습니다. 큰 기대 없이 갔는데 위치와 분위기가 좋아서 편하게 쉬고 왔습니다.', tags: ['#힐링', '#가성비좋음', '#주차편함'], satisfaction: '만족' }
+    ];
+
+    const winterTemplates = [
+      { title: '겨울 여행지로 만족스러웠습니다', body: '난방이 잘 되었고 겨울 분위기를 느끼기에 좋았습니다. 주변 관광지와 같이 묶어서 다녀오니 일정이 알차게 느껴졌습니다.', tags: ['#겨울여행', '#가족여행', '#재방문의사'], satisfaction: '매우 만족' },
+      { title: '눈 오는 날 분위기가 정말 좋았어요', body: '사진 찍기 좋은 포인트가 많고 숙소도 따뜻했습니다. 겨울 이벤트 휴양소로 계속 운영되면 좋겠습니다.', tags: ['#겨울여행', '#힐링', '#조용해요'], satisfaction: '만족' },
+      { title: '아이와 함께 머물기 편했습니다', body: '동선이 복잡하지 않고 주차도 편해서 가족 단위로 이용하기 괜찮았습니다. 다음에는 부모님과도 같이 오고 싶습니다.', tags: ['#아이와함께', '#주차편함', '#가족여행'], satisfaction: '만족' }
+    ];
+
+    const seasideTemplates = [
+      { title: '바다 전망이 좋아서 힐링됐어요', body: '아침에 산책하기 좋고 바다를 가까이 볼 수 있어 만족도가 높았습니다. 객실 컨디션도 무난해서 쉬기 좋았습니다.', tags: ['#오션뷰', '#힐링', '#재방문의사'], satisfaction: '매우 만족' },
+      { title: '근처 먹거리와 산책 코스가 좋았습니다', body: '차로 조금만 이동하면 볼거리와 먹거리가 많았습니다. 가족끼리 부담 없이 다녀오기 좋은 곳이라는 생각이 들었습니다.', tags: ['#가족여행', '#주차편함', '#가성비좋음'], satisfaction: '만족' },
+      { title: '조용하게 쉬고 오기 괜찮았어요', body: '화려하진 않지만 필요한 것은 잘 갖춰져 있었습니다. 휴식 목적이라면 충분히 만족할 수 있는 휴양소입니다.', tags: ['#조용해요', '#깨끗해요', '#힐링'], satisfaction: '보통' }
+    ];
+
+    const names = ['김OO', '박OO', '이OO', '최OO', '정OO', '윤OO', '한OO', '송OO'];
+
+    const resorts = resortSeeds.map((r, i) => ({
+      ...r,
+      recommendCount: 58 + ((i * 17) % 94),
+      reviewCount: 0
+    }));
+
+    const staySpecs = {
+      1: { rooms: 2, bedrooms: 1, beds: '퀸침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '인덕션, 싱크대, 전자레인지', maxGuests: '4인 권장', area: '약 24평형', laundry: '세탁기 있음', note: '가족 단위가 쓰기 무난한 구조이며 거실 공간이 여유로운 편입니다.' },
+      2: { rooms: 2, bedrooms: 1, beds: '더블침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '기본 조리도구, 전자레인지', maxGuests: '3~4인 권장', area: '약 22평형', laundry: '건조대 있음', note: '조용한 분위기의 콘도형 구조로 간단한 취사가 가능합니다.' },
+      3: { rooms: 3, bedrooms: 2, beds: '퀸침대 1개 + 싱글침대 1개', bed: '있음', bathrooms: 2, cooking: '가능', kitchen: '주방, 전자레인지, 전기포트', maxGuests: '5인 권장', area: '약 30평형', laundry: '세탁기 있음', note: '아이와 함께 쓰기 좋은 넓은 구조이며 화장실이 2개라 가족 이용에 편합니다.' },
+      4: { rooms: 1, bedrooms: 1, beds: '더블침대 1개', bed: '있음', bathrooms: 1, cooking: '간단취사', kitchen: '미니 주방, 전자레인지', maxGuests: '2인 권장', area: '약 16평형', laundry: '공용 세탁 가능', note: '커플 또는 1~2인 여행에 맞는 스튜디오형 숙소입니다.' },
+      5: { rooms: 2, bedrooms: 2, beds: '퀸침대 1개 + 싱글침대 2개', bed: '있음', bathrooms: 2, cooking: '가능', kitchen: '주방, 기본 조리도구, 냉장고', maxGuests: '4~5인 권장', area: '약 28평형', laundry: '세탁기 있음', note: '부모님 동반이나 가족 여행에 적합한 넓은 객실 구성입니다.' },
+      6: { rooms: 2, bedrooms: 1, beds: '더블침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '가스레인지, 전자레인지, 기본 식기', maxGuests: '4인 권장', area: '약 23평형', laundry: '세탁기 없음', note: '주말 가족 여행에 필요한 기본 시설이 갖춰진 실속형 숙소입니다.' },
+      7: { rooms: 2, bedrooms: 1, beds: '퀸침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '인덕션, 냉장고, 전자레인지', maxGuests: '4인 권장', area: '약 25평형', laundry: '세탁기 있음', note: '바다 전망과 야경을 즐기기 좋은 콘도형 구조입니다.' },
+      8: { rooms: 1, bedrooms: 1, beds: '더블침대 1개', bed: '있음', bathrooms: 1, cooking: '간단취사', kitchen: '미니 주방, 전자레인지', maxGuests: '2~3인 권장', area: '약 18평형', laundry: '공용 세탁 가능', note: '도심 접근성이 좋아 짧은 일정이나 커플 여행에 적합합니다.' },
+      9: { rooms: 3, bedrooms: 2, beds: '퀸침대 1개 + 싱글침대 1개 + 바닥요', bed: '있음', bathrooms: 2, cooking: '가능', kitchen: '주방, 냉장고, 조리도구', maxGuests: '4~5인 권장', area: '약 32평형', laundry: '세탁기 있음', note: '수도권 근교 가족 이용에 적합한 아파트형 숙소입니다.' },
+      10: { rooms: 1, bedrooms: 1, beds: '침대 없음, 바닥요 제공', bed: '없음', bathrooms: 1, cooking: '가능', kitchen: '주방, 전자레인지, 전기포트', maxGuests: '2~3인 권장', area: '약 18평형', laundry: '세탁기 있음', note: '실속형 구조로 대중교통 이용과 짧은 숙박에 편리합니다.' },
+      11: { rooms: 2, bedrooms: 1, beds: '더블침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '취사도구, 전자레인지', maxGuests: '4인 권장', area: '약 24평형', laundry: '세탁기 없음', note: '스키 장비 보관과 겨울 난방을 고려한 리조트형 숙소입니다.' },
+      12: { rooms: 1, bedrooms: 1, beds: '더블침대 1개', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '미니 주방, 전자레인지', maxGuests: '2~3인 권장', area: '약 20평형', laundry: '공용 세탁 가능', note: '겨울 바다를 조용히 즐기기 좋은 아담한 구조입니다.' },
+      13: { rooms: 2, bedrooms: 1, beds: '퀸침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '간단취사', kitchen: '전기포트, 전자레인지, 미니싱크대', maxGuests: '4인 권장', area: '약 24평형', laundry: '세탁기 없음', note: '겨울 리조트 이용을 전제로 한 따뜻한 난방 중심 숙소입니다.' },
+      14: { rooms: 2, bedrooms: 1, beds: '침대 없음, 바닥요 제공', bed: '없음', bathrooms: 1, cooking: '가능', kitchen: '주방, 바비큐 가능, 냉장고', maxGuests: '4인 권장', area: '약 22평형', laundry: '세탁기 없음', note: '펜션형 분위기로 가족 또는 친구 단위 주말 여행에 적합합니다.' },
+      15: { rooms: 2, bedrooms: 1, beds: '더블침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '주방, 기본 조리도구', maxGuests: '4인 권장', area: '약 23평형', laundry: '세탁기 없음', note: '숲속 분위기의 조용한 숙소로 겨울 난방 만족도가 높은 편입니다.' },
+      16: { rooms: 2, bedrooms: 1, beds: '더블침대 1개 + 바닥요 2세트', bed: '있음', bathrooms: 1, cooking: '가능', kitchen: '주방, 전자레인지, 기본 식기', maxGuests: '4인 권장', area: '약 22평형', laundry: '세탁기 있음', note: '부담 없는 겨울 가족 여행에 맞춘 기본형 숙소입니다.' }
+    };
+    resorts.forEach(r => { r.stay = staySpecs[r.id]; });
+
+    let reviews = [];
+    let reviewNo = 1048;
+    resorts.forEach((resort, idx) => {
+      const base = resort.type === 'winter' ? winterTemplates : (resort.category === '바다' || resort.category === '제주' ? seasideTemplates : reviewTemplates);
+      base.forEach((tpl, j) => {
+        const extraTag = resort.tags[j % resort.tags.length];
+        const mergedTags = Array.from(new Set([...tpl.tags, extraTag])).slice(0, 4);
+        reviews.push({
+          id: reviewNo++,
+          resortId: resort.id,
+          resortName: resort.name,
+          title: tpl.title,
+          author: names[(idx + j) % names.length],
+          date: `2026.${String(5 - ((idx + j) % 3)).padStart(2, '0')}.${String(18 - ((idx * 2 + j) % 15)).padStart(2, '0')}`,
+          image: resort.image,
+          icon: resort.icon,
+          recommend: 14 + ((idx * 9 + j * 7) % 78),
+          views: 120 + ((idx * 67 + j * 41) % 860),
+          empathy: 8 + ((idx * 11 + j * 13) % 95),
+          tags: mergedTags,
+          satisfaction: tpl.satisfaction,
+          stayInfo: makeStayInfo(resort, idx, j),
+          body: tpl.body,
+          comments: [
+            { author: '임직원A', text: '사진 분위기가 좋아 보여요. 다음 예약 때 참고하겠습니다.', like: 3 },
+            { author: '임직원B', text: '주차 정보까지 있어서 도움이 됐습니다.', like: 2 }
+          ]
+        });
+      });
+    });
+    resorts.forEach(r => { r.reviewCount = reviews.filter(rv => rv.resortId === r.id).length; });
+
+    function makeStayInfo(resort, idx, j) {
+      const spec = staySpecs[resort.id];
+      const bedOptions = spec.bed === '없음' ? ['없음', '없음', '있음'] : ['있음', '있음', '확인 필요'];
+      const cookingOptions = spec.cooking === '간단취사' ? ['간단취사', '가능', '확인 필요'] : ['가능', '가능', '간단취사'];
+      const cleanOptions = ['깨끗함', '매우 깨끗함', '보통'];
+      const noiseOptions = ['조용함', '보통', '조용함'];
+      return {
+        rooms: Math.max(1, spec.rooms - (j === 2 && spec.rooms > 1 ? 1 : 0)),
+        bed: bedOptions[(idx + j) % bedOptions.length],
+        bathrooms: spec.bathrooms,
+        cooking: cookingOptions[(idx + j) % cookingOptions.length],
+        guests: j === 0 ? spec.maxGuests : (j === 1 ? '2~3인 이용' : '3~4인 이용'),
+        cleanliness: cleanOptions[(idx + j) % cleanOptions.length],
+        noise: noiseOptions[(idx + j) % noiseOptions.length],
+        memo: j === 0 ? '객실 구조와 기본 비품을 확인하기 쉬웠고 가족이 머물기 무난했습니다.' : (j === 1 ? '침구와 화장실 상태가 전반적으로 괜찮았습니다.' : '취사 가능 여부와 주차 정보가 이용 전에 특히 도움이 됐습니다.')
+      };
+    }
+
+    const state = {
+      screen: 'home',
+      history: [],
+      resortTab: '전체',
+      resortFilter: '전체',
+      reviewSort: 'latest',
+      resortDetailSort: 'latest',
+      query: '',
+      reviewQuery: '',
+      tagFilter: '',
+      selectedResortId: null,
+      selectedReviewId: null,
+      likedReviews: new Set([reviews[0].id, reviews[9].id]),
+      bookmarkedResorts: new Set([1, 7, 13]),
+      bookmarkedReviews: new Set([reviews[2].id, reviews[7].id, reviews[28].id]),
+      form: { satisfaction: '매우 만족', recommend: '추천' }
+    };
+
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+    const byId = id => document.getElementById(id);
+    const resortById = id => resorts.find(r => r.id === Number(id));
+    const reviewById = id => reviews.find(r => r.id === Number(id));
+
+    function showToast(message) {
+      const toast = byId('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1700);
+    }
+
+    function navigate(screen, opts = {}) {
+      if (!opts.replace && state.screen !== screen) state.history.push(state.screen);
+      state.screen = screen;
+      if (opts.resortId) state.selectedResortId = Number(opts.resortId);
+      if (opts.reviewId) state.selectedReviewId = Number(opts.reviewId);
+      if (opts.tag) {
+        state.tagFilter = opts.tag;
+        state.reviewQuery = '';
+        state.reviewSort = 'latest';
+      }
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBack() {
+      const prev = state.history.pop();
+      navigate(prev || 'home', { replace: true });
+    }
+
+    function setActiveScreen() {
+      $$('.screen').forEach(s => s.classList.remove('active'));
+      byId(`screen-${state.screen}`).classList.add('active');
+      $$('.nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.nav === state.screen));
+      if (['resort-detail','stay-info','review-detail','reviews'].includes(state.screen)) {
+        $$('.nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.nav === 'resorts'));
+      }
+    }
+
+    function header(title, right = '') {
+      return `
+        <div class="top-area">
+          <div class="header-row">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1 class="page-title">${title}</h1>
+            ${right || '<span style="width:40px"></span>'}
+          </div>
+        </div>`;
+    }
+
+    function homeHeader() {
+      return `
+        <div class="top-area">
+          <div class="brand-row">
+            <div class="brand">
+              <div class="brand-logo">🏝️</div>
+              <div>
+                <h1 class="brand-title">휴양소 리뷰</h1>
+                <p class="brand-sub">임직원 복지 휴양소 정보 · 후기</p>
+              </div>
+            </div>
+            <button class="icon-btn" onclick="navigate('mypage')">🙂</button>
+          </div>
+          <div class="search-wrap">
+            <label class="search-box">
+              <span>🔎</span>
+              <input id="homeSearch" value="${escapeHtml(state.query)}" placeholder="휴양소명, 지역명, 후기 제목, #해시태그 검색" oninput="state.query=this.value; renderHomeOnly();" />
+            </label>
+          </div>
+        </div>`;
+    }
+
+    function escapeHtml(str = '') {
+      return String(str).replace(/[&<>'"]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[m]));
+    }
+
+    function tagHtml(tags, mint = false) {
+      return `<div class="tags">${tags.map(t => `<button class="tag ${mint ? 'mint' : ''}" onclick="navigate('reviews',{tag:'${t}'})">${t}</button>`).join('')}</div>`;
+    }
+
+    function imageDiv(type, icon, cls = '') {
+      return `<div class="photo ${type} ${cls}" data-icon="${icon}"></div>`;
+    }
+
+    function statsLine(review) {
+      return `<div class="meta"><span>👍 ${review.recommend}</span><span>👀 ${review.views}</span><span>💙 ${review.empathy}</span><span class="badge green">${review.satisfaction}</span></div>`;
+    }
+
+    function getFilteredResorts() {
+      let list = resorts.slice();
+      if (state.resortTab === '일반') list = list.filter(r => r.type === 'general');
+      if (state.resortTab === '동계이벤트') list = list.filter(r => r.type === 'winter');
+      if (state.resortFilter !== '전체') {
+        list = list.filter(r => r.category === state.resortFilter || r.audience === state.resortFilter || (state.resortFilter === '동계이벤트' && r.type === 'winter'));
+      }
+      const q = normalize(state.query);
+      if (q) list = list.filter(r => normalize([r.name, r.location, r.region, r.category, r.desc, r.stay ? Object.values(r.stay).join(' ') : '', ...r.tags].join(' ')).includes(q));
+      return list;
+    }
+
+    function normalize(str) { return String(str || '').replace(/#/g, '').toLowerCase().trim(); }
+
+    function getFilteredReviews({ resortId = null } = {}) {
+      let list = reviews.slice();
+      if (resortId) list = list.filter(r => r.resortId === Number(resortId));
+      const q = normalize(state.reviewQuery || state.query);
+      if (state.tagFilter) list = list.filter(r => r.tags.includes(state.tagFilter));
+      if (q) list = list.filter(r => normalize([r.title, r.resortName, r.author, r.body, ...r.tags].join(' ')).includes(q));
+      const sort = resortId ? state.resortDetailSort : state.reviewSort;
+      list.sort((a,b) => {
+        if (sort === 'recommend') return b.recommend - a.recommend;
+        if (sort === 'views') return b.views - a.views;
+        if (sort === 'empathy') return b.empathy - a.empathy;
+        return b.date.localeCompare(a.date) || b.id - a.id;
+      });
+      return list;
+    }
+
+    function renderHomeOnly() {
+      renderHome();
+      byId('screen-home').classList.add('active');
+      const input = byId('homeSearch');
+      if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+    }
+
+    function renderHome() {
+      const popularResorts = resorts.slice().sort((a,b) => b.recommendCount - a.recommendCount).slice(0,3);
+      const empathyReviews = reviews.slice().sort((a,b) => b.empathy - a.empathy).slice(0,3);
+      const latestReviews = getFilteredReviews().slice(0,4);
+      const recommendReviews = reviews.slice().sort((a,b) => b.recommend - a.recommend).slice(0,3);
+      const tags = popularTags();
+      const queryResults = state.query ? getSearchPreview() : '';
+
+      byId('screen-home').innerHTML = `
+        ${homeHeader()}
+        <section class="hero-card">
+          <h2>이번 주말, 어디로 쉬러 갈까요?</h2>
+          <p>임직원이 남긴 실제 같은 후기와 추천 정보를 한눈에 확인하세요.</p>
+          <div class="hero-actions">
+            <button class="btn ghost" onclick="navigate('resorts')">휴양소 보기</button>
+            <button class="btn" onclick="navigate('write')">후기 작성</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="chip-row">
+            ${['전체','일반','동계이벤트'].map(tab => `<button class="chip ${state.resortTab===tab?'active':''}" onclick="state.resortTab='${tab}'; navigate('resorts')">${tab}</button>`).join('')}
+            <button class="chip" onclick="navigate('reviews')">전체 후기</button>
+          </div>
+        </section>
+
+        ${queryResults}
+
+        <section class="section">
+          <div class="section-head">
+            <div><h2 class="section-title">인기 휴양소 TOP 3</h2><p class="section-desc">추천 수가 많은 순위입니다.</p></div>
+            <button class="link-btn" onclick="navigate('resorts')">전체보기</button>
+          </div>
+          <div class="h-scroll">
+            ${popularResorts.map((r,i) => `
+              <button class="rank-card ${i===0?'first':''}" onclick="navigate('resort-detail',{resortId:${r.id}})">
+                <span class="rank">${i+1}위</span>
+                <div class="rank-icon">${r.icon}</div>
+                <h3>${r.name}</h3>
+                <p>${r.location} · 추천 ${r.recommendCount}</p>
+              </button>`).join('')}
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">추천 여행 테마</h2><p class="section-desc">상황에 맞는 휴양소를 골라보세요.</p></div></div>
+          <div class="two-col">
+            ${themeButtons()}
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">공감이 많은 후기</h2><p class="section-desc">임직원들이 많이 공감한 글입니다.</p></div></div>
+          ${empathyReviews.map(reviewCard).join('')}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">최근 등록된 후기</h2><p class="section-desc">새로 올라온 휴양소 이용 후기입니다.</p></div><button class="link-btn" onclick="navigate('reviews')">더보기</button></div>
+          ${latestReviews.map(reviewCard).join('')}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">추천이 많은 후기</h2><p class="section-desc">추천을 많이 받은 인기 글입니다.</p></div></div>
+          ${recommendReviews.map(reviewCard).join('')}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">인기 해시태그</h2><p class="section-desc">키워드를 누르면 후기 목록으로 이동합니다.</p></div></div>
+          <div class="chip-row">${tags.map(t => `<button class="chip small" onclick="navigate('reviews',{tag:'${t}'})">${t}</button>`).join('')}</div>
+        </section>`;
+    }
+
+    function getSearchPreview() {
+      const resortsFound = getFilteredResorts().slice(0,2);
+      const reviewsFound = getFilteredReviews().slice(0,2);
+      return `
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">검색 결과</h2><p class="section-desc">“${escapeHtml(state.query)}”와 관련된 결과입니다.</p></div></div>
+          ${resortsFound.length ? resortsFound.map(resortMiniCard).join('') : ''}
+          ${reviewsFound.length ? reviewsFound.map(reviewCard).join('') : ''}
+          ${!resortsFound.length && !reviewsFound.length ? `<div class="empty"><span class="big">🔎</span>검색 결과가 없습니다.</div>` : ''}
+        </section>`;
+    }
+
+    function themeButtons() {
+      const themes = [
+        ['아이와 함께 가기 좋은 휴양소','가족추천','👨‍👩‍👧‍👦'],
+        ['오션뷰가 좋은 휴양소','바다','🌊'],
+        ['겨울에 가기 좋은 휴양소','동계이벤트','⛄'],
+        ['가볍게 주말에 다녀오기 좋은 휴양소','주말여행','🚗'],
+        ['부모님과 가기 좋은 휴양소','가족추천','🌿']
+      ];
+      return themes.map(([label, filter, icon]) => `
+        <button class="stat-card" onclick="applyTheme('${filter}')">
+          <strong>${icon}</strong><span>${label}</span>
+        </button>`).join('');
+    }
+
+    function applyTheme(filter) {
+      state.resortTab = filter === '동계이벤트' ? '동계이벤트' : '전체';
+      state.resortFilter = ['바다','동계이벤트','가족추천'].includes(filter) ? filter : '전체';
+      state.query = filter === '주말여행' ? '주말' : '';
+      navigate('resorts');
+    }
+
+    function popularTags() {
+      const counts = new Map();
+      reviews.forEach(r => r.tags.forEach(t => counts.set(t, (counts.get(t) || 0) + 1)));
+      return Array.from(counts.entries()).sort((a,b) => b[1] - a[1]).slice(0,10).map(x => x[0]);
+    }
+
+    function resortMiniCard(r) {
+      return `
+        <button class="mini-card" onclick="navigate('resort-detail',{resortId:${r.id}})">
+          ${imageDiv(r.image, r.icon, 'round')}
+          <div style="text-align:left; flex:1;">
+            <h3 style="margin:0 0 5px; font-size:15px;">${r.name}</h3>
+            <div class="meta"><span>${r.location}</span><span>추천 ${r.recommendCount}</span><span>후기 ${r.reviewCount}</span></div>
+            <div style="margin-top:7px;">${r.tags.slice(0,2).map(t => `<span class="badge blue">${t}</span>`).join(' ')}</div>
+          </div>
+        </button>`;
+    }
+
+    function resortCard(r) {
+      return `
+        <article class="card resort-card">
+          <button style="width:100%; text-align:left; background:transparent; padding:0;" onclick="navigate('resort-detail',{resortId:${r.id}})">
+            ${imageDiv(r.image, r.icon)}
+          </button>
+          <div class="content">
+            <div class="card-title-row">
+              <div>
+                <h3>${r.name}</h3>
+                <div class="meta"><span>📍 ${r.location}</span><span>👍 평균 ${r.recommendCount}</span><span>💬 후기 ${r.reviewCount}</span></div>
+              </div>
+              <button class="icon-btn" style="width:38px;height:38px;" onclick="toggleResortBookmark(${r.id})">${state.bookmarkedResorts.has(r.id) ? '🔖' : '🤍'}</button>
+            </div>
+            <p class="desc">${r.desc}</p>
+            <div class="stay-note" style="margin:8px 0 10px;">
+              🏠 방 ${r.stay.rooms}개 · 🛏️ 침대 ${r.stay.bed} · 🚿 화장실 ${r.stay.bathrooms}개 · 🍳 취사 ${r.stay.cooking}
+            </div>
+            ${tagHtml(r.tags, true)}
+            <div class="two-col" style="margin-top:12px;">
+              <button class="btn outline" onclick="navigate('stay-info',{resortId:${r.id}})">숙소 정보</button>
+              <button class="btn primary" onclick="navigate('resort-detail',{resortId:${r.id}})">상세보기</button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function reviewCard(rv) {
+      const liked = state.likedReviews.has(rv.id);
+      const bookmarked = state.bookmarkedReviews.has(rv.id);
+      return `
+        <article class="card review-card">
+          <button style="background:transparent;padding:0;" onclick="openReview(${rv.id})">${imageDiv(rv.image, rv.icon)}</button>
+          <div>
+            <button style="background:transparent;text-align:left;padding:0;width:100%;" onclick="openReview(${rv.id})">
+              <div class="meta"><span>No.${rv.id}</span><span>${rv.resortName}</span></div>
+              <h3>${rv.title}</h3>
+              <div class="meta"><span>${rv.author}</span><span>${rv.date}</span></div>
+            </button>
+            <div style="margin-top:7px;">${statsLine(rv)}</div>
+            ${rv.stayInfo ? '<div style="margin-top:6px;"><span class="badge blue">🏠 숙소정보 포함</span></div>' : ''}
+            <div style="margin-top:8px;">${tagHtml(rv.tags.slice(0,3))}</div>
+          </div>
+          <div class="actions">
+            <button class="${liked ? 'active' : ''}" onclick="toggleLike(${rv.id})">💙 공감 ${rv.empathy}</button>
+            <button class="${bookmarked ? 'active' : ''}" onclick="toggleReviewBookmark(${rv.id})">${bookmarked ? '🔖 저장됨' : '🤍 북마크'}</button>
+            <button onclick="shareItem()">🔗 공유</button>
+          </div>
+        </article>`;
+    }
+
+    function openReview(id) {
+      const rv = reviewById(id);
+      rv.views += 1;
+      navigate('review-detail', { reviewId: id });
+    }
+
+    function toggleLike(id) {
+      const rv = reviewById(id);
+      if (state.likedReviews.has(id)) {
+        state.likedReviews.delete(id);
+        rv.empathy = Math.max(0, rv.empathy - 1);
+        showToast('공감을 취소했습니다.');
+      } else {
+        state.likedReviews.add(id);
+        rv.empathy += 1;
+        showToast('공감했습니다.');
+      }
+      render();
+    }
+
+    function toggleReviewBookmark(id) {
+      if (state.bookmarkedReviews.has(id)) {
+        state.bookmarkedReviews.delete(id);
+        showToast('후기 북마크를 해제했습니다.');
+      } else {
+        state.bookmarkedReviews.add(id);
+        showToast('후기를 북마크했습니다.');
+      }
+      render();
+    }
+
+    function toggleResortBookmark(id) {
+      if (state.bookmarkedResorts.has(id)) {
+        state.bookmarkedResorts.delete(id);
+        showToast('휴양소 북마크를 해제했습니다.');
+      } else {
+        state.bookmarkedResorts.add(id);
+        showToast('휴양소를 북마크했습니다.');
+      }
+      render();
+    }
+
+    function shareItem() { showToast('링크가 복사되었습니다.'); }
+
+
+    function renderResorts() {
+      const list = getFilteredResorts();
+      const filters = ['전체','바다','산/계곡','도심','제주','동계이벤트','가족추천','커플추천'];
+      byId('screen-resorts').innerHTML = `
+        ${header('휴양소 목록', '<button class="icon-btn" onclick="state.query=\'\'; render()">↻</button>')}
+        <div class="chip-row">
+          ${['전체','일반','동계이벤트'].map(tab => `<button class="chip ${state.resortTab===tab?'active':''}" onclick="state.resortTab='${tab}'; renderResorts()">${tab}</button>`).join('')}
+        </div>
+        <div class="search-wrap" style="margin-top:4px;">
+          <label class="search-box"><span>🔎</span><input value="${escapeHtml(state.query)}" placeholder="휴양소명, 지역명, 해시태그 검색" oninput="state.query=this.value; renderResorts();" /></label>
+        </div>
+        <section class="section" style="margin-top:14px;">
+          <div class="chip-row">${filters.map(f => `<button class="chip small ${state.resortFilter===f?'active':''}" onclick="state.resortFilter='${f}'; renderResorts()">${f}</button>`).join('')}</div>
+        </section>
+        <section class="section" style="margin-top:8px;">
+          <div class="section-head"><div><h2 class="section-title">${list.length}개 휴양소</h2><p class="section-desc">카드를 눌러 상세 정보와 후기를 확인하세요.</p></div></div>
+          ${list.length ? list.map(resortCard).join('') : `<div class="empty"><span class="big">🏝️</span>조건에 맞는 휴양소가 없습니다.</div>`}
+        </section>`;
+    }
+
+    function renderResortDetail() {
+      const r = resortById(state.selectedResortId) || resorts[0];
+      const resortReviews = getFilteredReviews({ resortId: r.id });
+      byId('screen-resort-detail').innerHTML = `
+        ${header(r.name, `<button class="icon-btn" onclick="shareItem()">🔗</button>`)}
+        ${imageDiv(r.image, r.icon, 'tall')}
+        <div class="card" style="margin-top:14px;"><div class="card-pad">
+          <div class="card-title-row">
+            <div><h1 class="detail-title">${r.name}</h1><div class="meta"><span>📍 ${r.location}</span><span>👍 추천 ${r.recommendCount}</span><span>💬 후기 ${r.reviewCount}</span></div></div>
+            <button class="icon-btn" onclick="toggleResortBookmark(${r.id})">${state.bookmarkedResorts.has(r.id) ? '🔖' : '🤍'}</button>
+          </div>
+          <p class="desc">${r.desc}</p>
+          ${tagHtml(r.tags, true)}
+          <div class="two-col" style="margin-top:12px;">
+            <button class="btn primary" onclick="navigate('write')">후기 작성</button>
+            <button class="btn outline" onclick="shareItem()">공유하기</button>
+          </div>
+        </div></div>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">숙소 정보 요약</h2><p class="section-desc">객실 구조와 후기에 입력된 숙소 정보를 함께 확인하세요.</p></div></div>
+          <div class="stay-grid">
+            ${stayCard('🚪','방 구성', `방 ${r.stay.rooms}개 · 침실 ${r.stay.bedrooms}개`)}
+            ${stayCard('🛏️','침대', r.stay.beds)}
+            ${stayCard('🚿','화장실', `${r.stay.bathrooms}개`)}
+            ${stayCard('🍳','취사', `${r.stay.cooking} · ${r.stay.kitchen}`)}
+          </div>
+          <button class="btn primary full" style="margin-top:10px;" onclick="navigate('stay-info',{resortId:${r.id}})">숙소 정보 · 후기 통계 자세히 보기</button>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">기본 정보</h2><p class="section-desc">이용 전에 필요한 정보를 확인하세요.</p></div></div>
+          <div class="info-grid">
+            ${infoRow('📍','위치', r.location)}
+            ${infoRow('🛏️','객실 유형', r.room)}
+            ${infoRow('🧺','주요 편의시설', r.facilities.join(', '))}
+            ${infoRow('📅','이용 추천 계절', r.season)}
+            ${infoRow('🚗','주차 가능 여부', r.parking)}
+            ${infoRow('🗺️','주변 관광지', r.nearby.join(', '))}
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">이 휴양소 후기</h2><p class="section-desc">총 ${resortReviews.length}개의 후기가 있습니다.</p></div></div>
+          <div class="sort-row">
+            <select onchange="state.resortDetailSort=this.value; renderResortDetail();">
+              ${sortOptions(state.resortDetailSort)}
+            </select>
+          </div>
+          ${resortReviews.map(reviewCard).join('')}
+        </section>`;
+    }
+
+    function infoRow(icon, title, text) {
+      return `<div class="info-row"><div style="font-size:22px;line-height:1;">${icon}</div><div><b>${title}</b><span>${text}</span></div></div>`;
+    }
+
+    function stayCard(icon, title, text) {
+      return `<div class="stay-card"><span class="ico">${icon}</span><b>${title}</b><span>${text}</span></div>`;
+    }
+
+    function stayInfoBlock(info) {
+      if (!info) return `<div class="empty"><span class="big">🏠</span>작성자가 숙소 정보를 따로 입력하지 않았습니다.</div>`;
+      return `<div class="stay-grid">
+        ${stayCard('🚪','방 개수', info.rooms ? `${info.rooms}개` : '선택 안함')}
+        ${stayCard('🛏️','침대', info.bed || '선택 안함')}
+        ${stayCard('🚿','화장실', info.bathrooms ? `${info.bathrooms}개` : '선택 안함')}
+        ${stayCard('🍳','취사', info.cooking || '선택 안함')}
+        ${stayCard('👥','이용 인원', info.guests || '선택 안함')}
+        ${stayCard('✨','청결 체감', info.cleanliness || '선택 안함')}
+      </div>${info.noise || info.memo ? `<div class="stay-note">${info.noise ? `소음 체감: ${info.noise}<br>` : ''}${info.memo ? `추가 메모: ${escapeHtml(info.memo)}` : ''}</div>` : ''}`;
+    }
+
+    function getStayStats(resortId) {
+      const items = reviews.filter(rv => rv.resortId === Number(resortId) && rv.stayInfo);
+      const pct = fn => items.length ? Math.round(items.filter(fn).length / items.length * 100) : 0;
+      const mode = arr => {
+        const counts = new Map();
+        arr.filter(v => v !== undefined && v !== null && v !== '' && v !== '선택 안함').forEach(v => counts.set(v, (counts.get(v) || 0) + 1));
+        return Array.from(counts.entries()).sort((a,b) => b[1] - a[1])[0]?.[0] || '정보 없음';
+      };
+      return {
+        count: items.length,
+        rooms: mode(items.map(x => x.stayInfo.rooms ? `${x.stayInfo.rooms}개` : '')),
+        bathrooms: mode(items.map(x => x.stayInfo.bathrooms ? `${x.stayInfo.bathrooms}개` : '')),
+        bedPct: pct(x => x.stayInfo.bed === '있음'),
+        cookingPct: pct(x => ['가능','간단취사'].includes(x.stayInfo.cooking)),
+        quietPct: pct(x => x.stayInfo.noise === '조용함'),
+        cleanPct: pct(x => ['깨끗함','매우 깨끗함'].includes(x.stayInfo.cleanliness)),
+        notes: items.map(x => x.stayInfo.memo).filter(Boolean).slice(0, 4),
+        items
+      };
+    }
+
+    function progressRow(label, percent, desc) {
+      return `<div class="progress-row"><div class="progress-head"><span>${label}</span><span>${percent}%</span></div><div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div><div class="form-help">${desc}</div></div>`;
+    }
+
+    function renderStayInfo() {
+      const r = resortById(state.selectedResortId) || resorts[0];
+      const stats = getStayStats(r.id);
+      byId('screen-stay-info').innerHTML = `
+        ${header('숙소 정보', `<button class="icon-btn" onclick="shareItem()">🔗</button>`)}
+        ${imageDiv(r.image, r.icon, 'tall')}
+        <section class="section" style="margin-top:12px;">
+          <div class="card"><div class="card-pad">
+            <div class="meta"><span>${r.location}</span><span>${r.room}</span></div>
+            <h1 class="detail-title">${r.name}</h1>
+            <p class="desc">공식 기본 정보와 후기에 선택 입력된 숙소 정보를 통계처럼 보여주는 화면입니다.</p>
+            <div class="two-col" style="margin-top:12px;">
+              <button class="btn outline" onclick="navigate('resort-detail',{resortId:${r.id}})">휴양소 상세</button>
+              <button class="btn primary" onclick="navigate('write')">숙소 정보 남기기</button>
+            </div>
+          </div></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">기본 숙소 정보</h2><p class="section-desc">휴양소별 안내용 더미데이터입니다.</p></div></div>
+          <div class="stay-grid">
+            ${stayCard('🚪','방/침실', `방 ${r.stay.rooms}개 · 침실 ${r.stay.bedrooms}개`)}
+            ${stayCard('🛏️','침대 여부', `${r.stay.bed} · ${r.stay.beds}`)}
+            ${stayCard('🚿','화장실', `${r.stay.bathrooms}개`)}
+            ${stayCard('🍳','취사 가능 여부', `${r.stay.cooking}`)}
+            ${stayCard('👥','권장 인원', r.stay.maxGuests)}
+            ${stayCard('📐','객실 규모', r.stay.area)}
+          </div>
+          <div class="stay-note">주방: ${r.stay.kitchen}<br>세탁/비품: ${r.stay.laundry}<br>${r.stay.note}</div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">후기 기반 숙소 통계</h2><p class="section-desc">숙소 정보가 입력된 후기 ${stats.count}건 기준입니다.</p></div></div>
+          <div class="two-col">
+            <div class="stat-card"><strong>${stats.rooms}</strong><span>가장 많이 선택된 방 개수</span></div>
+            <div class="stat-card"><strong>${stats.bathrooms}</strong><span>가장 많이 선택된 화장실 수</span></div>
+          </div>
+          ${progressRow('침대 있음 응답', stats.bedPct, '후기 작성자가 침대가 있다고 선택한 비율입니다.')}
+          ${progressRow('취사 가능 응답', stats.cookingPct, '가능 또는 간단취사로 선택한 비율입니다.')}
+          ${progressRow('조용하다는 응답', stats.quietPct, '소음 체감을 조용함으로 선택한 비율입니다.')}
+          ${progressRow('깨끗하다는 응답', stats.cleanPct, '청결 체감을 깨끗함 이상으로 선택한 비율입니다.')}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">숙소 정보 메모</h2><p class="section-desc">후기에 자유 입력된 추가 정보입니다.</p></div></div>
+          ${stats.notes.length ? stats.notes.map(n => `<div class="stay-note">${escapeHtml(n)}</div>`).join('') : `<div class="empty">아직 입력된 숙소 메모가 없습니다.</div>`}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">숙소 정보가 포함된 후기</h2></div></div>
+          ${stats.items.slice(0,4).map(reviewCard).join('') || `<div class="empty">숙소 정보가 포함된 후기가 없습니다.</div>`}
+        </section>`;
+    }
+
+    function sortOptions(current) {
+      const opts = [['latest','최신순'], ['recommend','추천순'], ['views','조회순'], ['empathy','공감순']];
+      return opts.map(([v,t]) => `<option value="${v}" ${current===v?'selected':''}>${t}</option>`).join('');
+    }
+
+    function renderReviews() {
+      const list = getFilteredReviews();
+      byId('screen-reviews').innerHTML = `
+        ${header('전체 후기', '<button class="icon-btn" onclick="state.tagFilter=\'\'; state.reviewQuery=\'\'; renderReviews();">↻</button>')}
+        <div class="search-wrap" style="margin-top:4px;">
+          <label class="search-box"><span>🔎</span><input value="${escapeHtml(state.reviewQuery)}" placeholder="후기 제목, 장소, #해시태그 검색" oninput="state.reviewQuery=this.value; renderReviews();" /></label>
+        </div>
+        <section class="section" style="margin-top:14px;">
+          <div class="chip-row">${popularTags().map(t => `<button class="chip small ${state.tagFilter===t?'active':''}" onclick="state.tagFilter='${t}'; renderReviews();">${t}</button>`).join('')}</div>
+        </section>
+        <section class="section" style="margin-top:8px;">
+          <div class="section-head"><div><h2 class="section-title">후기 ${list.length}개</h2><p class="section-desc">${state.tagFilter ? state.tagFilter + ' 태그가 포함된 후기입니다.' : '전체 휴양소 후기를 확인하세요.'}</p></div></div>
+          <div class="sort-row"><select onchange="state.reviewSort=this.value; renderReviews();">${sortOptions(state.reviewSort)}</select></div>
+          ${list.length ? list.map(reviewCard).join('') : `<div class="empty"><span class="big">💬</span>조건에 맞는 후기가 없습니다.</div>`}
+        </section>`;
+    }
+
+    function renderReviewDetail() {
+      const rv = reviewById(state.selectedReviewId) || reviews[0];
+      const same = reviews.filter(r => r.resortId === rv.resortId && r.id !== rv.id).slice(0,2);
+      const similar = reviews.filter(r => r.id !== rv.id && r.tags.some(t => rv.tags.includes(t))).slice(0,2);
+      const liked = state.likedReviews.has(rv.id);
+      const bookmarked = state.bookmarkedReviews.has(rv.id);
+      byId('screen-review-detail').innerHTML = `
+        ${header('후기 상세', '<button class="icon-btn" onclick="shareItem()">🔗</button>')}
+        <div class="gallery-row">
+          ${imageDiv(rv.image, rv.icon, 'gallery')}
+          ${imageDiv(rv.image, '🛋️', 'gallery')}
+          ${imageDiv(rv.image, '📸', 'gallery')}
+        </div>
+        <section class="section" style="margin-top:10px;">
+          <div class="card"><div class="card-pad">
+            <div class="meta"><span>No.${rv.id}</span><span>${rv.resortName}</span><span>조회 ${rv.views}</span></div>
+            <h1 class="detail-title">${rv.title}</h1>
+            <div class="meta"><span>작성자 ${rv.author}</span><span>${rv.date}</span><span class="badge green">${rv.satisfaction}</span></div>
+            <div style="margin:12px 0;">${statsLine(rv)}</div>
+            ${tagHtml(rv.tags)}
+            <div class="two-col" style="margin-top:14px; grid-template-columns: 1fr 1fr;">
+              <button class="btn ${liked ? 'primary' : 'outline'}" onclick="toggleLike(${rv.id})">💙 공감 ${rv.empathy}</button>
+              <button class="btn ${bookmarked ? 'primary' : 'outline'}" onclick="toggleReviewBookmark(${rv.id})">${bookmarked ? '🔖 저장됨' : '🤍 북마크'}</button>
+            </div>
+            <button class="btn outline full" style="margin-top:8px;" onclick="shareItem()">🔗 공유하기</button>
+          </div></div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">본문 내용</h2>
+          <div class="detail-body">${rv.body}<br><br>전체적으로 직원 복지 휴양소로 이용하기에 충분히 만족스러웠고, 예약 가능한 일정이 있다면 주변 동료에게도 추천하고 싶습니다.</div>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">작성자가 남긴 숙소 정보</h2><p class="section-desc">후기 작성 시 선택 입력한 선택 정보입니다.</p></div></div>
+          ${stayInfoBlock(rv.stayInfo)}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">댓글</h2><p class="section-desc">더미데이터로 표시됩니다.</p></div></div>
+          <div class="sort-row"><input class="form-input" placeholder="댓글을 입력해보세요." /><button class="btn primary" onclick="showToast('댓글이 등록된 것처럼 표시됩니다.')">등록</button></div>
+          ${rv.comments.map(c => `<div class="comment"><div class="comment-head"><b>${c.author}</b><span>♡ ${c.like}</span></div><p>${c.text}</p></div>`).join('')}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">같은 휴양소의 다른 후기</h2></div></div>
+          ${same.map(reviewCard).join('') || `<div class="empty">추천 후기가 없습니다.</div>`}
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">비슷한 해시태그 후기</h2></div></div>
+          ${similar.map(reviewCard).join('') || `<div class="empty">추천 후기가 없습니다.</div>`}
+        </section>`;
+    }
+
+    function optionHtml(items) {
+      return items.map(v => `<option value="${v}">${v}</option>`).join('');
+    }
+
+    function parseCount(value) {
+      if (!value || value === '선택 안함') return null;
+      if (value.includes('3개 이상')) return 3;
+      return Number(value.replace(/[^0-9]/g, '')) || null;
+    }
+
+    function collectStayInfo() {
+      const rooms = $('#writeRooms')?.value || '선택 안함';
+      const bed = $('#writeBed')?.value || '선택 안함';
+      const bathrooms = $('#writeBathrooms')?.value || '선택 안함';
+      const cooking = $('#writeCooking')?.value || '선택 안함';
+      const guests = $('#writeGuests')?.value || '선택 안함';
+      const cleanliness = $('#writeCleanliness')?.value || '선택 안함';
+      const noise = $('#writeNoise')?.value || '선택 안함';
+      const memo = ($('#writeStayMemo')?.value || '').trim();
+      const values = [rooms, bed, bathrooms, cooking, guests, cleanliness, noise];
+      if (values.every(v => v === '선택 안함') && !memo) return null;
+      return {
+        rooms: parseCount(rooms),
+        bed: bed === '선택 안함' ? '' : bed,
+        bathrooms: parseCount(bathrooms),
+        cooking: cooking === '선택 안함' ? '' : cooking,
+        guests: guests === '선택 안함' ? '' : guests,
+        cleanliness: cleanliness === '선택 안함' ? '' : cleanliness,
+        noise: noise === '선택 안함' ? '' : noise,
+        memo
+      };
+    }
+
+    function renderWrite() {
+      byId('screen-write').innerHTML = `
+        ${header('후기 작성', '<button class="icon-btn" onclick="showToast(\'임시저장되었습니다.\')">💾</button>')}
+        <section class="section" style="margin-top:4px;">
+          <div class="card"><div class="card-pad">
+            <label class="form-label">휴양소 선택</label>
+            <select id="writeResort" class="form-select">${resorts.map(r => `<option value="${r.id}" ${state.selectedResortId===r.id?'selected':''}>${r.name}</option>`).join('')}</select>
+            <label class="form-label">제목 입력</label>
+            <input id="writeTitle" class="form-input" placeholder="예: 가족과 함께 다녀오기 좋았습니다" />
+            <label class="form-label">사진 업로드</label>
+            <div class="upload-box" onclick="showToast('사진 업로드 영역입니다.')"><div><div style="font-size:32px;">📷</div><b>사진을 추가해보세요</b><br><span>실제 저장 없이 UI만 동작합니다.</span></div></div>
+            <label class="form-label">본문 작성</label>
+            <textarea id="writeBody" class="form-textarea" placeholder="휴양소 이용 경험, 시설, 주변 관광지, 추천 포인트를 적어주세요."></textarea>
+            <label class="form-label">해시태그 입력</label>
+            <input id="writeTags" class="form-input" placeholder="#가족여행 #오션뷰 #깨끗해요" />
+            <label class="form-label">만족도 선택</label>
+            <div class="radio-row" id="satisfactionPills">
+              ${['매우 만족','만족','보통','아쉬움'].map(v => `<button class="radio-pill ${state.form.satisfaction===v?'active':''}" onclick="state.form.satisfaction='${v}'; renderWrite();">${v}</button>`).join('')}
+            </div>
+            <label class="form-label">추천 여부</label>
+            <div class="radio-row">
+              ${['추천','보통','비추천'].map(v => `<button class="radio-pill ${state.form.recommend===v?'active':''}" onclick="state.form.recommend='${v}'; renderWrite();">${v}</button>`).join('')}
+            </div>
+
+            <div class="stay-note" style="margin-top:18px;">
+              <b>숙소 정보 추가 입력</b><br>필수 항목은 아니며, 입력하면 휴양소별 숙소 통계 화면에 반영되는 것처럼 표시됩니다.
+            </div>
+            <label class="form-label">방 개수</label>
+            <select id="writeRooms" class="form-select">${optionHtml(['선택 안함','1개','2개','3개 이상'])}</select>
+            <label class="form-label">침대 여부</label>
+            <select id="writeBed" class="form-select">${optionHtml(['선택 안함','있음','없음','확인 필요'])}</select>
+            <label class="form-label">화장실 개수</label>
+            <select id="writeBathrooms" class="form-select">${optionHtml(['선택 안함','1개','2개','3개 이상'])}</select>
+            <label class="form-label">취사 가능 여부</label>
+            <select id="writeCooking" class="form-select">${optionHtml(['선택 안함','가능','간단취사','불가','확인 필요'])}</select>
+            <label class="form-label">이용 인원</label>
+            <select id="writeGuests" class="form-select">${optionHtml(['선택 안함','1~2인','2~3인','3~4인','4인 이상'])}</select>
+            <label class="form-label">청결 체감</label>
+            <select id="writeCleanliness" class="form-select">${optionHtml(['선택 안함','매우 깨끗함','깨끗함','보통','아쉬움'])}</select>
+            <label class="form-label">소음 체감</label>
+            <select id="writeNoise" class="form-select">${optionHtml(['선택 안함','조용함','보통','소음 있음'])}</select>
+            <label class="form-label">숙소 정보 자유 메모</label>
+            <textarea id="writeStayMemo" class="form-textarea" style="min-height:86px;" placeholder="예: 침대는 1개였고 바닥요가 있어서 아이와 함께 자기 편했습니다. 간단한 취사는 가능했습니다."></textarea>
+
+            <button class="btn primary full" style="margin-top:18px;" onclick="submitReview()">작성 완료</button>
+          </div></div>
+        </section>`;
+    }
+
+    function submitReview() {
+      const resortId = Number($('#writeResort').value);
+      const resort = resortById(resortId);
+      const title = $('#writeTitle').value.trim() || '새로 작성한 휴양소 후기입니다';
+      const body = $('#writeBody').value.trim() || '휴양소 이용 경험을 바탕으로 작성한 후기입니다. 실제 저장은 되지 않지만 현재 화면에서는 등록된 것처럼 표시됩니다.';
+      let tags = $('#writeTags').value.trim().split(/\s+/).filter(Boolean).map(t => t.startsWith('#') ? t : `#${t}`);
+      if (!tags.length) tags = resort.tags.slice(0,3);
+      const stayInfo = collectStayInfo();
+      const newReview = {
+        id: reviewNo++, resortId, resortName: resort.name, title, author: '홍길동', date: '2026.05.18', image: resort.image, icon: resort.icon,
+        recommend: state.form.recommend === '추천' ? 1 : 0, views: 1, empathy: 0, tags: tags.slice(0,4), satisfaction: state.form.satisfaction, stayInfo, body,
+        comments: [{ author: '시스템', text: '작성 완료된 것처럼 표시되는 더미 댓글입니다.', like: 0 }]
+      };
+      reviews.unshift(newReview);
+      resort.reviewCount += 1;
+      state.selectedReviewId = newReview.id;
+      showToast('후기가 등록되었습니다.');
+      navigate('review-detail', { reviewId: newReview.id });
+    }
+
+    function renderBookmarks() {
+      const resortBookmarks = Array.from(state.bookmarkedResorts).map(resortById).filter(Boolean);
+      const reviewBookmarks = Array.from(state.bookmarkedReviews).map(reviewById).filter(Boolean);
+      const tab = renderBookmarks.tab || 'resorts';
+      byId('screen-bookmarks').innerHTML = `
+        ${header('북마크', '<button class="icon-btn" onclick="showToast(\'북마크가 동기화된 것처럼 표시됩니다.\')">🔄</button>')}
+        <div class="chip-row">
+          <button class="chip ${tab==='resorts'?'active':''}" onclick="renderBookmarks.tab='resorts'; renderBookmarks();">휴양소 북마크</button>
+          <button class="chip ${tab==='reviews'?'active':''}" onclick="renderBookmarks.tab='reviews'; renderBookmarks();">후기 북마크</button>
+        </div>
+        <section class="section" style="margin-top:10px;">
+          ${tab === 'resorts'
+            ? (resortBookmarks.length ? resortBookmarks.map(resortCard).join('') : `<div class="empty"><span class="big">🔖</span>북마크한 휴양소가 없습니다.</div>`)
+            : (reviewBookmarks.length ? reviewBookmarks.map(reviewCard).join('') : `<div class="empty"><span class="big">🔖</span>북마크한 후기가 없습니다.</div>`)}
+        </section>`;
+    }
+
+    function renderMypage() {
+      const myReviews = reviews.filter(r => r.author === '홍길동');
+      const liked = Array.from(state.likedReviews).map(reviewById).filter(Boolean).slice(0,3);
+      const bookmarked = Array.from(state.bookmarkedReviews).map(reviewById).filter(Boolean).slice(0,3);
+      const recentResorts = [state.selectedResortId, 7, 1, 13].map(resortById).filter(Boolean).filter((v,i,a) => a.findIndex(x => x.id===v.id)===i).slice(0,3);
+      byId('screen-mypage').innerHTML = `
+        ${header('마이페이지', '<button class="icon-btn" onclick="showToast(\'설정이 열리는 것처럼 표시됩니다.\')">⚙️</button>')}
+        <section class="profile">
+          <div class="avatar">홍</div>
+          <div style="flex:1;">
+            <h2 style="margin:0 0 5px; font-size:19px;">홍길동</h2>
+            <div class="meta"><span>소속: 임직원</span><span>복지 휴양소 이용자</span></div>
+          </div>
+        </section>
+        <section class="section two-col">
+          <div class="stat-card"><strong>${myReviews.length}</strong><span>작성한 후기 수</span></div>
+          <div class="stat-card"><strong>${state.likedReviews.size}</strong><span>공감한 글 수</span></div>
+          <div class="stat-card"><strong>${state.bookmarkedReviews.size + state.bookmarkedResorts.size}</strong><span>북마크 수</span></div>
+          <div class="stat-card"><strong>${recentResorts.length}</strong><span>최근 본 휴양소</span></div>
+        </section>
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">내가 작성한 글</h2></div></div>
+          ${myReviews.length ? myReviews.map(reviewCard).join('') : `<div class="empty"><span class="big">✍️</span>아직 작성한 후기가 없습니다.</div>`}
+        </section>
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">내가 공감한 글</h2></div></div>
+          ${liked.map(reviewCard).join('') || `<div class="empty">공감한 글이 없습니다.</div>`}
+        </section>
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">내가 북마크한 글</h2></div></div>
+          ${bookmarked.map(reviewCard).join('') || `<div class="empty">북마크한 글이 없습니다.</div>`}
+        </section>
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">최근 본 휴양소</h2></div></div>
+          ${recentResorts.map(resortMiniCard).join('')}
+        </section>
+        <section class="section">
+          <div class="section-head"><div><h2 class="section-title">설정 메뉴</h2></div></div>
+          <div class="menu-list">
+            ${['알림 설정','관심 휴양소 관리','이용 가이드','문의하기'].map((m,i) => `<button class="menu-item" onclick="showToast('${m} 화면이 열리는 것처럼 표시됩니다.')"><span>${['🔔','⭐','📘','💬'][i]} ${m}</span><span>›</span></button>`).join('')}
+          </div>
+        </section>`;
+    }
+
+    function render() {
+      if (state.screen === 'home') renderHome();
+      if (state.screen === 'resorts') renderResorts();
+      if (state.screen === 'resort-detail') renderResortDetail();
+      if (state.screen === 'stay-info') renderStayInfo();
+      if (state.screen === 'reviews') renderReviews();
+      if (state.screen === 'review-detail') renderReviewDetail();
+      if (state.screen === 'write') renderWrite();
+      if (state.screen === 'bookmarks') renderBookmarks();
+      if (state.screen === 'mypage') renderMypage();
+      setActiveScreen();
+    }
+
+    $$('.nav-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const nav = btn.dataset.nav;
+        state.tagFilter = nav === 'resorts' ? state.tagFilter : '';
+        navigate(nav);
+      });
+    });
+
+    render();
+
+    // session 02 패턴: top-area 뒤 콘텐츠를 .scroll-body로 자동 래핑
+    (function setupScrollPattern() {
+      function wrap(screenEl) {
+        if (!screenEl.children.length) return;
+        if (screenEl.querySelector(':scope > .scroll-body')) return;
+        const topArea = screenEl.querySelector(':scope > .top-area');
+        if (!topArea) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'scroll-body';
+        let next = topArea.nextSibling;
+        while (next) {
+          const cur = next;
+          next = next.nextSibling;
+          wrapper.appendChild(cur);
+        }
+        if (wrapper.children.length) screenEl.appendChild(wrapper);
+      }
+      function wrapAll() {
+        document.querySelectorAll('.screen').forEach(wrap);
+      }
+      const observer = new MutationObserver(() => requestAnimationFrame(wrapAll));
+      document.querySelectorAll('.screen').forEach(screen => {
+        observer.observe(screen, { childList: true });
+      });
+      wrapAll();
+    })();
+
+    // 스크롤 안내 카드 자동 해제
+    (function(){
+      const hint = document.getElementById('scrollHint');
+      if (!hint) return;
+      let dismissed = false;
+      function dismiss(){
+        if (dismissed) return;
+        dismissed = true;
+        hint.classList.add('hidden');
+        setTimeout(()=>hint.remove(), 400);
+      }
+      hint.addEventListener('click', dismiss);
+      function bindScroll(el){
+        if (!el) return;
+        el.addEventListener('scroll', dismiss, { once: true, passive: true });
+        el.addEventListener('wheel', dismiss, { once: true, passive: true });
+        el.addEventListener('touchmove', dismiss, { once: true, passive: true });
+      }
+      // 동적으로 추가되는 scroll-body 모두 바인딩
+      const obs = new MutationObserver(() => {
+        document.querySelectorAll('.scroll-body').forEach(bindScroll);
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
+      document.querySelectorAll('.scroll-body').forEach(bindScroll);
+    })();
+  </script>
+</body>
+</html>

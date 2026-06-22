@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>복지 휴양소 후기 모바일 인터랙션 프로토타입</title>
+  <style>
+    :root{
+      --primary:#2f6bff; --primary-soft:#eaf1ff; --accent:#18b07a; --bg:#eef3f8; --phone-bg:#f8fafc;
+      --card:#ffffff; --text:#111827; --sub:#6b7280; --line:#e5e7eb; --shadow:0 12px 36px rgba(15,23,42,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Arial,"Noto Sans KR",sans-serif;background:linear-gradient(180deg,#edf3f8,#e8eef6);color:var(--text)}
+    body{height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:20px}
+    button,input,textarea,select{font:inherit}
+    .page{max-width:none;margin:0;padding:0;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+    .hero{
+      position:sticky;top:0;z-index:1000;
+      display:block;
+      padding:18px 32px;margin:0 -24px 20px;
+      background:rgba(237,243,248,0.92);
+      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid #d8e1ec;
+      font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    .hero .kicker{font-family:'Inter','Noto Sans KR',sans-serif;font-size:11px;letter-spacing:0.2em;color:var(--primary);text-transform:uppercase;margin-bottom:4px}
+    .hero h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-0.01em;color:var(--text)}
+    .hero p{margin:6px 0 0;color:var(--sub);line-height:1.55;font-size:12.5px}
+    .guide{display:none}
+    .phone{width:390px;height:100%;max-height:calc(100vh - 40px);background:var(--phone-bg);border:1px solid #dbe4ee;border-radius:34px;overflow:hidden;box-shadow:var(--shadow);position:relative;display:flex;flex-direction:column}
+    /* Session 02 패턴: screen = flex column, header 고정 + scroll-body 만 스크롤 */
+    .screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;width:100%}
+    .screen.active{display:flex}
+    /* 스크롤 안내 카드 */
+    .scroll-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;width:132px;height:132px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(15,23,42,0.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;cursor:pointer;transition:opacity 0.3s ease,visibility 0.3s ease,transform 0.3s ease;border-radius:18px;padding:12px;text-align:center;box-shadow:0 12px 30px -10px rgba(0,0,0,0.4)}
+    .scroll-hint.hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,calc(-50% + 8px))}
+    .scroll-hint-icon{width:42px;height:42px;display:flex;align-items:center;justify-content:center;animation:swipe-up 1.6s ease-in-out infinite}
+    .scroll-hint-icon svg{display:block}
+    @keyframes swipe-up{0%{transform:translateY(10px);opacity:0.55}45%{transform:translateY(-8px);opacity:1}55%{transform:translateY(-8px);opacity:1}100%{transform:translateY(10px);opacity:0.55}}
+    .scroll-hint-text{font-size:12px;font-weight:700;letter-spacing:-0.01em;line-height:1.35}
+    .scroll-hint-sub{font-size:10px;opacity:0.7;letter-spacing:0.02em;margin-top:-2px}
+    .statusbar{height:18px;background:#fff}
+    .topbar{background:#fff;padding:16px 18px 14px;border-bottom:1px solid #eef2f6;flex-shrink:0;z-index:5}
+    .screen-label{font-size:12px;font-weight:700;color:var(--primary);letter-spacing:.06em}
+    .screen-title{margin-top:6px;font-size:22px;font-weight:800}
+    .screen-desc{margin-top:4px;font-size:13px;color:var(--sub)}
+    .content{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;scrollbar-width:thin;scrollbar-color:rgba(15,23,42,0.22) transparent}
+    .content::-webkit-scrollbar{width:3px}
+    .content::-webkit-scrollbar-thumb{background:rgba(15,23,42,0.22);border-radius:999px}
+    .content::-webkit-scrollbar-track{background:transparent}
+    .search{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;border:1px solid var(--line);border-radius:14px;background:#fff;color:#94a3b8}
+    .chips{display:flex;gap:8px;overflow:auto;padding-bottom:2px}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-size:13px;color:#334155;white-space:nowrap;cursor:pointer}
+    .chip.active{background:var(--primary-soft);border-color:#cfe0ff;color:var(--primary);font-weight:700}
+    .banner{background:linear-gradient(135deg,#2f6bff,#30a8ff);color:#fff;border-radius:24px;padding:20px}
+    .banner small{opacity:.9}
+    .banner h3{margin:8px 0 0;font-size:22px;line-height:1.35}
+    .banner p{margin:8px 0 0;font-size:14px;line-height:1.55;opacity:.95}
+    .section-title{font-size:16px;font-weight:800;margin-bottom:10px}
+    .section-header{display:flex;align-items:center;justify-content:space-between}
+    .text-link{border:none;background:none;color:var(--primary);font-weight:700;cursor:pointer}
+    .card{background:#fff;border:1px solid #edf1f5;border-radius:22px;padding:14px;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+    .thumb-wide,.hero-image,.photo,.thumb-square{background:linear-gradient(135deg,#dbeafe,#bfdbfe,#cbd5e1);color:#64748b;display:flex;align-items:center;justify-content:center}
+    .thumb-wide{aspect-ratio:16/9;border-radius:16px;margin-bottom:12px;font-size:13px}
+    .thumb-square{width:96px;height:96px;border-radius:18px;font-size:12px;flex:0 0 auto}
+    .hero-image{aspect-ratio:16/10;border-radius:24px;font-size:14px;position:relative;overflow:hidden}
+    .carousel-controls{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:8px}
+    .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.55)}
+    .dot.active{background:#fff}
+    .title-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .title-row h3{margin:0;font-size:16px;line-height:1.4}
+    .meta{font-size:13px;color:var(--sub);margin-top:4px}
+    .desc{font-size:14px;color:#475569;line-height:1.6;margin-top:8px}
+    .rating{font-size:14px;font-weight:800;color:#f59e0b;white-space:nowrap}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .tag{font-size:12px;color:var(--primary);background:var(--primary-soft);border-radius:999px;padding:6px 10px}
+    .card-row{display:flex;gap:12px}
+    .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .toolbar button,.ghost-btn,.primary-btn,.secondary-btn{min-height:46px;border-radius:14px;padding:0 14px;border:none;cursor:pointer;font-weight:700}
+    .toolbar button,.ghost-btn{background:#fff;border:1px solid var(--line);color:#334155}
+    .primary-btn{background:var(--primary);color:#fff;box-shadow:0 10px 20px rgba(47,107,255,.22)}
+    .secondary-btn{background:var(--primary-soft);color:var(--primary);border:1px solid #cfe0ff}
+    .fab{position:absolute;right:18px;bottom:18px;min-height:48px;border:none;border-radius:999px;background:var(--primary);color:#fff;padding:0 18px;font-weight:700;cursor:pointer;box-shadow:0 10px 20px rgba(47,107,255,.28);z-index:4}
+    .bottom-nav{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #eef2f6;display:grid;grid-template-columns:repeat(4,1fr);z-index:3}
+    .nav-btn{height:60px;border:none;background:#fff;color:#64748b;font-size:12px;font-weight:700;cursor:pointer}
+    .nav-btn.active{color:var(--primary)}
+    .info-box,.soft-box,.good,.bad{border-radius:22px;padding:16px;border:1px solid #edf1f5;background:#fff}
+    .good{background:#ecfdf5;border-color:#ccefe1}
+    .bad{background:#fff1f2;border-color:#ffd5da}
+    .good h3{color:#047857}
+    .bad h3{color:#be123c}
+    .list{margin:10px 0 0;padding-left:18px}
+    .list li{font-size:14px;color:#334155;line-height:1.55;margin-bottom:6px}
+    .stepper{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 10px}
+    .step{text-align:center;font-size:12px;color:var(--sub)}
+    .step .circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;background:#e5e7eb;color:#475569;font-weight:800}
+    .step.active{color:var(--primary);font-weight:700}
+    .step.active .circle{background:var(--primary);color:#fff}
+    .field{background:#fff;border:1px solid #edf1f5;border-radius:22px;padding:16px}
+    .field label{display:block;font-size:14px;font-weight:700;margin-bottom:10px}
+    .input-box,.textarea-box{width:100%;border:1px solid var(--line);border-radius:14px;background:#f8fafc;padding:14px;line-height:1.5}
+    .input-box{color:#94a3b8}
+    .textarea-box{min-height:96px;resize:none}
+    .rating-stars{font-size:32px;display:flex;gap:8px;flex-wrap:wrap}
+    .star{cursor:pointer;filter:grayscale(1);opacity:.45}
+    .star.active{filter:none;opacity:1}
+    .upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .upload,.photo{aspect-ratio:1/1;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:13px}
+    .upload{border:2px dashed #cbd5e1;background:#fff;color:#64748b;cursor:pointer}
+    .photo{background:linear-gradient(135deg,#dbeafe,#cbd5e1);color:#64748b}
+    .help{font-size:12px;color:#94a3b8;margin-top:8px}
+    .row{display:flex;gap:10px}
+    .row > *{flex:1}
+    .hidden{display:none!important}
+    .toast{position:absolute;left:50%;bottom:76px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:12px 14px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:6}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .ai-box{background:#eff6ff;border:1px solid #dbeafe}
+    .ai-title{color:#1d4ed8;font-weight:800}
+    .ai-output{margin-top:10px;padding:12px;border-radius:14px;background:#fff;border:1px dashed #bfdbfe;font-size:14px;line-height:1.6;color:#334155}
+    .subtle{color:var(--sub);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="phone">
+      <!-- 스크롤 안내 카드 -->
+      <div class="scroll-hint" id="scrollHint" role="button" aria-label="안내 닫기">
+        <div class="scroll-hint-icon">
+          <svg width="36" height="36" viewBox="0 0 56 56" fill="none">
+            <path d="M22 16V31" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+            <path d="M16 24L22 31L28 24" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+            <path d="M22 31C22 31 22 36 22 40C22 43.3137 24.6863 46 28 46H34C37.3137 46 40 43.3137 40 40V28C40 25.7909 38.2091 24 36 24C33.7909 24 32 25.7909 32 28V34" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32 28C32 25.7909 30.2091 24 28 24C25.7909 24 24 25.7909 24 28V34" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24 28C24 25.7909 22.2091 24 20 24C17.7909 24 16 25.7909 16 28V34" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="scroll-hint-text">스크롤 해보세요</div>
+        <div class="scroll-hint-sub">탭하면 닫혀요</div>
+      </div>
+      <div class="statusbar"></div>
+
+      <section class="screen active" id="homeScreen">
+        <div class="topbar">
+          <div class="screen-label">HOME</div>
+          <div class="screen-title">휴양소 후기</div>
+          <div class="screen-desc">후기 탐색과 작성 진입이 쉬운 홈 화면</div>
+        </div>
+        <div class="content" style="padding-bottom:84px">
+          <div class="search">🔍 휴양소 검색</div>
+          <div class="chips" id="homeChips">
+            <button class="chip active">강원</button><button class="chip">제주</button><button class="chip">가족여행</button><button class="chip">바다뷰</button><button class="chip">가성비</button><button class="chip">조용한곳</button>
+          </div>
+          <div class="banner">
+            <small>이달의 추천 후기</small>
+            <h3>아이와 함께 가기 좋은 속초 휴양소</h3>
+            <p>사진 중심 후기와 한줄 팁으로 휴양소를 빠르게 비교해보세요.</p>
+          </div>
+          <div>
+            <div class="section-header"><div class="section-title">최신 후기</div><button class="text-link" data-go="list">더보기</button></div>
+            <div class="card review-link" data-review="1">
+              <div class="thumb-wide">후기 이미지</div>
+              <div class="title-row"><div><h3>속초 휴양소 후기</h3><div class="meta">강원 · 속초</div></div><div class="rating">★ 4.7</div></div>
+              <div class="desc">아이와 가기 좋고 바다뷰가 좋아 만족도가 높았어요.</div>
+              <div class="tags"><span class="tag">#가족</span><span class="tag">#바다뷰</span><span class="tag">#청결</span></div>
+            </div>
+            <div class="card review-link" data-review="2">
+              <div class="thumb-wide">후기 이미지</div>
+              <div class="title-row"><div><h3>제주 휴양소 후기</h3><div class="meta">제주 · 서귀포</div></div><div class="rating">★ 4.5</div></div>
+              <div class="desc">조용하고 산책하기 좋았고 숙소 상태도 깔끔했습니다.</div>
+              <div class="tags"><span class="tag">#조용함</span><span class="tag">#가성비</span><span class="tag">#산책</span></div>
+            </div>
+          </div>
+        </div>
+        <button class="fab" data-go="write">✏ 후기 작성</button>
+      </section>
+
+      <section class="screen" id="listScreen">
+        <div class="topbar">
+          <div class="screen-label">LIST</div>
+          <div class="screen-title">후기 목록</div>
+          <div class="screen-desc">검색, 필터, 정렬이 가능한 카드형 목록 화면</div>
+        </div>
+        <div class="content" style="padding-bottom:84px">
+          <div class="search">🔍 지역, 휴양소명, 키워드 검색</div>
+          <div class="toolbar"><button id="filterBtn">필터</button><button id="sortBtn">정렬 · 최신순</button></div>
+          <div class="chips" id="listChips">
+            <button class="chip active">강원</button><button class="chip">제주</button><button class="chip">충청</button><button class="chip">가족</button><button class="chip">아이동반</button><button class="chip">가성비</button><button class="chip">청결</button><button class="chip">조용함</button>
+          </div>
+          <div class="soft-box hidden" id="filterPanel"><div class="section-title">필터 미리보기</div><div class="subtle">지역, 동반 유형, 테마를 선택하는 패널 영역 예시입니다.</div></div>
+          <div class="card review-link" data-review="1"><div class="card-row"><div class="thumb-square">썸네일</div><div><h3 style="margin:0;font-size:16px">속초 휴양소 후기</h3><div class="meta">강원 · 속초</div><div class="desc">아이와 가기 좋고 바다뷰가 좋아 만족도가 높았어요.</div><div class="meta">★ 4.7 · 2026.03.18</div></div></div></div>
+          <div class="card review-link" data-review="2"><div class="card-row"><div class="thumb-square">썸네일</div><div><h3 style="margin:0;font-size:16px">제주 휴양소 후기</h3><div class="meta">제주 · 서귀포</div><div class="desc">조용하고 산책하기 좋았고 숙소 상태도 깔끔했습니다.</div><div class="meta">★ 4.5 · 2026.03.17</div></div></div></div>
+          <div class="card review-link" data-review="3"><div class="card-row"><div class="thumb-square">썸네일</div><div><h3 style="margin:0;font-size:16px">평창 휴양소 후기</h3><div class="meta">강원 · 평창</div><div class="desc">조용하고 공기가 좋아 힐링하기에 적합한 숙소였습니다.</div><div class="meta">★ 4.8 · 2026.03.14</div></div></div></div>
+        </div>
+      </section>
+
+      <section class="screen" id="detailScreen">
+        <div class="topbar">
+          <div class="screen-label">DETAIL</div>
+          <div class="screen-title">후기 상세</div>
+          <div class="screen-desc">사진, 장점, 아쉬운 점을 읽기 쉽게 구조화한 화면</div>
+        </div>
+        <div class="content" style="padding-bottom:84px">
+          <div class="hero-image" id="heroImage">이미지 1 / 3<div class="carousel-controls"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div></div>
+          <div class="row"><button class="ghost-btn" id="prevImageBtn">이전</button><button class="ghost-btn" id="nextImageBtn">다음</button></div>
+          <section class="info-box"><div class="title-row"><div><h3 id="detailTitle" style="margin:0;font-size:18px">속초 휴양소 후기</h3><div class="meta" id="detailMeta">강원 · 속초 · 2026년 3월 방문</div></div><div class="rating" id="detailRating">★ 4.7</div></div><div class="tags" id="detailTags"></div></section>
+          <section class="info-box"><h3 style="margin:0;font-size:16px">후기 내용</h3><p id="detailBody" class="desc" style="margin-top:10px"></p></section>
+          <section class="good"><h3 style="margin:0;font-size:16px">👍 좋았던 점</h3><ul class="list" id="detailGood"></ul></section>
+          <section class="bad"><h3 style="margin:0;font-size:16px">👎 아쉬운 점</h3><ul class="list" id="detailBad"></ul></section>
+        </div>
+      </section>
+
+      <section class="screen" id="writeScreen">
+        <div class="topbar">
+          <div class="screen-label">WRITE</div>
+          <div class="screen-title">후기 작성</div>
+          <div class="screen-desc">모바일에서 3분 안에 쓰는 단계형 작성 화면</div>
+        </div>
+        <div class="content" style="padding-bottom:84px">
+          <div class="stepper">
+            <div class="step active" data-step-ui="1"><div class="circle">1</div>휴양소</div>
+            <div class="step" data-step-ui="2"><div class="circle">2</div>별점</div>
+            <div class="step" data-step-ui="3"><div class="circle">3</div>사진</div>
+            <div class="step" data-step-ui="4"><div class="circle">4</div>내용</div>
+          </div>
+          <div id="step1" class="step-panel"><section class="field"><label>휴양소 선택</label><div class="input-box">🔍 휴양소를 검색하세요</div><div class="help">예: 속초 휴양소, 제주 휴양소</div></section></div>
+          <div id="step2" class="step-panel hidden"><section class="field"><label>별점</label><div class="rating-stars" id="ratingStars"><span class="star active">⭐</span><span class="star active">⭐</span><span class="star active">⭐</span><span class="star active">⭐</span><span class="star">⭐</span></div><div class="help">클릭해서 만족도를 선택해보세요.</div></section></div>
+          <div id="step3" class="step-panel hidden"><section class="field"><label>사진 등록</label><div class="upload-grid"><div class="upload" id="addPhotoBtn">+ 추가</div><div class="photo">사진</div><div class="photo">사진</div></div><div class="help" id="photoHelp">최대 5장 업로드</div></section></div>
+          <div id="step4" class="step-panel hidden">
+            <section class="field"><label for="goodInput">좋았던 점</label><textarea id="goodInput" class="textarea-box">객실이 깨끗했고 아이와 함께 이동하기 편했어요.</textarea></section>
+            <section class="field"><label for="badInput">아쉬운 점</label><textarea id="badInput" class="textarea-box">주차 공간이 조금 부족했어요.</textarea></section>
+            <section class="field"><label for="tipInput">한줄 팁</label><input id="tipInput" class="input-box" value="예: 체크인은 4시 이후가 덜 붐벼요" /></section>
+            <section class="soft-box ai-box"><div class="ai-title">AI 작성 보조</div><div class="subtle" style="margin-top:6px">입력한 내용을 바탕으로 제목 추천, 요약, 태그를 생성하는 예시입니다.</div><div class="row" style="margin-top:12px"><button class="secondary-btn" id="aiAssistBtn">AI 추천 생성</button></div><div class="ai-output hidden" id="aiOutput"></div></section>
+          </div>
+          <div class="row"><button class="ghost-btn" id="prevStepBtn">이전</button><button class="primary-btn" id="nextStepBtn">다음</button></div>
+          <button class="primary-btn hidden" id="submitBtn" style="min-height:52px">후기 등록하기</button>
+        </div>
+      </section>
+
+      <nav class="bottom-nav">
+        <button class="nav-btn active" data-go="home">홈</button>
+        <button class="nav-btn" data-go="list">목록</button>
+        <button class="nav-btn" data-go="detail">상세</button>
+        <button class="nav-btn" data-go="write">작성</button>
+      </nav>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+  <script>
+    const screens = { home: homeScreen, list: listScreen, detail: detailScreen, write: writeScreen };
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const toast = document.getElementById('toast');
+    const reviews = {
+      1:{title:'속초 휴양소 후기',meta:'강원 · 속초 · 2026년 3월 방문',rating:'★ 4.7',body:'객실이 전반적으로 깨끗했고 아이와 함께 이동하기에도 동선이 편했습니다. 실제 바다뷰가 더 좋아 만족도가 높았습니다.',tags:['#가족','#바다뷰','#청결','#아이동반'],good:['객실 청결 상태가 좋음','바다뷰 만족도 높음','가족 단위 이용에 적합'],bad:['주차 공간이 다소 부족','주말 체크인 대기 시간이 김']},
+      2:{title:'제주 휴양소 후기',meta:'제주 · 서귀포 · 2026년 3월 방문',rating:'★ 4.5',body:'조용하고 산책하기 좋았고 숙소 상태도 깔끔했습니다. 커플이나 조용히 쉬고 싶은 분께 적합한 분위기였습니다.',tags:['#조용함','#가성비','#산책','#커플'],good:['산책 동선이 좋음','숙소가 조용함','전반적으로 깔끔함'],bad:['성수기에는 예약이 빨리 마감됨','주변 편의시설이 다소 적음']},
+      3:{title:'평창 휴양소 후기',meta:'강원 · 평창 · 2026년 3월 방문',rating:'★ 4.8',body:'공기가 좋고 주변 경관이 뛰어나 힐링 목적의 방문에 적합했습니다. 가족 단위보다 조용한 휴식을 원하는 분께 더 잘 맞습니다.',tags:['#힐링','#자연','#조용함','#경관'],good:['공기와 경관이 매우 좋음','휴식 목적에 적합','객실이 넓음'],bad:['대중교통 접근성은 아쉬움','주변 식당 선택 폭이 적음']}
+    };
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(()=>toast.classList.remove('show'), 1600);
+    }
+    function activateNav(screen){ navBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.go === screen)); }
+    function go(screen){ Object.values(screens).forEach(el => el.classList.remove('active')); screens[screen].classList.add('active'); activateNav(screen); }
+    document.querySelectorAll('[data-go]').forEach(el => el.addEventListener('click',()=>go(el.dataset.go)));
+
+    function renderTags(tags){ return tags.map(tag => `<span class="tag">${tag}</span>`).join(''); }
+    function renderList(items){ return items.map(item => `<li>${item}</li>`).join(''); }
+    function loadDetail(id){
+      const review = reviews[id];
+      detailTitle.textContent = review.title;
+      detailMeta.textContent = review.meta;
+      detailRating.textContent = review.rating;
+      detailBody.textContent = review.body;
+      detailTags.innerHTML = renderTags(review.tags);
+      detailGood.innerHTML = renderList(review.good);
+      detailBad.innerHTML = renderList(review.bad);
+      heroIndex = 0; renderHero();
+    }
+    document.querySelectorAll('.review-link').forEach(el => el.addEventListener('click',()=>{ loadDetail(el.dataset.review); go('detail'); }));
+
+    document.querySelectorAll('.chips').forEach(group => {
+      group.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click',()=>{
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      }));
+    });
+
+    let sortMode = 0;
+    const sortLabels = ['정렬 · 최신순','정렬 · 평점순','정렬 · 추천순'];
+    filterBtn.addEventListener('click',()=>{ filterPanel.classList.toggle('hidden'); showToast(filterPanel.classList.contains('hidden') ? '필터 패널 닫힘' : '필터 패널 열림'); });
+    sortBtn.addEventListener('click',()=>{ sortMode = (sortMode + 1) % sortLabels.length; sortBtn.textContent = sortLabels[sortMode]; showToast(sortLabels[sortMode]); });
+
+    let heroIndex = 0;
+    function renderHero(){
+      heroImage.childNodes[0].nodeValue = `이미지 ${heroIndex + 1} / 3`;
+      heroImage.querySelectorAll('.dot').forEach((dot, idx) => dot.classList.toggle('active', idx === heroIndex));
+    }
+    prevImageBtn.addEventListener('click',()=>{ heroIndex = (heroIndex + 2) % 3; renderHero(); });
+    nextImageBtn.addEventListener('click',()=>{ heroIndex = (heroIndex + 1) % 3; renderHero(); });
+
+    let currentStep = 1;
+    const stepPanels = [step1,step2,step3,step4];
+    const stepUis = document.querySelectorAll('[data-step-ui]');
+    function renderStep(){
+      stepPanels.forEach((panel, idx) => panel.classList.toggle('hidden', idx !== currentStep - 1));
+      stepUis.forEach((ui, idx) => ui.classList.toggle('active', idx === currentStep - 1));
+      prevStepBtn.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+      nextStepBtn.classList.toggle('hidden', currentStep === 4);
+      submitBtn.classList.toggle('hidden', currentStep !== 4);
+    }
+    prevStepBtn.addEventListener('click',()=>{ if(currentStep > 1){ currentStep--; renderStep(); } });
+    nextStepBtn.addEventListener('click',()=>{ if(currentStep < 4){ currentStep++; renderStep(); } });
+
+    let selectedRating = 4;
+    document.querySelectorAll('.star').forEach((star, idx) => {
+      star.addEventListener('click',()=>{
+        selectedRating = idx + 1;
+        document.querySelectorAll('.star').forEach((s, i)=>s.classList.toggle('active', i < selectedRating));
+        showToast(`별점 ${selectedRating}점 선택`);
+      });
+    });
+
+    let photoCount = 2;
+    addPhotoBtn.addEventListener('click',()=>{
+      if(photoCount < 5){
+        photoCount++;
+        photoHelp.textContent = `현재 ${photoCount}장 선택됨 / 최대 5장`;
+        showToast('사진이 추가된 것으로 가정한 프로토타입입니다');
+      } else { showToast('최대 5장까지 업로드 가능'); }
+    });
+
+    aiAssistBtn.addEventListener('click',()=>{
+      const title = selectedRating >= 4 ? '가족여행에 만족스러웠던 휴양소 후기' : '장단점이 분명했던 휴양소 후기';
+      aiOutput.innerHTML = `<strong>제목 추천</strong><br>${title}<br><br><strong>AI 요약</strong><br>좋은 점: ${goodInput.value}<br>아쉬운 점: ${badInput.value}<br>한줄 팁: ${tipInput.value}<br><br><strong>추천 태그</strong><br>#가족 #청결 #휴양소후기`;
+      aiOutput.classList.remove('hidden');
+      showToast('AI 추천이 생성되었습니다');
+    });
+
+    submitBtn.addEventListener('click',()=>{
+      showToast('후기가 등록된 것으로 가정한 프로토타입입니다');
+      setTimeout(()=>{ go('home'); currentStep = 1; renderStep(); }, 600);
+    });
+
+    loadDetail(1); renderHero(); renderStep();
+
+    // 스크롤 안내 카드 자동 해제
+    (function(){
+      const hint = document.getElementById('scrollHint');
+      if (!hint) return;
+      let dismissed = false;
+      function dismiss(){
+        if (dismissed) return;
+        dismissed = true;
+        hint.classList.add('hidden');
+        setTimeout(()=>hint.remove(), 400);
+      }
+      hint.addEventListener('click', dismiss);
+      document.querySelectorAll('.content').forEach(s => {
+        s.addEventListener('scroll', dismiss, { once: true, passive: true });
+        s.addEventListener('wheel', dismiss, { once: true, passive: true });
+        s.addEventListener('touchmove', dismiss, { once: true, passive: true });
+      });
+    })();
+  </script>
+</body>
+</html>
