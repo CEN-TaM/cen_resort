@@ -2546,6 +2546,316 @@
     cursor: pointer;
   }
 
+  /* ============ 로그인 화면 ============ */
+  .login-screen { background: var(--surface-2); }
+  .login-screen .scroll-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-wrap {
+    width: 100%;
+    padding: 32px 28px 28px;
+    display: flex;
+    flex-direction: column;
+  }
+  .login-logo {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 18px;
+  }
+  .login-logo svg { width: 100%; height: 100%; display: block; }
+  .login-title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-1);
+  }
+  .login-sub {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-top: 10px;
+    margin-bottom: 28px;
+  }
+  .login-field { margin-bottom: 12px; }
+  .login-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 6px;
+  }
+  .login-field input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r);
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-1);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .login-field input::placeholder { color: var(--text-3); }
+  .login-field input:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-50);
+  }
+  .login-error {
+    font-size: 12px;
+    color: #DC2626;
+    margin: 2px 2px 0;
+    min-height: 16px;
+  }
+  .login-keep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 2px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .login-keep input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--brand);
+    cursor: pointer;
+  }
+  .login-keep span { font-size: 13px; color: var(--text-2); }
+  .login-submit {
+    width: 100%;
+    padding: 15px;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--r);
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .login-submit:active { transform: scale(0.98); background: var(--brand-dark); }
+  .login-help {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: 22px;
+    line-height: 1.6;
+  }
+
+  /* ============ 홈 사용자 상태 스트립 ============ */
+  .user-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 16px 4px;
+    padding: 14px 16px;
+    background: var(--brand-50);
+    border: 1px solid var(--brand-100);
+    border-radius: var(--r-lg);
+  }
+  .user-strip .us-ava {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .user-strip .us-txt { min-width: 0; flex: 1; }
+  .user-strip .us-hi {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-1);
+    letter-spacing: -0.01em;
+  }
+  .user-strip .us-hi b { color: var(--brand); }
+  .user-strip .us-sub {
+    font-size: 12px;
+    color: var(--brand-dark);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .user-strip .us-verify {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mint-fg);
+  }
+  .user-strip .us-verify i { font-size: 15px; }
+
+  /* ============ 로그아웃 버튼 (마이페이지) ============ */
+  .logout-btn {
+    width: calc(100% - 36px);
+    margin: 0 18px 30px;
+    padding: 14px;
+    background: #fff;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r);
+    color: #DC2626;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s;
+  }
+  .logout-btn:active { background: var(--surface-3); }
+  .logout-btn i { font-size: 18px; }
+
+  /* 로그아웃 확인 모달 버튼 행 */
+  .confirm-modal { max-width: 300px; }
+  .confirm-modal .cm-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .confirm-modal .cm-actions button {
+    flex: 1;
+    width: auto;
+  }
+  .confirm-modal .cm-cancel {
+    background: var(--surface-3);
+    color: var(--text-1);
+  }
+  .confirm-modal .cm-confirm { background: #DC2626; }
+
+  /* 로그인 하단 회원가입 링크 */
+  .login-alt {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-2);
+    margin-top: 18px;
+  }
+  .login-alt a {
+    color: var(--brand);
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ============ 회원가입 / 회원정보 수정 공통 ============ */
+  .auth-flow .content { padding: 4px 24px 28px; }
+  .signup-intro .t { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+  .signup-intro .s { font-size: 12px; color: var(--text-2); margin-top: 6px; line-height: 1.6; }
+
+  .step-indicator {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 16px 0 24px;
+  }
+  .step-indicator .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+  .step-indicator .dot {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    color: var(--text-3);
+    border: 1px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+    transition: all 0.2s;
+  }
+  .step-indicator .dot i { font-size: 18px; }
+  .step-indicator .step.active .dot { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .step-indicator .step.done .dot { background: var(--mint-fg); color: #fff; border-color: var(--mint-fg); }
+  .step-indicator .lbl { font-size: 10px; color: var(--text-3); white-space: nowrap; }
+  .step-indicator .step.active .lbl { color: var(--brand); font-weight: 700; }
+  .step-indicator .step.done .lbl { color: var(--mint-fg); font-weight: 700; }
+  .step-indicator .bar { flex: 1; max-width: 36px; height: 2px; background: var(--border-strong); margin: 15px 6px 0; }
+  .step-indicator .bar.done { background: var(--mint-fg); }
+
+  .signup-step { display: none; }
+  .signup-step.active { display: block; animation: fadeIn 0.25s ease; }
+  .signup-step h4 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .signup-step .step-desc { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 18px; }
+
+  .field-row { display: flex; gap: 8px; align-items: flex-end; }
+  .field-row .login-field { flex: 1; margin-bottom: 12px; }
+  .btn-line {
+    padding: 14px 14px;
+    border: 1px solid var(--brand);
+    background: #fff;
+    color: var(--brand);
+    border-radius: var(--r);
+    font-size: 13px; font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-bottom: 12px;
+  }
+  .btn-line:disabled { border-color: var(--border-strong); color: var(--text-3); cursor: default; background: var(--surface-3); }
+
+  .verified-tag {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px; font-weight: 700;
+    color: var(--mint-fg);
+    margin: -2px 2px 14px;
+  }
+  .verified-tag.show { display: inline-flex; }
+  .verified-tag i { font-size: 16px; }
+
+  .code-sent {
+    display: none;
+    font-size: 12px;
+    color: var(--brand-dark);
+    background: var(--brand-50);
+    border: 1px solid var(--brand-100);
+    border-radius: var(--r-sm);
+    padding: 10px 12px;
+    margin: 2px 0 14px;
+    line-height: 1.5;
+  }
+  .code-sent.show { display: block; }
+  .code-sent b { color: var(--brand); }
+
+  .read-field input, input.read-field {
+    background: var(--surface-3) !important;
+    color: var(--text-2);
+  }
+
+  .signup-actions { display: flex; gap: 10px; margin-top: 8px; }
+  .signup-actions button { flex: 1; }
+  .login-submit.ghost { background: var(--surface-3); color: var(--text-1); }
+  .login-submit:disabled { background: var(--border-strong); color: #fff; cursor: default; }
+
+  .form-section-label {
+    font-size: 12px; font-weight: 700;
+    color: var(--text-3);
+    margin: 22px 2px 10px;
+    letter-spacing: 0.02em;
+  }
+
   /* === 디바이스 라벨 === */
   .device-label {
     text-align: center;
@@ -2798,8 +3108,179 @@
   <!-- ====== DEVICE (인터랙티브 프로토타입) ====== -->
   <div class="device" id="device1">
 
+    <!-- LOGIN : 사번 인증 화면 (첫 진입) -->
+    <div class="screen active login-screen" data-screen="login">
+      <div class="login-wrap">
+        <div class="login-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 312.43 312.43"><defs><style>.lcls-1{fill:url(#login-rg);}.lcls-4{fill:#fff;}</style><radialGradient id="login-rg" cx="633.2" cy="384.82" r="382.37" gradientTransform="translate(-206.41 -2.51) scale(0.82)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#569dff"></stop><stop offset="0.44" stop-color="#1264ee"></stop><stop offset="0.6" stop-color="#0055e9"></stop><stop offset="1" stop-color="#0032a0"></stop></radialGradient></defs><g><path class="lcls-1" d="M156.08,312.42H312.43l0-156.35A166.62,166.62,0,0,0,156.08,312.42Z"></path><path class="lcls-1" d="M0,312.43H151L89.88,93.15A311.43,311.43,0,0,0,0,312.43Z"></path><path class="lcls-1" d="M93.15,89.88,312.43,151V0A311.45,311.45,0,0,0,93.15,89.88Z"></path><path class="lcls-4" d="M89.88,93.15,151,312.43h5.13A166.61,166.61,0,0,1,312.43,156.08V151L93.15,89.88C92.06,91,91,92.05,89.88,93.15Z"></path></g></svg>
+        </div>
+        <div class="login-title">ITCEN 휴양소</div>
+        <div class="login-sub">임직원 전용 서비스입니다.<br>사번 인증 후 이용해주세요.</div>
+
+        <form id="login-form" onsubmit="return doLogin(event)" novalidate>
+          <div class="login-field">
+            <label for="login-empno">사번</label>
+            <input id="login-empno" type="text" inputmode="numeric" autocomplete="off" placeholder="사번을 입력하세요" />
+          </div>
+          <div class="login-field">
+            <label for="login-pw">비밀번호</label>
+            <input id="login-pw" type="password" autocomplete="off" placeholder="비밀번호를 입력하세요" />
+          </div>
+          <div class="login-error" id="login-error"></div>
+          <label class="login-keep">
+            <input type="checkbox" id="login-keep" />
+            <span>로그인 상태 유지</span>
+          </label>
+          <button type="submit" class="login-submit">로그인</button>
+        </form>
+
+        <div class="login-alt">처음 이용하시나요? <a onclick="openSignup()">사번인증 및 비밀번호 설정</a></div>
+
+        <div class="login-help">문의: 인사복지팀 / 총무팀</div>
+      </div>
+    </div>
+
+    <!-- SIGNUP : 사번인증 및 비밀번호 설정 -->
+    <div class="screen auth-flow" data-screen="signup">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="goSignupBack()"></i>
+        <div class="title">사번인증 및 비밀번호 설정</div>
+        <div class="actions" style="width:22px"></div>
+      </div>
+      <div class="content">
+        <div class="step-indicator">
+          <div class="step active" id="si-1"><div class="dot">1</div><div class="lbl">사번인증</div></div>
+          <div class="bar" id="si-bar1"></div>
+          <div class="step" id="si-2"><div class="dot">2</div><div class="lbl">비밀번호 설정</div></div>
+          <div class="bar" id="si-bar2"></div>
+          <div class="step" id="si-3"><div class="dot">3</div><div class="lbl">정보 입력</div></div>
+        </div>
+
+        <!-- STEP 1: 사번 인증 -->
+        <div class="signup-step active" data-step="1">
+          <h4>사번 인증</h4>
+          <div class="step-desc">회사 개인 이메일로 인증코드를 받아<br>본인 인증을 완료해주세요.</div>
+
+          <div class="login-field">
+            <label for="su-empno">사번</label>
+            <input id="su-empno" type="text" inputmode="numeric" autocomplete="off" placeholder="사번을 입력하세요" />
+          </div>
+          <div class="field-row">
+            <div class="login-field">
+              <label for="su-email">회사 개인 이메일</label>
+              <input id="su-email" type="email" autocomplete="off" placeholder="000@itcen.com" />
+            </div>
+            <button type="button" class="btn-line" id="su-send-btn" onclick="sendAuthCode()">인증코드 발급</button>
+          </div>
+
+          <div class="code-sent" id="su-code-sent"></div>
+
+          <div class="field-row" id="su-code-row" style="display:none">
+            <div class="login-field">
+              <label for="su-code">인증코드</label>
+              <input id="su-code" type="text" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="6자리 코드" />
+            </div>
+            <button type="button" class="btn-line" onclick="confirmAuthCode()">인증 확인</button>
+          </div>
+
+          <div class="verified-tag" id="su-verified"><i class="ti ti-shield-check"></i>이메일 인증이 완료되었습니다</div>
+          <div class="login-error" id="su-step1-error"></div>
+
+          <button type="button" class="login-submit" id="su-next1" onclick="signupGoStep(2)" disabled>다음</button>
+        </div>
+
+        <!-- STEP 2: 비밀번호 설정 -->
+        <div class="signup-step" data-step="2">
+          <h4>비밀번호 설정</h4>
+          <div class="step-desc">로그인에 사용할 비밀번호를 설정해주세요.<br>1차·2차 입력값이 동일해야 합니다.</div>
+
+          <div class="login-field">
+            <label for="su-pw1">비밀번호 (1차)</label>
+            <input id="su-pw1" type="password" autocomplete="new-password" placeholder="비밀번호를 입력하세요" />
+          </div>
+          <div class="login-field">
+            <label for="su-pw2">비밀번호 확인 (2차)</label>
+            <input id="su-pw2" type="password" autocomplete="new-password" placeholder="비밀번호를 다시 입력하세요" />
+          </div>
+          <div class="login-error" id="su-step2-error"></div>
+
+          <div class="signup-actions">
+            <button type="button" class="login-submit ghost" onclick="signupGoStep(1)">이전</button>
+            <button type="button" class="login-submit" onclick="signupGoStep(3)">다음</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: 정보 입력 -->
+        <div class="signup-step" data-step="3">
+          <h4>정보 입력</h4>
+          <div class="step-desc">서비스 이용에 필요한 기본 정보를 입력해주세요.</div>
+
+          <div class="login-field">
+            <label for="su-phone">핸드폰 번호</label>
+            <input id="su-phone" type="tel" inputmode="numeric" autocomplete="off" placeholder="010-0000-0000" />
+          </div>
+          <div class="login-field">
+            <label for="su-name">이름</label>
+            <input id="su-name" type="text" autocomplete="off" placeholder="이름을 입력하세요" />
+          </div>
+          <div class="login-error" id="su-step3-error"></div>
+
+          <div class="signup-actions">
+            <button type="button" class="login-submit ghost" onclick="signupGoStep(2)">이전</button>
+            <button type="button" class="login-submit" onclick="completeSignup()">가입 완료</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT PROFILE : 회원정보 수정 -->
+    <div class="screen auth-flow" data-screen="edit-profile">
+      <div class="app-header">
+        <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+        <div class="title">회원정보 수정</div>
+        <div class="actions" style="width:22px"></div>
+      </div>
+      <div class="content">
+        <div class="form-section-label">기본 정보</div>
+        <div class="login-field read-field">
+          <label for="ep-empno">사번 (인증 완료)</label>
+          <input id="ep-empno" type="text" readonly />
+        </div>
+        <div class="login-field">
+          <label for="ep-name">이름</label>
+          <input id="ep-name" type="text" autocomplete="off" placeholder="이름을 입력하세요" />
+        </div>
+        <div class="login-field">
+          <label for="ep-phone">핸드폰 번호</label>
+          <input id="ep-phone" type="tel" inputmode="numeric" autocomplete="off" placeholder="010-0000-0000" />
+        </div>
+        <div class="login-field">
+          <label for="ep-email">회사 개인 이메일</label>
+          <input id="ep-email" type="email" autocomplete="off" placeholder="000@itcen.com" />
+        </div>
+
+        <div class="form-section-label">비밀번호 변경</div>
+        <div class="login-field">
+          <label for="ep-pw-cur">현재 비밀번호</label>
+          <input id="ep-pw-cur" type="password" autocomplete="off" placeholder="현재 비밀번호" />
+        </div>
+        <div class="login-field">
+          <label for="ep-pw-new">새 비밀번호</label>
+          <input id="ep-pw-new" type="password" autocomplete="new-password" placeholder="새 비밀번호 (변경 시에만 입력)" />
+        </div>
+        <div class="login-field">
+          <label for="ep-pw-new2">새 비밀번호 확인</label>
+          <input id="ep-pw-new2" type="password" autocomplete="new-password" placeholder="새 비밀번호 다시 입력" />
+        </div>
+        <div class="login-error" id="ep-error"></div>
+
+        <button type="button" class="login-submit" onclick="saveProfile()">저장</button>
+        <div style="height:8px"></div>
+      </div>
+    </div>
+
     <!-- HOME -->
-    <div class="screen active" data-screen="home">
+    <div class="screen" data-screen="home">
       <div class="content">
         <div class="sticky-header">
           <div class="top-bar">
@@ -2862,6 +3343,15 @@
 
         <!-- 탭 패널: 홈 -->
         <div class="mtab-pane active" data-mtab-pane="0">
+
+        <div class="user-strip">
+          <div class="us-ava" id="us-ava">박</div>
+          <div class="us-txt">
+            <div class="us-hi">안녕하세요, <b id="us-name">박OO 책임</b>님</div>
+            <div class="us-sub">이번 달 리뷰 작성 시 +300P 적립 가능해요</div>
+          </div>
+          <div class="us-verify"><i class="ti ti-shield-check"></i>인증완료</div>
+        </div>
 
         <div class="banner-carousel" id="eventCarousel">
           <div class="banner-slides">
@@ -4144,7 +4634,7 @@
     <div class="screen" data-screen="my">
       <div class="content">
         <div class="my-header">
-          <div class="name">박OO 책임</div>
+          <div class="name" id="my-name">박OO 책임</div>
           <div class="role">전략기획팀 · 사번 인증 완료</div>
         </div>
 
@@ -4193,6 +4683,11 @@
           <div class="title">설정</div>
         </div>
         <div class="menu-list" style="margin-bottom:30px">
+          <div class="menu-row" onclick="openEditProfile()">
+            <div class="micon tone-sky"><i class="ti ti-user-edit"></i></div>
+            <div class="mlabel">회원정보 수정</div>
+            <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+          </div>
           <div class="menu-row">
             <div class="micon"><i class="ti ti-bell"></i></div>
             <div class="mlabel">알림 설정</div>
@@ -4210,6 +4705,10 @@
             <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
           </div>
         </div>
+
+        <button class="logout-btn" onclick="openLogoutConfirm()">
+          <i class="ti ti-logout"></i>로그아웃
+        </button>
       </div>
       <div class="tabbar">
         <div class="tab-item" onclick="showScreen('device1','home')">
@@ -4513,6 +5012,18 @@
       </div>
     </div>
 
+    <!-- 로그아웃 확인 모달 -->
+    <div class="modal-backdrop" id="logout-modal" onclick="closeLogoutConfirm(event)">
+      <div class="point-modal confirm-modal" onclick="event.stopPropagation()">
+        <h3>로그아웃 하시겠습니까?</h3>
+        <div class="pmsub">로그아웃하면 다시 사번 인증 후<br>이용할 수 있습니다.</div>
+        <div class="cm-actions">
+          <button class="cm-cancel" onclick="closeLogoutConfirm()">취소</button>
+          <button class="cm-confirm" onclick="doLogout()">로그아웃</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 전역 토스트 (모든 화면 공통) -->
     <div class="toast" id="app-toast"><i class="ti ti-circle-check"></i><span id="app-toast-msg"></span></div>
 
@@ -4527,6 +5038,7 @@
     'ti-heart':'favorite','ti-heart-filled':'favorite',
     'ti-message-circle':'chat_bubble',
     'ti-home':'home','ti-speakerphone':'campaign','ti-plus':'add','ti-user':'person',
+    'ti-logout':'logout','ti-user-edit':'manage_accounts','ti-mail':'mail','ti-phone':'call',
     'ti-arrow-left':'arrow_back','ti-share':'share',
     'ti-map-pin':'location_on','ti-building-cottage':'cottage','ti-sparkles':'auto_awesome',
     'ti-check':'check','ti-corner-down-right':'subdirectory_arrow_right',
@@ -4584,8 +5096,335 @@
       target.scrollTop = 0;
       const sh = target.querySelector('.sticky-header');
       if (sh) sh.classList.remove('scrolled');
+      const sb = target.querySelector('.scroll-body');
+      if (sb) sb.scrollTop = 0;
     }
   }
+
+  // ===== 사번 인증 로그인 / 회원가입 / 로그아웃 (더미: localStorage 기반) =====
+  const AUTH_KEY = 'centam_auth';        // 현재 로그인 세션
+  const USERS_KEY = 'centam_users';      // 가입한 계정 저장소 (사번 → 정보)
+  const PROFILE_KEY = 'centam_profile';  // 현재 로그인 사용자의 표시 정보
+  // 시연용 기본 계정 정보 (실제 DB 연동 없음)
+  const DEMO_USER = { name: '박OO 책임', dept: '전략기획팀', short: '박' };
+  // 시연용 기본 인증 계정 (사번 / 비밀번호)
+  const VALID_EMPNO = '11223';
+  const VALID_PW = '0000';
+
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem(USERS_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveUsers(users) {
+    try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); } catch (e) {}
+  }
+  // 사번에 해당하는 유효 비밀번호 (가입 계정 우선, 없으면 기본 데모 계정)
+  function getValidPw(empno) {
+    const u = getUsers()[empno];
+    if (u) return u.pw;
+    if (empno === VALID_EMPNO) return VALID_PW;
+    return null;
+  }
+
+  function getAuth() {
+    try {
+      const raw = localStorage.getItem(AUTH_KEY) || sessionStorage.getItem(AUTH_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function isLoggedIn() { return !!getAuth(); }
+
+  function getProfile() {
+    try {
+      const raw = localStorage.getItem(PROFILE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return null;
+  }
+  function saveProfileData(p) {
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch (e) {}
+  }
+  // 로그인한 사번 기준으로 표시용 프로필 구성/저장
+  function buildProfile(empno) {
+    const u = getUsers()[empno];
+    let p;
+    if (u) {
+      p = { empno, name: u.name || DEMO_USER.name, phone: u.phone || '', email: u.email || '' };
+    } else {
+      // 기본 데모 계정
+      p = { empno, name: DEMO_USER.name, phone: '010-1234-5678', email: VALID_EMPNO + '@itcen.com' };
+    }
+    saveProfileData(p);
+    return p;
+  }
+
+  function applyUserInfo() {
+    const p = getProfile() || { name: DEMO_USER.name };
+    const dispName = p.name || DEMO_USER.name;
+    const nameEl = document.getElementById('us-name');
+    const avaEl = document.getElementById('us-ava');
+    const myNameEl = document.getElementById('my-name');
+    if (nameEl) nameEl.textContent = dispName;
+    if (avaEl) avaEl.textContent = (dispName.trim()[0]) || '박';
+    if (myNameEl) myNameEl.textContent = dispName;
+  }
+
+  function doLogin(event) {
+    if (event) event.preventDefault();
+    const empno = (document.getElementById('login-empno').value || '').trim();
+    const pw = document.getElementById('login-pw').value || '';
+    const keep = document.getElementById('login-keep').checked;
+    const errEl = document.getElementById('login-error');
+
+    if (!empno || !pw) {
+      errEl.textContent = '사번과 비밀번호를 모두 입력해주세요.';
+      return false;
+    }
+    // 가입 계정 또는 기본 데모 계정으로 인증
+    const validPw = getValidPw(empno);
+    if (validPw === null || pw !== validPw) {
+      errEl.textContent = '사번 또는 비밀번호가 올바르지 않습니다.';
+      return false;
+    }
+    errEl.textContent = '';
+
+    const auth = { empno, ts: Date.now() };
+    try {
+      sessionStorage.setItem(AUTH_KEY, JSON.stringify(auth));
+      if (keep) localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
+      else localStorage.removeItem(AUTH_KEY);
+    } catch (e) {}
+
+    buildProfile(empno);
+    applyUserInfo();
+    showScreen('device1', 'home');
+    return false;
+  }
+
+  function openLogoutConfirm() {
+    document.getElementById('logout-modal').classList.add('show');
+  }
+  function closeLogoutConfirm(event) {
+    if (event && event.target !== event.currentTarget) return;
+    document.getElementById('logout-modal').classList.remove('show');
+  }
+
+  function doLogout() {
+    try {
+      localStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem(AUTH_KEY);
+    } catch (e) {}
+    document.getElementById('logout-modal').classList.remove('show');
+    const empnoEl = document.getElementById('login-empno');
+    const pwEl = document.getElementById('login-pw');
+    const keepEl = document.getElementById('login-keep');
+    const errEl = document.getElementById('login-error');
+    if (empnoEl) empnoEl.value = '';
+    if (pwEl) pwEl.value = '';
+    if (keepEl) keepEl.checked = false;
+    if (errEl) errEl.textContent = '';
+    showScreen('device1', 'login');
+  }
+
+  // ===== 회원가입: 사번인증 및 비밀번호 설정 =====
+  let signupState = { code: '', verified: false };
+
+  function openSignup() {
+    // 초기화
+    signupState = { code: '', verified: false };
+    ['su-empno','su-email','su-code','su-pw1','su-pw2','su-phone','su-name'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+    ['su-step1-error','su-step2-error','su-step3-error'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.textContent = '';
+    });
+    document.getElementById('su-code-sent').classList.remove('show');
+    document.getElementById('su-code-row').style.display = 'none';
+    document.getElementById('su-verified').classList.remove('show');
+    document.getElementById('su-send-btn').disabled = false;
+    document.getElementById('su-next1').disabled = true;
+    signupGoStep(1);
+    showScreen('device1', 'signup');
+  }
+
+  function goSignupBack() {
+    showScreen('device1', 'login');
+  }
+
+  function signupGoStep(n) {
+    // 단계 패널 토글
+    document.querySelectorAll('#device1 [data-screen="signup"] .signup-step').forEach(s => {
+      s.classList.toggle('active', s.getAttribute('data-step') === String(n));
+    });
+    // 인디케이터 갱신
+    for (let i = 1; i <= 3; i++) {
+      const step = document.getElementById('si-' + i);
+      if (!step) continue;
+      step.classList.toggle('active', i === n);
+      step.classList.toggle('done', i < n);
+    }
+    const b1 = document.getElementById('si-bar1');
+    const b2 = document.getElementById('si-bar2');
+    if (b1) b1.classList.toggle('done', n >= 2);
+    if (b2) b2.classList.toggle('done', n >= 3);
+    const sb = document.querySelector('#device1 [data-screen="signup"] .scroll-body');
+    if (sb) sb.scrollTop = 0;
+  }
+
+  function sendAuthCode() {
+    const empno = (document.getElementById('su-empno').value || '').trim();
+    const email = (document.getElementById('su-email').value || '').trim();
+    const errEl = document.getElementById('su-step1-error');
+    if (!empno) { errEl.textContent = '사번을 입력해주세요.'; return; }
+    if (!/^[^\s@]+@itcen\.com$/i.test(email)) {
+      errEl.textContent = '회사 개인 이메일(@itcen.com)을 정확히 입력해주세요.';
+      return;
+    }
+    errEl.textContent = '';
+    // 데모: 6자리 인증코드 생성 (시연 편의를 위해 화면에 표시)
+    const code = String(((empno.length * 7919 + email.length * 104729) % 900000) + 100000);
+    signupState.code = code;
+    signupState.verified = false;
+    const sent = document.getElementById('su-code-sent');
+    sent.innerHTML = '인증코드가 <b>' + email + '</b> 으로 발송되었습니다.<br>(데모용 코드: <b>' + code + '</b>)';
+    sent.classList.add('show');
+    document.getElementById('su-code-row').style.display = 'flex';
+    document.getElementById('su-verified').classList.remove('show');
+    document.getElementById('su-next1').disabled = true;
+    document.getElementById('su-send-btn').textContent = '재발급';
+    showToast('인증코드를 발송했습니다');
+  }
+
+  function confirmAuthCode() {
+    const code = (document.getElementById('su-code').value || '').trim();
+    const errEl = document.getElementById('su-step1-error');
+    if (!signupState.code) { errEl.textContent = '먼저 인증코드를 발급받아주세요.'; return; }
+    if (code !== signupState.code) { errEl.textContent = '인증코드가 일치하지 않습니다.'; return; }
+    errEl.textContent = '';
+    signupState.verified = true;
+    document.getElementById('su-verified').classList.add('show');
+    document.getElementById('su-next1').disabled = false;
+    showToast('이메일 인증이 완료되었습니다');
+  }
+
+  // 1 → 2 검증, 2 → 3 검증을 signupGoStep 호출 전에 수행
+  (function wrapSignupSteps() {
+    const orig = signupGoStep;
+    signupGoStep = function(n) {
+      // 다음 단계로 진행할 때만 검증 (이전 버튼은 자유 이동)
+      const cur = currentSignupStep();
+      if (n > cur) {
+        if (cur === 1 && n === 2) {
+          if (!signupState.verified) {
+            document.getElementById('su-step1-error').textContent = '사번 인증을 먼저 완료해주세요.';
+            return;
+          }
+        }
+        if (cur === 2 && n === 3) {
+          const pw1 = document.getElementById('su-pw1').value || '';
+          const pw2 = document.getElementById('su-pw2').value || '';
+          const e2 = document.getElementById('su-step2-error');
+          if (pw1.length < 4) { e2.textContent = '비밀번호는 4자리 이상으로 설정해주세요.'; return; }
+          if (pw1 !== pw2) { e2.textContent = '1차·2차 비밀번호가 일치하지 않습니다.'; return; }
+          e2.textContent = '';
+        }
+      }
+      orig(n);
+    };
+  })();
+
+  function currentSignupStep() {
+    const active = document.querySelector('#device1 [data-screen="signup"] .signup-step.active');
+    return active ? parseInt(active.getAttribute('data-step'), 10) : 1;
+  }
+
+  function completeSignup() {
+    const empno = (document.getElementById('su-empno').value || '').trim();
+    const email = (document.getElementById('su-email').value || '').trim();
+    const pw = document.getElementById('su-pw1').value || '';
+    const phone = (document.getElementById('su-phone').value || '').trim();
+    const name = (document.getElementById('su-name').value || '').trim();
+    const errEl = document.getElementById('su-step3-error');
+    if (!phone) { errEl.textContent = '핸드폰 번호를 입력해주세요.'; return; }
+    if (!name) { errEl.textContent = '이름을 입력해주세요.'; return; }
+    errEl.textContent = '';
+
+    const users = getUsers();
+    users[empno] = { pw, name, phone, email };
+    saveUsers(users);
+
+    showToast('가입이 완료되었습니다. 로그인해주세요.');
+    showScreen('device1', 'login');
+    // 로그인 화면에 사번 미리 채우기
+    const le = document.getElementById('login-empno');
+    if (le) le.value = empno;
+    const lp = document.getElementById('login-pw');
+    if (lp) lp.value = '';
+  }
+
+  // ===== 회원정보 수정 =====
+  function openEditProfile() {
+    const auth = getAuth();
+    const empno = auth ? auth.empno : VALID_EMPNO;
+    const p = getProfile() || buildProfile(empno);
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+    set('ep-empno', p.empno || empno);
+    set('ep-name', p.name);
+    set('ep-phone', p.phone);
+    set('ep-email', p.email);
+    set('ep-pw-cur', '');
+    set('ep-pw-new', '');
+    set('ep-pw-new2', '');
+    document.getElementById('ep-error').textContent = '';
+    showScreen('device1', 'edit-profile');
+  }
+
+  function saveProfile() {
+    const auth = getAuth();
+    const empno = auth ? auth.empno : VALID_EMPNO;
+    const name = (document.getElementById('ep-name').value || '').trim();
+    const phone = (document.getElementById('ep-phone').value || '').trim();
+    const email = (document.getElementById('ep-email').value || '').trim();
+    const cur = document.getElementById('ep-pw-cur').value || '';
+    const npw = document.getElementById('ep-pw-new').value || '';
+    const npw2 = document.getElementById('ep-pw-new2').value || '';
+    const errEl = document.getElementById('ep-error');
+
+    if (!name) { errEl.textContent = '이름을 입력해주세요.'; return; }
+    if (!phone) { errEl.textContent = '핸드폰 번호를 입력해주세요.'; return; }
+
+    const users = getUsers();
+    const existing = users[empno] || { pw: getValidPw(empno) };
+    let newPw = existing.pw;
+
+    // 비밀번호 변경을 시도하는 경우에만 검증
+    if (cur || npw || npw2) {
+      if (cur !== getValidPw(empno)) { errEl.textContent = '현재 비밀번호가 올바르지 않습니다.'; return; }
+      if (npw.length < 4) { errEl.textContent = '새 비밀번호는 4자리 이상으로 설정해주세요.'; return; }
+      if (npw !== npw2) { errEl.textContent = '새 비밀번호가 일치하지 않습니다.'; return; }
+      newPw = npw;
+    }
+    errEl.textContent = '';
+
+    users[empno] = { pw: newPw, name, phone, email };
+    saveUsers(users);
+    saveProfileData({ empno, name, phone, email });
+    applyUserInfo();
+    showToast('회원정보가 저장되었습니다');
+    showScreen('device1', 'my');
+  }
+
+  // 첫 진입 시 인증 상태에 따라 시작 화면 결정
+  (function initAuthGate() {
+    if (isLoggedIn()) {
+      const auth = getAuth();
+      if (!getProfile() && auth) buildProfile(auth.empno);
+      applyUserInfo();
+      showScreen('device1', 'home');
+    } else {
+      showScreen('device1', 'login');
+    }
+  })();
 
   // ===== 검색 및 알림 기능 =====
   function openSearch() {
