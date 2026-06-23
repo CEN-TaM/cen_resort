@@ -462,6 +462,80 @@ h3{letter-spacing:-.035em}
 }
 </style>
 
+
+<style>
+/* v4.7 responsive stability patch */
+html, body{max-width:100%;overflow-x:hidden!important;}
+img, iframe, video, svg{max-width:100%;}
+.wrap{width:min(1180px, calc(100% - 32px))!important;}
+.hero-grid,.grid,.mockups,.revenue,.timeline,.problem-flow,.live-preview-section,.demo-section{min-width:0;}
+.card,.step,.rev-card,.phone,.ai-panel,.dashboard,.live-copy,.browser-mock,.demo-copy,.qr-card{min-width:0;max-width:100%;}
+.stage{max-width:100%;}
+.browser-frame{max-width:100%;}
+.browser-frame iframe{max-width:100%;}
+.matrix{overflow-x:auto;}
+.matrix-row{min-width:720px;}
+.demo-section{grid-template-columns:1fr!important;}
+.qr-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important;}
+.qr-card{max-width:none!important;}
+@media(max-width:1100px){
+  .hero-grid{grid-template-columns:1fr!important;gap:34px!important;}
+  .stage{min-height:500px;}
+  .mockups{grid-template-columns:1fr!important;}
+  .phone,.ai-panel,.dashboard{min-height:auto!important;}
+  .revenue,.timeline{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .problem-flow{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+@media(max-width:760px){
+  .wrap{width:min(100%, calc(100% - 24px))!important;}
+  .nav .inner{height:auto!important;padding:14px 0!important;gap:10px!important;align-items:flex-start!important;flex-direction:column!important;}
+  .nav .pill,.launch-ribbon{font-size:11px!important;padding:7px 10px!important;margin-left:0!important;}
+  .section{padding:64px 0!important;}
+  .hero{min-height:auto!important;padding:64px 0 72px!important;}
+  h1{font-size:clamp(42px,13vw,64px)!important;letter-spacing:-.065em!important;}
+  h2{font-size:clamp(30px,9vw,44px)!important;letter-spacing:-.05em!important;}
+  .lead,.hero p{font-size:16px!important;line-height:1.68!important;}
+  .hero-actions{flex-direction:column!important;}
+  .btn{width:100%!important;text-align:center!important;}
+  .stage{min-height:360px!important;border-radius:28px!important;}
+  .center-core{width:128px!important;height:128px!important;font-size:17px!important;}
+  .ring.r1{width:205px!important;height:205px!important;}
+  .ring.r2{width:300px!important;height:300px!important;}
+  .node{width:82px!important;min-height:70px!important;border-radius:18px!important;font-size:13px!important;}
+  .node span{font-size:18px!important;}
+  .node small{font-size:10px!important;}
+  .n1{transform:translate(-94px,-105px)!important;}
+  .n2{transform:translate(94px,-105px)!important;}
+  .n3{transform:translate(108px,40px)!important;}
+  .n4{transform:translate(-108px,40px)!important;}
+  .n5{transform:translate(0,128px)!important;}
+  .grid-2,.grid-3,.grid-4,.problem-flow,.revenue,.timeline,.mockups,.live-preview-section,.demo-section,.qr-grid{grid-template-columns:1fr!important;display:grid!important;}
+  .bright-band{padding:26px!important;border-radius:28px!important;}
+  .phone,.ai-panel,.dashboard{border-radius:26px!important;min-height:auto!important;}
+  .screen,.dashboard{padding:16px!important;}
+  .metric{grid-template-columns:1fr!important;}
+  .browser-frame{height:420px!important;}
+  .demo-copy,.live-copy{padding:24px!important;border-radius:26px!important;}
+  .qr-img{width:132px!important;height:132px!important;}
+  .final{padding:78px 0!important;}
+}
+@media(max-width:430px){
+  .wrap{width:min(100%, calc(100% - 18px))!important;}
+  .stage{min-height:330px!important;}
+  .center-core{width:112px!important;height:112px!important;font-size:15px!important;}
+  .ring.r1{width:180px!important;height:180px!important;}
+  .ring.r2{width:260px!important;height:260px!important;}
+  .node{width:72px!important;min-height:62px!important;font-size:12px!important;}
+  .n1{transform:translate(-78px,-92px)!important;}
+  .n2{transform:translate(78px,-92px)!important;}
+  .n3{transform:translate(88px,34px)!important;}
+  .n4{transform:translate(-88px,34px)!important;}
+  .n5{transform:translate(0,108px)!important;}
+  .matrix-row{min-width:620px;}
+  .browser-frame{height:360px!important;}
+}
+</style>
+
 </head>
 <body>
 <nav class="nav">
