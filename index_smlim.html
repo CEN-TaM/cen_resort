@@ -8581,6 +8581,8 @@
         s.addEventListener('wheel', dismiss, { once: true, passive: true });
         s.addEventListener('touchmove', dismiss, { once: true, passive: true });
       });
+      // 3초 후 자동 해제
+      setTimeout(dismiss, 3000);
     })();
   </script>
 
