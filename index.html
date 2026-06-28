@@ -594,6 +594,11 @@
       background: linear-gradient(100deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, .38) 36%, rgba(255, 255, 255, 0) 68%);
     }
 
+    /* 3번째 배너(이용수칙)는 밝은 배경이라 흰색 오버레이 제거 */
+    .event-banner[data-img="banner-third"]::after {
+      display: none;
+    }
+
     .event-banner .ev-text,
     .event-banner .pager {
       z-index: 2;
@@ -620,6 +625,18 @@
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
+    }
+
+    .event-banner .cta {
+      align-self: flex-start;
+      margin-top: 2px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: var(--pill);
+      background: #2c84f2;
     }
 
     .event-banner .title {
@@ -5111,6 +5128,7 @@
                     <div class="label">이용수칙</div>
                     <div class="title">휴양소 이용 수칙 개정 안내</div>
                     <div class="sub">5월 15일 시행</div>
+                    <span class="cta">바로가기</span>
                   </div>
                   <div class="pager"><b>3</b> / 3</div>
                 </div>
@@ -8336,9 +8354,9 @@
       view3: { local: 'review-3.jpg', fallback: 'https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?w=400&q=75' },
       view4: { local: 'review-4.jpg', fallback: 'https://images.unsplash.com/photo-1571508601891-ca5e7a713859?w=400&q=75' },
       'hero-jocheon': { local: 'hero-jocheon.jpg', fallback: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=900&q=85' },
-      'banner-summer': { local: 'assets/banner-summer.jpg', fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85' },
-      'banner-second': { local: 'assets/banner-vacation.png', fallback: 'assets/banner-summer.jpg' },
-      'banner-third': { local: 'assets/banner-third.jpg', fallback: 'assets/banner-summer.jpg' },
+      'banner-summer': { local: 'assets/banner-summer.png', fallback: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&q=85' },
+      'banner-second': { local: 'assets/banner-vacation.png', fallback: 'assets/banner-summer.png' },
+      'banner-third': { local: 'assets/banner-info.png', fallback: 'assets/banner-summer.png' },
       'win-1': { local: 'resort-winter-1.jpg', fallback: 'https://images.unsplash.com/photo-1418985991508-e47386d96a71?w=500&q=75' },
       'win-2': { local: 'resort-winter-2.jpg', fallback: 'https://images.unsplash.com/photo-1551524559-8af4e6624178?w=500&q=75' }
     };
