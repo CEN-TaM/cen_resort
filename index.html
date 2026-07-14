@@ -7241,7 +7241,23 @@
       '20451': { name: '김OO', position: '선임' },
       '33102': { name: '이OO', position: '매니저' },
       '40876': { name: '최OO', position: '수석' },
-      '51234': { name: '정OO', position: '사원' }
+      '51234': { name: '정OO', position: '사원' },
+      // ===== 개발용 임시 계정 (실명) =====
+      '11343': { name: '김효정', position: '책임' },
+      '11750': { name: '임소미', position: '수석' },
+      '11865': { name: '김솔이', position: '책임' },
+      '11875': { name: '박가연', position: '책임' },
+      '11887': { name: '김자경', position: '책임' }
+    };
+
+    // ===== 개발용 임시 계정 전체 정보 (사번 → {비번, 이름, 직급, 전화, 이메일}) =====
+    // 초기 비밀번호: 0000 (공통)
+    const DEMO_ACCOUNTS = {
+      '11343': { pw: '0000', name: '김효정', position: '책임', phone: '010-6233-9617', email: 'hjkim4@itcen.com' },
+      '11750': { pw: '0000', name: '임소미', position: '수석', phone: '010-4416-5333', email: 'smlim@itcen.com' },
+      '11865': { pw: '0000', name: '김솔이', position: '책임', phone: '010-7743-2602', email: 'kimsolyi@itcen.com' },
+      '11875': { pw: '0000', name: '박가연', position: '책임', phone: '010-4922-7098', email: 'gypark@itcen.com' },
+      '11887': { pw: '0000', name: '김자경', position: '책임', phone: '010-4576-8556', email: 'jk_kim@itcen.com' }
     };
 
     // 사번으로 인사정보(이름·직급) 조회.
@@ -7267,10 +7283,11 @@
     function saveUsers(users) {
       try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); } catch (e) { }
     }
-    // 사번에 해당하는 유효 비밀번호 (가입 계정 우선, 없으면 기본 데모 계정)
+    // 사번에 해당하는 유효 비밀번호 (가입 계정 우선 → 개발용 임시 계정 → 기본 데모 계정)
     function getValidPw(empno) {
       const u = getUsers()[empno];
       if (u) return u.pw;
+      if (DEMO_ACCOUNTS[empno]) return DEMO_ACCOUNTS[empno].pw;
       if (empno === VALID_EMPNO) return VALID_PW;
       return null;
     }
@@ -7295,11 +7312,16 @@
     }
     // 로그인한 사번 기준으로 표시용 프로필 구성/저장
     function buildProfile(empno) {
-      const u = getUsers()[empno];
+      const u = getUsers()[empno];   // localStorage에 저장된 (수정된) 계정
+      const demo = DEMO_ACCOUNTS[empno]; // 개발용 임시 계정
       const hr = lookupHR(empno) || {};
       let p;
       if (u) {
+        // localStorage 우선 (개인정보 수정 후 저장된 값)
         p = { empno, name: hr.name || u.name || DEMO_USER.name, position: hr.position !== undefined ? hr.position : (u.position || ''), phone: u.phone || '', email: u.email || '' };
+      } else if (demo) {
+        // 개발용 임시 계정 기본값
+        p = { empno, name: demo.name, position: demo.position, phone: demo.phone, email: demo.email };
       } else {
         // 기본 데모 계정
         p = { empno, name: hr.name || DEMO_USER.name, position: hr.position !== undefined ? hr.position : DEMO_USER.position, phone: '010-1234-5678', email: VALID_EMPNO + '@itcen.com' };
