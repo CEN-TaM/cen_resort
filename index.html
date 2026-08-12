@@ -5159,7 +5159,7 @@
             <div class="user-strip" id="userStrip">
               <img class="us-point" src="assets/img_point.png" alt="포인트">
               <div class="us-txt">
-                <div class="us-hi">안녕하세요, <b id="us-name">박OO책임</b>님,</div>
+                <div class="us-hi">안녕하세요, <b id="us-name">관리자</b>님,</div>
                 <div class="us-sub">휴양소 리뷰 작성시 <b>+300P</b>가 적립이 가능합니다.</div>
                 <span class="us-tip">휴양소 리뷰 작성시 <b>+300P</b>가 적립이 가능합니다.</span>
               </div>
@@ -5322,26 +5322,6 @@
                 </span>
                 <span class="action-btn" data-comment="rv2" onclick="openComments(event,'rv2')">
                   <i class="ti ti-message-circle"></i> 댓글 <b class="comment-count">1</b>
-                </span>
-              </div>
-            </div>
-
-            <div class="review-card" onclick="openResort('애월 2호점','reviews','rv3')">
-              <div class="review-head">
-                <div class="avatar" style="background:#047857">최</div>
-                <div class="who">
-                  <div class="name">최OO 매니저 <span class="badge verified">제주 전문가</span></div>
-                  <div class="meta">애월 2호점 · 5일 전</div>
-                </div>
-              </div>
-              <div class="rating-line"><span class="stars">★★★★★</span><span class="rating-num">4.9</span></div>
-              <div class="review-text">애월 1호점보다 신축이라 시설이 훨씬 좋아요! 거실 통창에서 보이는 바다가 진짜 그림 같아요.</div>
-              <div class="review-actions">
-                <span class="action-btn" data-like="rv3" onclick="toggleLike(event,'rv3')">
-                  <i class="ti ti-heart"></i> 좋아요 <b class="like-count">12</b>
-                </span>
-                <span class="action-btn" data-comment="rv3" onclick="openComments(event,'rv3')">
-                  <i class="ti ti-message-circle"></i> 댓글 <b class="comment-count">0</b>
                 </span>
               </div>
             </div>
@@ -5780,6 +5760,7 @@
             </div>
 
             <div class="rev-divider"></div>
+            <div id="sample-reviews">
 
             <div class="review-head" id="rev-rv1">
               <div class="avatar" style="background:#1F4FE0">박</div>
@@ -5900,36 +5881,7 @@
               </div>
             </div>
 
-            <!-- 네 번째 리뷰 (최OO 매니저) -->
-            <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>
-
-            <div class="review-head" id="rev-rv3">
-              <div class="avatar" style="background:#047857">최</div>
-              <div class="who">
-                <div class="name">최OO 매니저 <span class="badge verified">제주 전문가</span></div>
-                <div class="meta">2025.05.05 방문 · 가족과 함께</div>
-              </div>
-            </div>
-            <div class="rating-line" style="margin-top:10px"><span class="stars">★★★★★</span><span
-                class="rating-num">4.9</span></div>
-
-            <div style="font-size:13px;color:#0F172A;line-height:1.7;margin-top:8px">
-              <b>👍 좋았던 점</b><br>
-              애월 1호점보다 신축이라 시설이 훨씬 좋아요! 거실 통창에서 보이는 바다가 진짜 그림 같아요.
-            </div>
-
-            <div style="display:flex;gap:8px;margin-top:14px">
-              <div class="detail-action" data-like="rv3" onclick="toggleLike(event,'rv3')"
-                style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
-                <i class="ti ti-heart" style="vertical-align:-2px"></i> 좋아요 <b class="like-count"
-                  style="color:#0F172A">12</b>
-              </div>
-              <div data-comment="rv3" onclick="openComments(event,'rv3')"
-                style="flex:1;text-align:center;padding:10px;background:#FFFFFF;border:1px solid #E8EAEE;border-radius:12px;font-size:12px;color:#475569;cursor:pointer;transition:all 0.15s">
-                <i class="ti ti-message-circle" style="vertical-align:-2px"></i> 댓글 <b class="comment-count"
-                  style="color:#0F172A">0</b>
-              </div>
-            </div>
+          </div>
           </div>
 
           <!-- 편의시설 탭 -->
@@ -6306,7 +6258,7 @@
           <div class="point-modal">
             <img class="seni-jump" src="seni-desk.png" alt="세니 체크" onerror="this.style.display='none'">
             <h3>리뷰 등록 완료!</h3>
-            <div class="pmsub">박OO님의 소중한 후기는<br>다른 동료들의 휴가를 더 빛나게 해요</div>
+            <div class="pmsub">관리자님의 소중한 후기는<br>다른 동료들의 휴가를 더 빛나게 해요</div>
             <div class="gain">+300P</div>
             <button onclick="closeModal('device1')">확인</button>
           </div>
@@ -6611,7 +6563,7 @@
       <div class="screen" data-screen="my">
         <div class="content">
           <div class="my-header">
-            <div class="name" id="my-name">박OO 책임</div>
+            <div class="name" id="my-name">관리자</div>
             <div class="role">전략기획팀 · 사번 인증 완료</div>
           </div>
 
@@ -6639,7 +6591,7 @@
             <div class="menu-row" onclick="showScreen('device1','my-reviews')">
               <div class="micon tone-mint"><i class="ti ti-pencil"></i></div>
               <div class="mlabel">내가 쓴 리뷰</div>
-              <div class="mext">14건</div>
+              <div class="mext" id="my-reviews-count">0건</div>
               <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
             </div>
             <div class="menu-row">
@@ -6807,100 +6759,9 @@
           <div class="actions"></div>
         </div>
         <div class="content">
-          <div class="resort-list-head">총 <b>14건</b>의 리뷰를 작성했어요</div>
+          <div class="resort-list-head" id="my-reviews-head">작성한 리뷰를 불러오는 중...</div>
 
-          <div class="review-list">
-            <div class="review-card" onclick="openResort('조천 휴양소','reviews','rv1')">
-              <div class="review-head">
-                <div class="avatar" style="background:#1F4FE0">박</div>
-                <div class="who">
-                  <div class="name">박OO 책임 <span class="badge king">🏆 리뷰왕</span></div>
-                  <div class="meta">조천 휴양소 · 2일 전</div>
-                </div>
-              </div>
-              <div class="rating-line"><span class="stars">★★★★★</span><span class="rating-num">4.8</span></div>
-              <div class="photo-row">
-                <div class="ph" data-img="view1"></div>
-                <div class="ph" data-img="view2"></div>
-                <div class="ph" data-img="view3"></div>
-              </div>
-              <div class="review-text">바다 뷰가 정말 환상이에요. 아이들이랑 가기 좋고 청결도도 만족스러웠어요. 다만 마트가 차로 10분...</div>
-              <div class="review-actions">
-                <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>24</b></span>
-                <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>2</b></span>
-              </div>
-            </div>
-
-            <div class="review-card" onclick="openResort('속초 (힐스)','reviews','rv2')">
-              <div class="review-head">
-                <div class="avatar" style="background:#1F4FE0">박</div>
-                <div class="who">
-                  <div class="name">박OO 책임</div>
-                  <div class="meta">속초 (힐스) · 2주 전</div>
-                </div>
-              </div>
-              <div class="rating-line"><span class="stars">★★★★★</span><span class="rating-num">4.6</span></div>
-              <div class="review-text">설악산 뷰가 압권입니다. 객실도 넓고 깨끗했어요. 다음에 또 오고 싶은 곳이에요. 주차도 넉넉합니다.</div>
-              <div class="review-actions">
-                <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>31</b></span>
-                <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>4</b></span>
-              </div>
-            </div>
-
-            <div class="review-card" onclick="openResort('애월 2호점','reviews','rv3')">
-              <div class="review-head">
-                <div class="avatar" style="background:#1F4FE0">박</div>
-                <div class="who">
-                  <div class="name">박OO 책임</div>
-                  <div class="meta">애월 2호점 · 1개월 전</div>
-                </div>
-              </div>
-              <div class="rating-line"><span class="stars">★★★★</span><span class="stars empty">★</span><span
-                  class="rating-num">4.3</span></div>
-              <div class="photo-row">
-                <div class="ph" data-img="view2"></div>
-                <div class="ph" data-img="view3"></div>
-              </div>
-              <div class="review-text">신축이라 시설이 깔끔합니다. 거실 통창 뷰가 정말 좋아요. 다만 성수기라 주변이 조금 붐볐어요.</div>
-              <div class="review-actions">
-                <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>17</b></span>
-                <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>1</b></span>
-              </div>
-            </div>
-
-            <div class="review-card" onclick="openResort('여수휴양소','reviews','rv4')">
-              <div class="review-head">
-                <div class="avatar" style="background:#1F4FE0">박</div>
-                <div class="who">
-                  <div class="name">박OO 책임</div>
-                  <div class="meta">여수휴양소 · 2개월 전</div>
-                </div>
-              </div>
-              <div class="rating-line"><span class="stars">★★★★★</span><span class="rating-num">4.7</span></div>
-              <div class="review-text">밤바다 야경이 정말 예뻐요. 회 포장해와서 먹기 딱 좋은 위치입니다. 가족 여행으로 강력 추천해요.</div>
-              <div class="review-actions">
-                <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>22</b></span>
-                <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>3</b></span>
-              </div>
-            </div>
-
-            <div class="review-card" onclick="openResort('경주휴양소','reviews','rv5')">
-              <div class="review-head">
-                <div class="avatar" style="background:#1F4FE0">박</div>
-                <div class="who">
-                  <div class="name">박OO 책임</div>
-                  <div class="meta">경주휴양소 · 3개월 전</div>
-                </div>
-              </div>
-              <div class="rating-line"><span class="stars">★★★★</span><span class="stars empty">★</span><span
-                  class="rating-num">4.0</span></div>
-              <div class="review-text">관광지가 가까워서 동선이 편했어요. 시설은 다소 연식이 있지만 관리는 잘 되어 있습니다.</div>
-              <div class="review-actions">
-                <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>9</b></span>
-                <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>0</b></span>
-              </div>
-            </div>
-          </div>
+          <div class="review-list" id="my-review-list"></div>
           <div style="height:30px"></div>
         </div>
       </div>
@@ -7218,6 +7079,10 @@
         const sb = target.querySelector('.scroll-body');
         if (sb) sb.scrollTop = 0;
       }
+      // '내가 쓴 리뷰' 진입 시 서버에서 내 후기 로드
+      if (screenName === 'my-reviews' && typeof loadMyReviews === 'function') loadMyReviews();
+      // 나의페이지 진입 시 리뷰 개수 갱신
+      if (screenName === 'my' && typeof updateMyReviewsCount === 'function') updateMyReviewsCount();
     }
 
     // ===== 사번 인증 로그인 / 회원가입 / 로그아웃 (더미: localStorage 기반) =====
@@ -7225,7 +7090,7 @@
     const USERS_KEY = 'centam_users';      // 가입한 계정 저장소 (사번 → 정보)
     const PROFILE_KEY = 'centam_profile';  // 현재 로그인 사용자의 표시 정보
     // 시연용 기본 계정 정보 (실제 DB 연동 없음)
-    const DEMO_USER = { name: '박OO', position: '책임', dept: '전략기획팀', short: '박' };
+    const DEMO_USER = { name: '관리자', position: '', dept: '전략기획팀', short: '관' };
 
     // 이름 + 직급을 합쳐 표시용 이름 생성
     function composeDisplayName(p) {
@@ -7237,7 +7102,7 @@
     // 실제로는 사번으로 인사 시스템을 조회해 이름·직급을 받아오지만,
     // 지금은 연동이 불가하므로 더미 매핑으로 대체한다.
     const HR_DIRECTORY = {
-      '11223': { name: '박OO', position: '책임' },
+      '11223': { name: '관리자', position: '' },
       '20451': { name: '김OO', position: '선임' },
       '33102': { name: '이OO', position: '매니저' },
       '40876': { name: '최OO', position: '수석' },
@@ -7681,8 +7546,104 @@
       }, { passive: true });
     });
 
-    function submitReview(deviceId) {
-      document.getElementById('modal-' + deviceId).classList.add('show');
+    // ===== 후기 백엔드 연동 =====
+    // 서버에서 열면(''=같은 출처), 파일로 열면(file://) 로컬 서버로 요청
+    const API_BASE = (location.protocol === 'file:') ? 'http://localhost:8999' : '';
+
+    // 작성 폼에서 값들을 모아 서버 전송용 객체로 만든다
+    function collectReviewForm() {
+      const form = document.querySelector('#device1 [data-screen="write"]');
+      if (!form) return null;
+
+      // 1) 휴양소 구분 (active 버튼)
+      const typeBtn = form.querySelector('.resort-type-seg .rts-btn.active');
+      const typeMap = { '정기 휴양소': 'regular', '하계 휴양소': 'summer', '동계 휴양소': 'winter' };
+      const resortType = typeBtn ? (typeMap[typeBtn.textContent.trim()] || 'regular') : 'regular';
+
+      // 2) 휴양소 이름
+      const resortName = (form.querySelector('#rv-resort-select')?.value || '').trim();
+
+      // 3) 항목별 평점 (위치/시설/청결도 순서)
+      const rateEls = form.querySelectorAll('.rate-row .rate-stars');
+      const num = el => parseInt(el?.getAttribute('data-score') || '0', 10);
+      const ratings = {
+        location: num(rateEls[0]),
+        facility: num(rateEls[1]),
+        clean: num(rateEls[2]),
+      };
+
+      // 4) 동행 (active 칩)
+      const companions = Array.from(form.querySelectorAll('.companion-chip.active'))
+        .map(c => c.textContent.trim());
+
+      // 5) 상세 후기
+      const content = (form.querySelector('.textarea')?.value || '').trim();
+
+      // 6) 사진 (photo-thumb 배경 dataURL 추출)
+      const photos = Array.from(form.querySelectorAll('#photo-grid .photo-thumb'))
+        .map(cell => {
+          const m = /url\(["']?(data:[^"')]+)["']?\)/.exec(cell.style.backgroundImage || '');
+          return m ? m[1] : null;
+        }).filter(Boolean);
+
+      // 7) 작성자 정보
+      const p = (typeof getProfile === 'function' && getProfile()) || {};
+      const authorName = (typeof composeDisplayName === 'function' && composeDisplayName(p)) || p.name || '';
+
+      return { empno: p.empno || null, authorName, resortName, resortType, ratings, companions, content, photos };
+    }
+
+    let submittingReview = false;
+    async function submitReview(deviceId) {
+      if (submittingReview) return;
+      const data = collectReviewForm();
+      if (!data) return;
+
+      // 클라이언트 1차 검증
+      if (!data.resortName) { if (typeof showToast === 'function') showToast('휴양소를 선택해주세요'); return; }
+      if (data.photos.length < 1) { if (typeof showToast === 'function') showToast('사진을 최소 1장 첨부해주세요'); return; }
+
+      submittingReview = true;
+      const btn = document.querySelector('#device1 [data-screen="write"] .write-submit');
+      const btnText = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = '등록 중...'; }
+
+      try {
+        const res = await fetch(API_BASE + '/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || '등록 실패');
+
+        // 방금 등록한 휴양소를 기억 → 상세 진입 시 최신 목록 반영
+        lastSubmittedResort = data.resortName;
+        // 등록 완료 모달 표시 (+300P)
+        document.getElementById('modal-' + deviceId).classList.add('show');
+        // 폼 초기화
+        resetReviewForm();
+        // 홈 '실시간 리뷰' 즉시 갱신
+        if (typeof loadHomeReviews === 'function') loadHomeReviews();
+        // 나의페이지 리뷰 개수 갱신
+        if (typeof updateMyReviewsCount === 'function') updateMyReviewsCount();
+      } catch (err) {
+        console.error('후기 등록 실패:', err);
+        if (typeof showToast === 'function') showToast(err.message || '등록에 실패했어요. 잠시 후 다시 시도해주세요');
+      } finally {
+        submittingReview = false;
+        if (btn) { btn.disabled = false; btn.textContent = btnText; }
+      }
+    }
+
+    let lastSubmittedResort = null;
+    function resetReviewForm() {
+      const form = document.querySelector('#device1 [data-screen="write"]');
+      if (!form) return;
+      const ta = form.querySelector('.textarea'); if (ta) ta.value = '';
+      const grid = form.querySelector('#photo-grid');
+      if (grid) grid.querySelectorAll('.photo-thumb').forEach(el => el.remove());
+      if (typeof updatePhotoCount === 'function') updatePhotoCount();
     }
     function closeModal(deviceId) {
       document.getElementById('modal-' + deviceId).classList.remove('show');
@@ -8637,7 +8598,7 @@
         item.className = 'qna-item unanswered';
         item.innerHTML =
           '<div class="qhead"><div class="qavatar" style="background:#1F4FE0">박</div>' +
-          '<div class="qname">박OO 책임 (나)</div><div class="qdate">방금 전</div></div>' +
+          '<div class="qname">관리자 (나)</div><div class="qdate">방금 전</div></div>' +
           '<div class="qtext">Q. ' + escapeHtml(q) + '</div>' +
           '<div class="answer-cta" style="cursor:default">아직 답변이 없어요. 답변을 기다리고 있어요 ⏳</div>';
         if (btn && btn.nextSibling) btn.parentNode.insertBefore(item, btn.nextSibling);
@@ -8685,7 +8646,7 @@
           `<div class="tag-row"><span class="tag tone-coral">NEW</span>${tagHtml}</div>` +
           `<div class="ttitle">${escapeHtml(title)}</div>` +
           `<div class="tcontent">${escapeHtml(content)}</div>` +
-          `<div class="tfoot"><span>박OO 책임 (나) · 방금 전</span><span>👁 0 · 👍 0</span></div>`;
+          `<div class="tfoot"><span>관리자 (나) · 방금 전</span><span>👁 0 · 👍 0</span></div>`;
         row.insertBefore(card, row.firstElementChild);
         row.scrollTo({ left: 0, behavior: 'smooth' });
       }
@@ -8741,7 +8702,250 @@
       setScoreItem(items[2], clampScore(r.rating));        // 청결
       const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `리뷰 ${r.reviews}`;
       const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = r.reviews;
+
+      // 서버에 저장된 최신 후기 로드
+      loadServerReviews(name);
     }
+
+    // ===== 서버 후기 렌더링 =====
+    // 로그인한 본인이 쓴 후기인지(사번 일치) 판별
+    function isMyReview(rv) {
+      try {
+        const p = (typeof getProfile === 'function') && getProfile();
+        return !!(p && p.empno && rv && rv.empno && String(p.empno) === String(rv.empno));
+      } catch (e) { return false; }
+    }
+    // 후기 카드용 배지 HTML (내 리뷰 / NEW)
+    function reviewBadge(rv) {
+      return isMyReview(rv)
+        ? '<span class="badge" style="background:#1F4FE0;color:#fff">내 리뷰</span>'
+        : '<span class="badge" style="background:#DCFCE7;color:#047857">NEW</span>';
+    }
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => (
+        { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+      ));
+    }
+    function fmtDate(iso) {
+      // 2026-08-12T... → 2026.08.12
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+      return m ? `${m[1]}.${m[2]}.${m[3]}` : '';
+    }
+    function serverReviewCard(rv) {
+      const name = escapeHtml(rv.authorName || '동료');
+      const avatarCh = (rv.authorName || '동').trim()[0] || '동';
+      const comp = (rv.companions && rv.companions.length) ? ' · ' + escapeHtml(rv.companions.join(', ')) + '와 함께' : '';
+      const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
+      const starFull = Math.round(rv.ratings?.avg || 0);
+      const stars = '★'.repeat(starFull) + '☆'.repeat(5 - starFull);
+      const photos = (rv.photos || []).slice(0, 4).map(src =>
+        `<div style="aspect-ratio:1;border-radius:8px;background:#E8EAEE center/cover no-repeat;background-image:url('${API_BASE}${escapeHtml(src)}')"></div>`
+      ).join('');
+      const photoGrid = photos ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:10px 0 12px">${photos}</div>` : '';
+      const content = rv.content ? `<div style="font-size:13px;color:#0F172A;line-height:1.7">${escapeHtml(rv.content)}</div>` : '';
+      return `
+      <div class="review-head" id="rev-srv-${rv.id}">
+        <div class="avatar" style="background:#1F4FE0">${escapeHtml(avatarCh)}</div>
+        <div class="who">
+          <div class="name">${name} ${reviewBadge(rv)}</div>
+          <div class="meta">${fmtDate(rv.createdAt)} 작성${comp}</div>
+        </div>
+        <span class="badge verified"><i class="ti ti-check"></i> 인증</span>
+      </div>
+      <div class="rating-line" style="margin-top:10px"><span class="stars">${stars}</span><span class="rating-num">${avg}</span></div>
+      <div style="background:#F1F3F6;padding:12px 14px;border-radius:12px;margin:10px 0">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#475569"><span>위치</span><span style="color:#0F172A;font-weight:700">${rv.ratings?.location ?? '-'}.0</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#475569"><span>시설</span><span style="color:#0F172A;font-weight:700">${rv.ratings?.facility ?? '-'}.0</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#475569"><span>청결도</span><span style="color:#0F172A;font-weight:700">${rv.ratings?.clean ?? '-'}.0</span></div>
+      </div>
+      ${photoGrid}
+      ${content}
+      <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>`;
+    }
+    // 상세페이지 총계(리뷰 수·평균·항목별 점수)를 실제 후기로 동기화
+    function syncDetailStats(reviews) {
+      const d = document.querySelector('.screen[data-screen="detail"]');
+      if (!d) return;
+      const n = reviews.length;
+      const mean = arr => arr.length ? arr.reduce((a, b) => a + (Number(b) || 0), 0) / arr.length : 0;
+      const avg = Math.round(mean(reviews.map(r => r.ratings?.avg)) * 10) / 10;
+      const avgLoc = mean(reviews.map(r => r.ratings?.location));
+      const avgFac = mean(reviews.map(r => r.ratings?.facility));
+      const avgCln = mean(reviews.map(r => r.ratings?.clean));
+
+      const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `리뷰 ${n}`;
+      const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = n;
+      const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = avg.toFixed(1);
+      const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(avg);
+      const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${n}개</b> 리뷰의 평균`;
+      const items = d.querySelectorAll('.score-breakdown .score-item');
+      setScoreItem(items[0], clampScore(avgLoc));
+      setScoreItem(items[1], clampScore(avgFac));
+      setScoreItem(items[2], clampScore(avgCln));
+    }
+
+    async function loadServerReviews(resortName) {
+      const pane = document.querySelector('.screen[data-screen="detail"] .dtab-pane[data-dtab="reviews"]');
+      if (!pane) return;
+      const samples = pane.querySelector('#sample-reviews');
+      // 이전에 주입한 서버 후기 제거
+      const old = pane.querySelector('#server-reviews');
+      if (old) old.remove();
+      try {
+        const res = await fetch(API_BASE + '/api/reviews?resort=' + encodeURIComponent(resortName));
+        if (!res.ok) return;
+        const { reviews } = await res.json();
+        if (!reviews || !reviews.length) {
+          // 서버 후기 없음 → 샘플 리뷰 노출(더미 총계 유지)
+          if (samples) samples.style.display = '';
+          return;
+        }
+        // 서버 후기 있음 → 샘플 숨기고 총계를 실제 값으로 동기화
+        if (samples) samples.style.display = 'none';
+        const wrap = document.createElement('div');
+        wrap.id = 'server-reviews';
+        wrap.innerHTML = reviews.map(serverReviewCard).join('');
+        // 구분선(.rev-divider) 바로 다음에 최신 후기를 먼저 노출
+        const divider = pane.querySelector('.rev-divider');
+        if (divider && divider.nextSibling) pane.insertBefore(wrap, divider.nextSibling);
+        else pane.appendChild(wrap);
+        syncDetailStats(reviews);
+      } catch (e) {
+        console.error('서버 후기 로드 실패:', e);
+      }
+    }
+
+    // ===== 홈 '실시간 리뷰' 서버 후기 =====
+    function homeReviewCard(rv) {
+      const name = escapeHtml(rv.authorName || '동료');
+      const avatarCh = (rv.authorName || '동').trim()[0] || '동';
+      const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
+      const full = Math.round(rv.ratings?.avg || 0);
+      const stars = `<span class="stars">${'★'.repeat(full)}</span>` +
+        (full < 5 ? `<span class="stars empty">${'★'.repeat(5 - full)}</span>` : '');
+      const photos = (rv.photos || []).slice(0, 3).map(src =>
+        `<div class="ph" style="background:#E8EAEE center/cover no-repeat;background-image:url('${API_BASE}${escapeHtml(src)}')"></div>`
+      ).join('');
+      const photoRow = photos ? `<div class="photo-row">${photos}</div>` : '';
+      let text = escapeHtml(rv.content || '');
+      if (text.length > 80) text = text.slice(0, 80) + '...';
+      const resortAttr = escapeHtml(rv.resortName).replace(/"/g, '&quot;');
+      return `
+      <div class="review-card server-home-card" onclick="openResort('${resortAttr}','reviews')">
+        <div class="review-head">
+          <div class="avatar" style="background:#1F4FE0">${escapeHtml(avatarCh)}</div>
+          <div class="who">
+            <div class="name">${name} ${reviewBadge(rv)}</div>
+            <div class="meta">${escapeHtml(rv.resortName)} · 방금 전</div>
+          </div>
+        </div>
+        <div class="rating-line">${stars}<span class="rating-num">${avg}</span></div>
+        ${photoRow}
+        <div class="review-text">${text}</div>
+      </div>`;
+    }
+    async function loadHomeReviews() {
+      const home = document.querySelector('.screen[data-screen="home"]');
+      if (!home) return;
+      // '실시간 리뷰' 섹션 헤드 찾기
+      const heads = home.querySelectorAll('.section-head');
+      let head = null;
+      heads.forEach(h => { if (h.textContent.includes('실시간 리뷰')) head = h; });
+      if (!head) return;
+      const old = home.querySelector('#home-server-reviews');
+      if (old) old.remove();
+      try {
+        const res = await fetch(API_BASE + '/api/reviews');
+        if (!res.ok) return;
+        const { reviews } = await res.json();
+        if (!reviews || !reviews.length) return;
+        const wrap = document.createElement('div');
+        wrap.id = 'home-server-reviews';
+        wrap.innerHTML = reviews.slice(0, 5).map(homeReviewCard).join('');
+        head.parentNode.insertBefore(wrap, head.nextSibling);
+      } catch (e) {
+        console.error('홈 리뷰 로드 실패:', e);
+      }
+    }
+    // 최초 진입 시 홈 실시간 리뷰 로드
+    loadHomeReviews();
+
+    // ===== '내가 쓴 리뷰' 페이지 (서버 연동) =====
+    // 내 후기 카드: 클릭 시 해당 휴양소 상세 리뷰로 이동
+    function myReviewCard(rv) {
+      const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
+      const full = Math.round(rv.ratings?.avg || 0);
+      const stars = `<span class="stars">${'★'.repeat(full)}</span>` +
+        (full < 5 ? `<span class="stars empty">${'★'.repeat(5 - full)}</span>` : '');
+      const photos = (rv.photos || []).slice(0, 3).map(src =>
+        `<div class="ph" style="background:#E8EAEE center/cover no-repeat;background-image:url('${API_BASE}${escapeHtml(src)}')"></div>`
+      ).join('');
+      const photoRow = photos ? `<div class="photo-row">${photos}</div>` : '';
+      let text = escapeHtml(rv.content || '');
+      if (text.length > 90) text = text.slice(0, 90) + '...';
+      const resortAttr = escapeHtml(rv.resortName).replace(/"/g, '&quot;');
+      return `
+      <div class="review-card" onclick="openResort('${resortAttr}','reviews')">
+        <div class="review-head">
+          <div class="avatar" style="background:#1F4FE0">${escapeHtml((rv.authorName || '나').trim()[0] || '나')}</div>
+          <div class="who">
+            <div class="name">${escapeHtml(rv.authorName || '나')} <span class="badge" style="background:#1F4FE0;color:#fff">내 리뷰</span></div>
+            <div class="meta">${escapeHtml(rv.resortName)} · ${fmtDate(rv.createdAt)}</div>
+          </div>
+        </div>
+        <div class="rating-line">${stars}<span class="rating-num">${avg}</span></div>
+        ${photoRow}
+        <div class="review-text">${text}</div>
+        <div class="review-actions">
+          <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>${rv.likes || 0}</b></span>
+          <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>${(rv.comments || []).length}</b></span>
+        </div>
+      </div>`;
+    }
+    async function loadMyReviews() {
+      const list = document.getElementById('my-review-list');
+      const head = document.getElementById('my-reviews-head');
+      if (!list) return;
+      const p = (typeof getProfile === 'function' && getProfile()) || {};
+      if (!p.empno) {
+        list.innerHTML = '';
+        if (head) head.textContent = '로그인 후 내 리뷰를 확인할 수 있어요';
+        return;
+      }
+      list.innerHTML = '';
+      if (head) head.textContent = '작성한 리뷰를 불러오는 중...';
+      try {
+        const res = await fetch(API_BASE + '/api/reviews/mine?empno=' + encodeURIComponent(p.empno));
+        const { reviews } = res.ok ? await res.json() : { reviews: [] };
+        if (!reviews || !reviews.length) {
+          if (head) head.textContent = '아직 작성한 리뷰가 없어요';
+          list.innerHTML = '<div style="text-align:center;color:#94A3B8;font-size:13px;padding:40px 0">첫 후기를 남겨보세요! ✍️</div>';
+          return;
+        }
+        if (head) head.innerHTML = `총 <b>${reviews.length}건</b>의 리뷰를 작성했어요`;
+        list.innerHTML = reviews.map(myReviewCard).join('');
+      } catch (e) {
+        console.error('내 리뷰 로드 실패:', e);
+        if (head) head.textContent = '리뷰를 불러오지 못했어요';
+      }
+    }
+
+    // 나의페이지 '내가 쓴 리뷰' 개수 배지 갱신
+    async function updateMyReviewsCount() {
+      const el = document.getElementById('my-reviews-count');
+      if (!el) return;
+      const p = (typeof getProfile === 'function' && getProfile()) || {};
+      if (!p.empno) { el.textContent = '0건'; return; }
+      try {
+        const res = await fetch(API_BASE + '/api/reviews/mine?empno=' + encodeURIComponent(p.empno));
+        const { reviews } = res.ok ? await res.json() : { reviews: [] };
+        el.textContent = (reviews ? reviews.length : 0) + '건';
+      } catch (e) {
+        console.error('내 리뷰 개수 조회 실패:', e);
+      }
+    }
+    // 최초 로드 시 개수 반영
+    updateMyReviewsCount();
 
     // banner characters removed
 
@@ -8774,7 +8978,7 @@
       <div class="answer">
         <div class="ahead">
           <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
-          박OO 책임 (나) <span style="color:#475569;font-weight:400;font-size:10px">· 방금 전</span>
+          관리자 (나) <span style="color:#475569;font-weight:400;font-size:10px">· 방금 전</span>
         </div>
         <div class="atext">${escapeHtml(text)}</div>
       </div>
