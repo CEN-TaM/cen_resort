@@ -29,11 +29,42 @@ npm start            # http://localhost:8999 에서 실행
 - ⚠️ 로컬은 **각자 빈 DB**입니다. 애월 실제 후기 16건은 **서버에만** 있어요.
 - 데이터(DB)·사진은 git에 없습니다(`server/data/`, `server/uploads/`는 `.gitignore`).
 
-### 개발 흐름
-1. 로컬에서 코드 수정 → `npm start`로 확인
-2. 본인 브랜치에 커밋 → `git push`
-3. GitHub에서 **PR 생성 → main 병합**
-4. 개발서버에 배포 (아래 4번)
+---
+
+## 1.5 브랜치 규칙 (⚠️ 꼭 지켜주세요)
+
+**저장소는 GitHub `CEN-TaM/cen_resort`에 연결되어 있고, 각자 개인 브랜치가 있습니다.**
+
+| 브랜치 | 담당자 | 회사 이메일 |
+|---|---|---|
+| `gypark` | 박가연 | gypark@itcen.com |
+| `gywjdkim` | 김효정 | hjkim4@itcen.com |
+| `jkkim` | 김자경 | jk_kim@itcen.com |
+| `smlim` | 임소미 | smlim@itcen.com |
+| `solyi` | 김솔이 | kimsolyi@itcen.com |
+| `main` | **통합 브랜치 (직접 push 금지)** | — |
+
+### 올리는 순서 — 반드시 이렇게
+1. **본인 개인 브랜치**에서 작업하고 **먼저 개인 브랜치에 push**
+   ```bash
+   git checkout <내브랜치>          # 예: git checkout gypark
+   git pull origin <내브랜치>       # 최신 상태로
+   # ... 코드 수정 ...
+   git add -A && git commit -m "작업 내용"
+   git push origin <내브랜치>       # ① 개인 브랜치에 먼저
+   ```
+2. 개인 브랜치 → **main 병합은 PR로**
+   ```bash
+   gh pr create --base main --head <내브랜치> --title "..." --body "..."
+   gh pr merge <PR번호> --merge      # ② 검토 후 main에 반영
+   ```
+
+- ⛔ **`main`에 직접 push 금지.** 반드시 `개인 브랜치 → PR → main` 순서.
+- ⛔ 남의 브랜치에 push 금지.
+- 💡 main의 최신 내용을 내 브랜치로 가져오려면: `git checkout <내브랜치> && git merge origin/main`
+
+### 개발 흐름 요약
+로컬 수정 → `npm start` 확인 → **개인 브랜치 push** → **PR로 main 병합** → 개발서버 배포(아래 4번)
 
 ---
 
