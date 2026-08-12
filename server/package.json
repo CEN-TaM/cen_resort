@@ -1,0 +1,16 @@
+{
+  "name": "cen-resort-server",
+  "version": "1.0.0",
+  "description": "모바일 휴양소 후기 서비스 백엔드 (Express + 내장 node:sqlite)",
+  "type": "commonjs",
+  "main": "index.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
