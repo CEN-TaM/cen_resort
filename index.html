@@ -7039,18 +7039,38 @@
     }
     document.querySelectorAll('i.ti, span.ti').forEach(tiToMs);
 
-    function showScreen(deviceId, screenName) {
+    // 화면별 스크롤 위치 저장소 (뒤로가기 시 보던 위치 복원용)
+    const scrollPos = {};
+    function saveScreenScroll(screenEl) {
+      if (!screenEl) return;
+      const name = screenEl.getAttribute('data-screen');
+      const sb = screenEl.querySelector('.scroll-body');
+      scrollPos[name] = { top: screenEl.scrollTop || 0, body: sb ? sb.scrollTop : 0 };
+    }
+    function showScreen(deviceId, screenName, opts) {
       const device = document.getElementById(deviceId);
+      // 떠나는 화면의 스크롤 위치 저장
+      saveScreenScroll(device.querySelector('.screen.active'));
       const screens = device.querySelectorAll('.screen');
       screens.forEach(s => s.classList.remove('active'));
       const target = device.querySelector(`[data-screen="${screenName}"]`);
       if (target) {
         target.classList.add('active');
-        target.scrollTop = 0;
         const sh = target.querySelector('.sticky-header');
-        if (sh) sh.classList.remove('scrolled');
         const sb = target.querySelector('.scroll-body');
-        if (sb) sb.scrollTop = 0;
+        const saved = scrollPos[screenName];
+        if (saved && !(opts && opts.reset)) {
+          // 뒤로가기 등 재진입: 보던 위치 복원
+          const apply = () => { target.scrollTop = saved.top; if (sb) sb.scrollTop = saved.body; };
+          apply();
+          requestAnimationFrame(apply); // 레이아웃 이후 한 번 더 (안전)
+          if (sh) sh.classList.toggle('scrolled', (saved.top || saved.body) > 4);
+        } else {
+          // 새로 여는 화면: 맨 위로
+          target.scrollTop = 0;
+          if (sh) sh.classList.remove('scrolled');
+          if (sb) sb.scrollTop = 0;
+        }
       }
       // '내가 쓴 리뷰' 진입 시 서버에서 내 후기 로드
       if (screenName === 'my-reviews' && typeof loadMyReviews === 'function') loadMyReviews();
@@ -8645,7 +8665,7 @@
     }
 
     function openResort(name, tab, reviewId) {
-      showScreen('device1', 'detail');
+      showScreen('device1', 'detail', { reset: true });
       // 상세 탭 지정 (기본: 편의시설)
       const dt = document.querySelector('.screen[data-screen="detail"]');
       if (dt) {
@@ -9359,7 +9379,7 @@
         const h = document.getElementById('detail-resort-name');
         if (h) h.textContent = name;
       }
-      showScreen('device1', 'detail');
+      showScreen('device1', 'detail', { reset: true });
     }
 
     renderSeniMap();
