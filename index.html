@@ -8726,6 +8726,11 @@
         { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
       ));
     }
+    // 부서 · 회사 표시줄 (있을 때만)
+    function orgLine(rv) {
+      const org = [rv.department, rv.company].filter(Boolean).map(escapeHtml).join(' · ');
+      return org ? `<div class="meta" style="color:#94A3B8;font-size:11px">${org}</div>` : '';
+    }
     function fmtDate(iso) {
       // 2026-08-12T... → 2026.08.12
       const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
@@ -8749,6 +8754,7 @@
         <div class="who">
           <div class="name">${name} ${reviewBadge(rv)}</div>
           <div class="meta">${fmtDate(rv.createdAt)} 작성${comp}</div>
+          ${orgLine(rv)}
         </div>
         <span class="badge verified"><i class="ti ti-check"></i> 인증</span>
       </div>
@@ -8837,6 +8843,7 @@
           <div class="who">
             <div class="name">${name} ${reviewBadge(rv)}</div>
             <div class="meta">${escapeHtml(rv.resortName)} · 방금 전</div>
+            ${orgLine(rv)}
           </div>
         </div>
         <div class="rating-line">${stars}<span class="rating-num">${avg}</span></div>
@@ -8891,6 +8898,7 @@
           <div class="who">
             <div class="name">${escapeHtml(rv.authorName || '나')} <span class="badge" style="background:#1F4FE0;color:#fff">내 리뷰</span></div>
             <div class="meta">${escapeHtml(rv.resortName)} · ${fmtDate(rv.createdAt)}</div>
+            ${orgLine(rv)}
           </div>
         </div>
         <div class="rating-line">${stars}<span class="rating-num">${avg}</span></div>

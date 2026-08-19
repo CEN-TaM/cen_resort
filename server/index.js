@@ -61,6 +61,8 @@ function loadReview(row) {
     id: row.id,
     empno: row.empno,
     authorName: row.author_name,
+    department: row.department,
+    company: row.company,
     resortName: row.resort_name,
     resortType: row.resort_type,
     companions,
@@ -106,9 +108,9 @@ app.post('/api/reviews', (req, res) => {
     // 트랜잭션으로 후기 + 사진 함께 저장
     const insertReview = db.prepare(`
       INSERT INTO reviews
-        (empno, author_name, resort_name, resort_type, companions, content,
+        (empno, author_name, department, company, resort_name, resort_type, companions, content,
          rating_location, rating_facility, rating_clean, rating_avg, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const insertPhoto = db.prepare('INSERT INTO review_photos (review_id, path) VALUES (?, ?)');
 
@@ -116,7 +118,8 @@ app.post('/api/reviews', (req, res) => {
     db.exec('BEGIN');
     try {
       const info = insertReview.run(
-        b.empno || null, b.authorName || null, resortName, b.resortType || null,
+        b.empno || null, b.authorName || null, b.department || null, b.company || null,
+        resortName, b.resortType || null,
         companions, b.content || '', rl, rf, rc, avg, createdAt
       );
       reviewId = Number(info.lastInsertRowid);

@@ -19,6 +19,8 @@ db.exec(`
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     empno           TEXT,              -- 작성자 사번
     author_name     TEXT,              -- 작성자 표시 이름
+    department      TEXT,              -- 부서
+    company         TEXT,              -- 회사
     resort_name     TEXT NOT NULL,     -- 휴양소 이름
     resort_type     TEXT,              -- regular | summer | winter
     companions      TEXT,              -- JSON 배열 문자열 (예: ["가족","친구"])
@@ -53,5 +55,10 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_photos_review  ON review_photos(review_id);
   CREATE INDEX IF NOT EXISTS idx_comments_review ON review_comments(review_id);
 `);
+
+// 기존 DB 마이그레이션: 부서/회사 컬럼이 없으면 추가
+for (const col of ['department', 'company']) {
+  try { db.exec(`ALTER TABLE reviews ADD COLUMN ${col} TEXT`); } catch (e) { /* 이미 존재 */ }
+}
 
 module.exports = db;
