@@ -7923,56 +7923,57 @@
         dots.forEach((d, i) => d.classList.toggle('active', i === logical));
       }
 
+      let snapTimer = null;
       function setPosition(idx, animate = true) {
-        if (animate) slides.style.transition = 'transform 0.3s ease';
-        else slides.style.transition = 'none';
+        slides.style.transition = animate ? 'transform 0.3s ease' : 'none';
         slides.style.transform = `translateX(-${idx * 100}%)`;
         slides.dataset.pos = idx;
+        posIndex = idx;
       }
 
+      // 클론 위치(0=마지막 클론, total-1=첫 클론)면 애니메이션 없이 실제 위치로 정렬
+      function snapIfClone() {
+        if (posIndex <= 0) setPosition(slideCount, false);
+        else if (posIndex >= total - 1) setPosition(1, false);
+      }
+      // transitionend 누락 대비 타이머 안전장치
+      function scheduleSnap() {
+        clearTimeout(snapTimer);
+        snapTimer = setTimeout(snapIfClone, 360);
+      }
+
+      function moveBanner(delta) {
+        snapIfClone();            // 이동 전 클론이면 먼저 실제 위치로 (빈 배너로 밀려나는 것 방지)
+        void slides.offsetWidth;  // reflow: 무애니 점프를 즉시 반영
+        setPosition(posIndex + delta, true);
+        updateDots();
+        scheduleSnap();
+      }
       function goToBannerSlide(idx) {
-        posIndex = ((idx % slideCount) + 1);
-        setPosition(posIndex, true);
+        snapIfClone();
+        void slides.offsetWidth;
+        setPosition(((idx % slideCount) + slideCount) % slideCount + 1, true);
         updateDots();
+        scheduleSnap();
       }
-
-      function nextBannerSlide() {
-        posIndex = posIndex + 1;
-        setPosition(posIndex, true);
-        updateDots();
-      }
-
-      function prevBannerSlide() {
-        posIndex = posIndex - 1;
-        setPosition(posIndex, true);
-        updateDots();
-      }
+      function nextBannerSlide() { moveBanner(1); }
+      function prevBannerSlide() { moveBanner(-1); }
 
       // 초기 위치: 첫 번째 실제 슬라이드
       setPosition(posIndex, false);
       updateDots();
 
-      // 자동슬라이드 (숨겨져 있으면 건너뜀 — 무한루프 인덱스 어긋남 방지)
+      // 자동슬라이드 (숨겨져 있으면 건너뜀)
       function autoTick() {
         if (carousel.offsetParent === null) return; // display:none 이면 정지
         nextBannerSlide();
       }
       let bannerAuto = setInterval(autoTick, 5000);
 
-      // 트랜지션 완료시 클론에서 실제 위치로 스냅
-      slides.addEventListener('transitionend', () => {
-        const cur = parseInt(slides.dataset.pos || posIndex, 10);
-        if (cur === 0) {
-          // 왼쪽 끝(마지막 클론) -> 실제 마지막으로 점프
-          posIndex = slideCount;
-          setPosition(posIndex, false);
-          updateDots();
-        } else if (cur === total - 1) {
-          // 오른쪽 끝(첫 클론) -> 실제 첫으로 점프
-          posIndex = 1;
-          setPosition(posIndex, false);
-          updateDots();
-        }
+      // 트랜지션 완료 즉시 클론 → 실제 스냅 (transform 전환만 대상)
+      slides.addEventListener('transitionend', (e) => {
+        if (e.target !== slides || e.propertyName !== 'transform') return;
+        snapIfClone();
       });
 
       // 터치/스와이프 처리
