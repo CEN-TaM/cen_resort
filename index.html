@@ -8704,6 +8704,65 @@
       const org = [rv.department, rv.company].filter(Boolean).map(escapeHtml).join(' · ');
       return org ? `<div class="meta" style="color:#94A3B8;font-size:11px">${org}</div>` : '';
     }
+
+    // ===== 후기 사진 라이트박스 (크게 보기 + 좌우 이동) =====
+    let lbImages = [], lbIdx = 0;
+    function ensureLightbox() {
+      if (document.getElementById('rv-lightbox')) return;
+      const host = document.getElementById('device1') || document.body;
+      if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+      const lb = document.createElement('div');
+      lb.id = 'rv-lightbox';
+      lb.style.cssText = 'position:absolute;inset:0;z-index:9999;display:none;background:rgba(0,0,0,.92);align-items:center;justify-content:center;';
+      lb.innerHTML =
+        '<button id="lb-close" aria-label="닫기" style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,.18);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer">×</button>' +
+        '<button id="lb-prev" aria-label="이전" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.18);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:24px;line-height:1;cursor:pointer">‹</button>' +
+        '<img id="lb-img" alt="후기 사진" style="max-width:88%;max-height:80%;object-fit:contain;border-radius:8px;user-select:none" />' +
+        '<button id="lb-next" aria-label="다음" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.18);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:24px;line-height:1;cursor:pointer">›</button>' +
+        '<div id="lb-count" style="position:absolute;bottom:16px;color:#fff;font-size:13px;background:rgba(0,0,0,.45);padding:4px 12px;border-radius:20px"></div>';
+      host.appendChild(lb);
+      lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+      lb.querySelector('#lb-close').onclick = e => { e.stopPropagation(); closeLightbox(); };
+      lb.querySelector('#lb-prev').onclick = e => { e.stopPropagation(); lbMove(-1); };
+      lb.querySelector('#lb-next').onclick = e => { e.stopPropagation(); lbMove(1); };
+      // 키보드 좌우/ESC
+      document.addEventListener('keydown', e => {
+        const el = document.getElementById('rv-lightbox');
+        if (!el || el.style.display === 'none') return;
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') lbMove(-1);
+        else if (e.key === 'ArrowRight') lbMove(1);
+      });
+      // 터치 스와이프
+      let sx = 0;
+      const img = lb.querySelector('#lb-img');
+      img.addEventListener('touchstart', e => { sx = e.changedTouches[0].clientX; }, { passive: true });
+      img.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx) > 40) lbMove(dx < 0 ? 1 : -1);
+      }, { passive: true });
+    }
+    function renderLightbox() {
+      if (!lbImages.length) return;
+      if (lbIdx < 0) lbIdx = lbImages.length - 1;
+      if (lbIdx >= lbImages.length) lbIdx = 0;
+      document.getElementById('lb-img').src = lbImages[lbIdx];
+      document.getElementById('lb-count').textContent = (lbIdx + 1) + ' / ' + lbImages.length;
+      const one = lbImages.length <= 1;
+      document.getElementById('lb-prev').style.display = one ? 'none' : '';
+      document.getElementById('lb-next').style.display = one ? 'none' : '';
+    }
+    function lbMove(d) { lbIdx += d; renderLightbox(); }
+    function closeLightbox() { const lb = document.getElementById('rv-lightbox'); if (lb) lb.style.display = 'none'; }
+    function openReviewLightbox(el, ev) {
+      if (ev) ev.stopPropagation();
+      ensureLightbox();
+      const nodes = Array.from(el.parentNode.querySelectorAll('[data-full]'));
+      lbImages = nodes.map(n => n.dataset.full);
+      lbIdx = Math.max(0, nodes.indexOf(el));
+      renderLightbox();
+      document.getElementById('rv-lightbox').style.display = 'flex';
+    }
     function fmtDate(iso) {
       // 2026-08-12T... → 2026.08.12
       const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
@@ -8717,7 +8776,7 @@
       const starFull = Math.round(rv.ratings?.avg || 0);
       const stars = '★'.repeat(starFull) + '☆'.repeat(5 - starFull);
       const photos = (rv.photos || []).slice(0, 4).map(src =>
-        `<div style="aspect-ratio:1;border-radius:8px;background:#E8EAEE center/cover no-repeat;background-image:url('${API_BASE}${escapeHtml(src)}')"></div>`
+        `<div class="rv-photo" data-full="${API_BASE}${escapeHtml(src)}" onclick="openReviewLightbox(this,event)" style="aspect-ratio:1;border-radius:8px;cursor:pointer;background:#E8EAEE center/cover no-repeat;background-image:url('${API_BASE}${escapeHtml(src)}')"></div>`
       ).join('');
       const photoGrid = photos ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:10px 0 12px">${photos}</div>` : '';
       const content = rv.content ? `<div style="font-size:13px;color:#0F172A;line-height:1.7">${escapeHtml(rv.content)}</div>` : '';
