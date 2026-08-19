@@ -107,9 +107,9 @@ function main(){
     .sort((a,b)=> (g(a,'post_date')).localeCompare(g(b,'post_date')));
 
   const insReview = db.prepare(`INSERT INTO reviews
-    (empno, author_name, resort_name, resort_type, companions, content,
+    (empno, author_name, department, company, resort_name, resort_type, companions, content,
      rating_location, rating_facility, rating_clean, rating_avg, likes, created_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`);
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
   const insPhoto = db.prepare('INSERT INTO review_photos (review_id, path) VALUES (?,?)');
 
   let nR=0,nP=0;
@@ -126,7 +126,7 @@ function main(){
       const cons=g(r,'cons'); if(cons) parts.push('⚠️ 아쉬웠던 점\n'+cons);
       const content=parts.join('\n\n');
       const createdAt=toISO(g(r,'post_date'));
-      const info=insReview.run(SENTINEL, g(r,'author_name')||'익명', resortName, 'regular',
+      const info=insReview.run(SENTINEL, g(r,'author_name')||'익명', g(r,'department'), g(r,'company'), resortName, 'regular',
         companions, content, rt.location, rt.facility, rt.clean, rt.avg, 0, createdAt);
       const reviewId=Number(info.lastInsertRowid); nR++;
 
