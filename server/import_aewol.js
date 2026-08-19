@@ -63,6 +63,14 @@ function companionsFrom(text){
   if(/부부|아내|남편|와이프/.test(text) && !c.includes('가족')) c.push('연인');
   return c;
 }
+// 원문(raw_text_file)의 '게시자' 다음 줄에서 직급 추출 (xlsx엔 직급 컬럼이 없음)
+function positionFromRaw(rawFile){
+  try{
+    const txt = fs.readFileSync(path.join(DATASET, rawFile), 'utf8');
+    const m = /게시자\s*\r?\n\s*(\S+)\s+([^\s/]+)\s*\//.exec(txt);
+    return m ? m[2] : '';
+  }catch(e){ return ''; }
+}
 function toISO(postDate){
   // "2026-04-01" → ISO. 날짜만 있으면 09:00 KST로.
   const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(postDate||'');
@@ -126,7 +134,9 @@ function main(){
       const cons=g(r,'cons'); if(cons) parts.push('⚠️ 아쉬웠던 점\n'+cons);
       const content=parts.join('\n\n');
       const createdAt=toISO(g(r,'post_date'));
-      const info=insReview.run(SENTINEL, g(r,'author_name')||'익명', g(r,'department'), g(r,'company'), resortName, 'regular',
+      const pos = positionFromRaw(g(r,'raw_text_file'));
+      const author = ((g(r,'author_name')||'익명') + (pos ? ' ' + pos : '')).trim();
+      const info=insReview.run(SENTINEL, author, g(r,'department'), g(r,'company'), resortName, 'regular',
         companions, content, rt.location, rt.facility, rt.clean, rt.avg, 0, createdAt);
       const reviewId=Number(info.lastInsertRowid); nR++;
 
