@@ -18,10 +18,15 @@ const HR_DIRECTORY = {
 
 // ===== 개발용 임시 계정 전체 정보 (사번 → {비번, 이름, 직급, 전화, 이메일}) =====
 // 초기 비밀번호: 0000 (공통)
+//
+// ⚠️ 이 저장소는 공개(public)입니다. 개인 휴대폰 번호는 넣지 마세요.
+//    phone 은 화면 미리채움용 예시값입니다 (문자 발송 기능 없음).
+//    email 은 추후 메일 인증 테스트에 필요해 실제 회사 메일을 유지합니다.
+//    외부 시연 계정은 11223 / 0000 입니다.
 const DEMO_ACCOUNTS = {
-  '11343': { pw: '0000', name: '김효정', position: '책임', phone: '010-6233-9617', email: 'hjkim4@itcen.com' },
-  '11750': { pw: '0000', name: '임소미', position: '수석', phone: '010-4416-5333', email: 'smlim@itcen.com' },
-  '11865': { pw: '0000', name: '김솔이', position: '책임', phone: '010-7743-2602', email: 'kimsolyi@itcen.com' },
-  '11875': { pw: '0000', name: '박가연', position: '책임', phone: '010-4922-7098', email: 'gypark@itcen.com' },
-  '11887': { pw: '0000', name: '김자경', position: '책임', phone: '010-4576-8556', email: 'jk_kim@itcen.com' }
+  '11343': { pw: '0000', name: '김효정', position: '책임', phone: '010-0000-1343', email: 'hjkim4@itcen.com' },
+  '11750': { pw: '0000', name: '임소미', position: '수석', phone: '010-0000-1750', email: 'smlim@itcen.com' },
+  '11865': { pw: '0000', name: '김솔이', position: '책임', phone: '010-0000-1865', email: 'kimsolyi@itcen.com' },
+  '11875': { pw: '0000', name: '박가연', position: '책임', phone: '010-0000-1875', email: 'gypark@itcen.com' },
+  '11887': { pw: '0000', name: '김자경', position: '책임', phone: '010-0000-1887', email: 'jk_kim@itcen.com' }
 };

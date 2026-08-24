@@ -108,40 +108,53 @@ ssh-copy-id -i ~/.ssh/cen_resort_deploy.pub -p 7722 devadm01@192.168.64.57
 
 ## 4. 서버에 코드 반영 (배포)
 
-> ⚠️ **현재 서버엔 git이 설치돼 있지 않습니다.** 그래서 배포는 **로컬 코드를 scp로 전송**하는 방식입니다.
-> (git 기반 `./deploy.sh` 자동화를 쓰려면 6번 "권장 개선" 참고)
+**① main 에 병합 → ② 서버에서 `./deploy.sh`** — 이게 전부입니다.
+
+```bash
+ssh -i ~/.ssh/cen_resort_deploy -p 7722 devadm01@192.168.64.57
+cd ~/cen_resort && ./deploy.sh
+```
+
+`deploy.sh` 가 알아서 합니다.
+
+- `origin/main` 최신 코드로 동기화 (`git fetch` → `git reset --hard`)
+- `npm install`
+- `pm2 reload` 로 무중단 재시작
+- **동시 배포 차단** — 누가 배포 중이면 "잠시 후 시도" 안내 후 종료
+
+로컬 파일을 올리지 않습니다. 서버가 GitHub 에서 직접 받습니다.
+`server/data`·`server/uploads` 는 `.gitignore` 대상이라 배포해도 **건드려지지 않습니다.**
+
+```bash
+git log --oneline -1        # 서버에 지금 올라가 있는 커밋 확인
+```
 
 ### Claude에게 시키는 법
 > "최신 코드를 개발서버(192.168.64.57)에 배포해줘"
 
-Claude가 아래를 수행합니다 (수동으로 할 경우 참고):
+---
+
+## 4.5 데이터 자동 백업
+
+후기 DB(`server/data`)와 사진(`server/uploads`)은 git 에 없습니다. 서버 한 곳에만 있으므로 매일 자동 백업합니다.
+
+| | |
+|---|---|
+| 주기 | 매일 새벽 3시 (pm2 cron — `crontab` 이 금지돼 있어 pm2 로 처리) |
+| 위치 | `~/backups/YYYY-MM-DD/` |
+| 보관 | 14일 |
 
 ```bash
-KEY=~/.ssh/cen_resort_deploy
-# 1) 로컬에서 전송용 압축 (node_modules/.git 제외, data·uploads 포함)
-cd /path/to/cen_resort
-tar czf /tmp/deploy.tgz --exclude=.git --exclude=server/node_modules --exclude='*.log' .
-
-# 2) 서버로 전송
-scp -i $KEY -P 7722 /tmp/deploy.tgz devadm01@192.168.64.57:~/deploy.tgz
-
-# 3) 서버에서 풀고 재시작 (서버엔 tar가 없어 python으로 추출)
-ssh -i $KEY -p 7722 devadm01@192.168.64.57 '
-  export PATH="$HOME/opt/node/bin:$PATH"
-  # 코드만 갱신하고 기존 DB/uploads는 보존하려면 별도 처리 필요 — 아래는 코드 전체 교체 예시
-  python3 -c "import tarfile; tarfile.open(\"$HOME/deploy.tgz\").extractall(\"$HOME/cen_resort\")"
-  rm -f ~/deploy.tgz
-  cd ~/cen_resort/server && npm install --no-audit --no-fund
-  pm2 reload cen-resort
-'
+pm2 logs cen-resort-backup --lines 20     # 백업 이력
+node ~/cen_resort/server/backup.js        # 수동 백업 (배포 직전 등)
+ls ~/backups/                             # 보관 목록
 ```
 
-> ⚠️ **데이터 주의**: 위 방식으로 `server/data`·`server/uploads`까지 덮어쓰면 서버의 후기가 로컬 것으로 바뀝니다.
-> 코드만 바꾸고 서버 데이터를 지키려면, **로컬 tar에서 `server/data`·`server/uploads`를 제외**하고 전송하세요:
-> ```bash
-> tar czf /tmp/deploy.tgz --exclude=.git --exclude=server/node_modules \
->   --exclude=server/data --exclude=server/uploads --exclude='*.log' .
-> ```
+- DB 는 `VACUUM INTO` 로 스냅샷을 떠 **WAL 모드에서도 일관성**이 보장됩니다.
+- 사진은 하드링크라 14일치를 쌓아도 디스크를 거의 쓰지 않습니다.
+- 복구 절차는 `server/backup.js` 상단 주석에 있습니다.
+
+> `pm2 status` 에서 `cen-resort-backup` 이 `stopped` 인 것은 **정상**입니다. 정해진 시각에만 깨어납니다.
 
 ---
 
@@ -164,18 +177,9 @@ ssh -i ~/.ssh/cen_resort_deploy -p 7722 devadm01@192.168.64.57
 여러 명이 같은 `devadm01` 계정을 씁니다. 아래만 지키면 안전해요:
 
 - ⛔ **`node index.js` 직접 실행 금지** → 포트 8999 충돌. 반드시 **pm2**를 통해서만.
-- ⛔ **서버에서 코드 직접 수정 금지** → 수정은 **로컬 → git push → 배포**. 서버는 실행 대상일 뿐.
-- ⛔ **`server/data/`, `server/uploads/` 삭제 금지** → 후기 DB·사진. git에 없어 복구 어려움.
-- ⚠️ **동시 배포 주의** → 두 명이 동시에 배포하지 않기. (git 기반 `deploy.sh`엔 락이 있지만 scp 방식엔 없음)
-
-### (권장 개선) git 기반 배포로 전환
-서버에 git을 설치하면 `./deploy.sh` 한 번으로 배포 + 동시배포 락까지 됩니다. 관리자가 1회 세팅:
-```bash
-# 서버에서 (sudo 비번 필요)
-sudo dnf install -y git tar
-# 저장소 clone + 인증(비공개 저장소라 토큰/deploy key 필요) 후
-cd ~/cen_resort && ./deploy.sh   # 이후 배포는 이 한 줄
-```
+- ⛔ **서버에서 코드 직접 수정 금지** → `git reset --hard` 로 날아갑니다. 수정은 **로컬 → PR → main → 배포**.
+- ⛔ **`server/data/`, `server/uploads/` 삭제 금지** → 후기 DB·사진. git에 없어 백업에서만 복구됩니다.
+- ✅ **동시 배포는 `deploy.sh` 가 막아줍니다** (flock). 겹치면 "잠시 후 시도" 안내가 뜹니다.
 
 ---
 
@@ -183,13 +187,16 @@ cd ~/cen_resort && ./deploy.sh   # 이후 배포는 이 한 줄
 
 개발서버(Rocky Linux 9.8) 환경에는 특이점이 있어, 팀원 Claude가 미리 알면 시행착오를 피할 수 있습니다:
 
-- **`tar`가 없음**, `git`도 없음, **`sudo`는 비밀번호 필요**(devadm01은 wheel 그룹).
-- **있는 것**: `python3`, `curl`, `gzip`, `xz`, `cpio`. **인터넷 됨**(github/nodejs.org 접근 가능).
-- **tar 없이 압축 풀기** → python 사용:
+- **`git` 2.52 설치됨**(2026-08-24). `tar`는 **여전히 없음**, **`sudo`는 비밀번호 필요**(devadm01은 wheel 그룹).
+- **있는 것**: `git`, `flock`, `python3`, `curl`, `gzip`, `xz`, `cpio`. **인터넷 됨**(github/nodejs.org 접근 가능).
+- **배포는 `./deploy.sh`** — 서버가 `origin/main` 을 직접 받습니다. scp 로 파일을 밀어넣지 마세요.
+- **tar 없이 압축 풀기**(필요한 경우) → python 사용:
   ```bash
   python3 -c "import tarfile; tarfile.open('archive.tgz').extractall('dest')"
   ```
   (`cpio`로 풀면 GNU tar의 긴 경로(`@LongLink`)가 깨지니 **python tarfile 사용**.)
+- **Windows 홈 경로에 한글이 있으면** OpenSSH 가 `~/.ssh` 를 못 읽습니다(`Could not create directory '/c/Users/\261\350...'`).
+  한글 없는 경로로 키를 옮기고 `-i`, `-o UserKnownHostsFile=` 을 명시하세요.
 - **Node는 sudo 없이 사용자 레벨 설치됨**: `~/opt/node` (nodejs.org tarball → python tarfile 추출 → `PATH="$HOME/opt/node/bin:$PATH"`). 이미 설치돼 있으니 재설치 불필요.
 - **pm2 전역 설치**는 사용자 레벨 node라 `npm install -g pm2`가 **sudo 없이** 됨.
 - **sudo가 꼭 필요한 것**은 방화벽 개방(`firewall-cmd --add-port=8999/tcp`)과 pm2 startup뿐 — **둘 다 이미 완료**됨.
