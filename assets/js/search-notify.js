@@ -34,23 +34,7 @@ function renderSearchResults(q) {
   results.innerHTML = matched.map(m => m.outerHTML).join('');
 }
 
-function openNotifications() {
-  renderNotifications();
-  showScreen('device1', 'notifications');
-}
-
-function renderNotifications() {
-  const out = document.getElementById('notifications-list');
-  if (!out) return;
-  out.innerHTML = Object.entries(NOTICES).map(([id, n]) => {
-    return `
-    <div class="notice-row" style="padding:12px 8px; border-bottom:1px solid var(--border); cursor:pointer" onclick="openNoticeDetail('${id}')">
-      <div style="font-weight:700">${n.title}</div>
-      <div style="font-size:12px; color:var(--text-3); margin-top:6px">${n.date} · ${n.views}</div>
-    </div>
-  `;
-  }).join('');
-}
+// 알림센터는 assets/js/notification.js 로 옮겼다 (댓글·답글·공지 3종 + 읽음 처리)
 
 // 스티키 헤더 스크롤 시 반투명 효과 (region-chips 포함)
 document.querySelectorAll('.screen').forEach(screen => {

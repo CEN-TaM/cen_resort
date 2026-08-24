@@ -92,6 +92,7 @@ function serverReviewCard(rv) {
   </div>
   ${photoGrid}
   ${content}
+  ${typeof reviewCommentsHtml === 'function' ? reviewCommentsHtml(rv) : ''}
   <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>`;
 }
 // 상세페이지 총계(리뷰 수·평균·항목별 점수)를 실제 후기로 동기화
