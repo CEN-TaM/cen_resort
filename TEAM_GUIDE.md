@@ -7,12 +7,39 @@
 
 ## 0. 사전 준비물
 
-| 항목 | 설명 |
+### 사람에게 받아야 하는 것 (AI가 대신 못 함)
+
+| 항목 | 어떻게 |
 |---|---|
-| **VPN (ITCEN Axgate)** | ⚠️ **필수.** 연결 안 하면 서버 접속·배포 전부 timeout. 개발 시작 전 항상 연결(연결완료 100% 확인). |
-| **Git Bash** (Windows) | 아래 명령들은 Git Bash(POSIX 셸) 기준. PowerShell 아님. |
-| **Node.js 22.5+** (로컬) | 로컬 테스트용. `node:sqlite` 내장 모듈 때문에 **22.5 이상** 필요. |
-| **GitHub 접근 권한** | 저장소 `CEN-TaM/cen_resort` collaborator 등록 필요. |
+| **VPN (ITCEN Axgate)** | ⚠️ **필수.** 없으면 서버 접속·배포 전부 timeout. 팀 담당자에게 설치 파일과 계정 요청 |
+| **서버 공용 비밀번호** | `devadm01` 계정 비번. 팀 내 공유 — 담당자에게 문의 |
+| **GitHub 저장소 권한** | `CEN-TaM/cen_resort` collaborator 등록. 저장소 관리자에게 GitHub 아이디 전달 |
+
+### 직접 설치하는 것
+
+| 항목 | 받는 곳 |
+|---|---|
+| **Git Bash** (Windows) | https://git-scm.com/download/win — 설치 중 옵션은 전부 기본값으로 두면 됩니다 |
+| **Node.js 22.5+** | https://nodejs.org — `node:sqlite` 내장 모듈 때문에 **22.5 이상**. LTS 버전 받으세요 |
+| **GitHub CLI** (`gh`) | https://cli.github.com — PR 만들 때 필요. 설치 후 `gh auth login` 한 번 |
+
+설치 확인 (Git Bash 에서):
+
+```bash
+node -v     # v22.5.0 이상
+git --version
+gh --version
+```
+
+### 터미널 여는 법
+
+명령은 전부 **Git Bash** 기준입니다. PowerShell 은 문법이 달라 안 됩니다.
+
+1. VS Code 에서 **`Ctrl`** + **`Shift`** + **`` ` ``** (숫자 `1` 왼쪽, `~` 키)
+2. 터미널 **오른쪽 위 `+` 옆 꺾쇠(`∨`)** → **Git Bash**
+3. `홍길동@LAPTOP-XXXX MINGW64 ~` 처럼 보이면 준비 완료
+
+> 붙여넣기는 **마우스 오른쪽 클릭** 또는 `Shift`+`Insert`. `Ctrl`+`V` 는 안 먹을 수 있습니다.
 
 ---
 
@@ -155,6 +182,16 @@ ls ~/backups/                             # 보관 목록
 - 복구 절차는 `server/backup.js` 상단 주석에 있습니다.
 
 > `pm2 status` 에서 `cen-resort-backup` 이 `stopped` 인 것은 **정상**입니다. 정해진 시각에만 깨어납니다.
+
+**새 서버에 백업을 붙일 때** (기존 서버는 이미 등록됨 — 빠뜨리기 쉬우니 주의):
+
+```bash
+cd ~/cen_resort/server
+pm2 start backup.js --name cen-resort-backup --cron "0 3 * * *" --no-autorestart
+pm2 save
+```
+
+새 서버 전체 세팅 절차는 `DEPLOY.md` 7번을 보세요.
 
 ---
 
