@@ -1,0 +1,121 @@
+/* 메인 탭 · 지역 칩 · 필터 칩 */
+.main-tab {
+  display: flex;
+  padding: 0 16px;
+  border-bottom: 1px solid #E8EAEE;
+}
+
+.mtab {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 14px;
+  color: #475569;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: color 0.15s;
+}
+
+.mtab.active {
+  color: #0F172A;
+  font-weight: 700;
+  border-bottom-color: #1F4FE0;
+}
+
+.mtab .new-dot {
+  width: 6px;
+  height: 6px;
+  background: #E94A4A;
+  border-radius: 50%;
+}
+
+.region-chips {
+  display: flex;
+  gap: 6px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.region-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.region-chip {
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(229, 221, 208, 0.4);
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.region-chip:hover {
+  background: rgba(245, 240, 232, 0.6);
+}
+
+.region-chip.active {
+  background: var(--brand-50);
+  color: var(--brand-dark);
+  border-color: var(--brand-100);
+  font-weight: 700;
+}
+
+.region-chip.cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: var(--brand-dark);
+  background: var(--brand-50);
+  border-color: var(--brand-100);
+}
+
+.region-chip.cat-chip i {
+  font-size: 14px;
+}
+
+.region-chip.cat-chip:hover {
+  background: var(--brand-100);
+}
+
+/* 필터 칩 */
+.filter-row {
+  padding: 0 18px 14px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-row::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: #FFFFFF;
+  border: 1px solid #E8EAEE;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip.active {
+  background: var(--brand-50);
+  color: var(--brand-dark);
+  border-color: var(--brand-100);
+  font-weight: 700;
+}
+
+/* 세니 이벤트 배너 (풀블리드 일러스트) */

@@ -1,0 +1,104 @@
+/* 포인트 적립 모달 */
+/* === 포인트 적립 모달 === */
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 31, 18, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 30px;
+}
+
+.modal-backdrop.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.point-modal {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 32px 24px 24px;
+  text-align: center;
+  width: 100%;
+  max-width: 280px;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.point-modal .seni-jump {
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin: 0 auto 14px;
+  object-fit: contain;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.point-modal h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 8px;
+}
+
+.point-modal .pmsub {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.point-modal .gain {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1F4FE0;
+  margin-bottom: 18px;
+}
+
+.point-modal button {
+  width: 100%;
+  padding: 14px;
+  background: #1F4FE0;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}

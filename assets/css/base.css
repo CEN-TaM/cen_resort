@@ -1,0 +1,231 @@
+/* 아이콘 폰트 · 기본 요소 스타일 */
+/* ============ ICON ============ */
+.ms {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ms.outline {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ============ BASE ============ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: var(--bg);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+  font-size: 14px;
+}
+
+.num-display {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* 디바이스 스테이지 — 단일 디바이스 가운데 정렬 */
+.device-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.device-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.device.static {
+  pointer-events: none;
+}
+
+.device.static .tabbar {
+  pointer-events: none;
+}
+
+.device {
+  width: 100%;
+  max-width: 390px;
+  height: calc(100vh - 40px);
+  height: calc(100dvh - 40px);
+  background: var(--surface-2);
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px -20px rgba(15, 23, 42, 0.35), 0 8px 20px -8px rgba(15, 23, 42, 0.15);
+  border: 0;
+  flex-shrink: 0;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--surface-2);
+  display: none;
+  flex-direction: column;
+}
+
+.screen.active {
+  display: flex;
+}
+
+.scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.22) transparent;
+}
+
+.scroll-body::-webkit-scrollbar {
+  width: 3px;
+}
+
+.scroll-body::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.22);
+  border-radius: 999px;
+}
+
+.scroll-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 공통 헤더 */
+.app-header {
+  padding: 14px 18px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header .back {
+  font-size: 22px;
+  cursor: pointer;
+  color: #0F172A;
+}
+
+.app-header .title {
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+  text-align: center;
+}
+
+.app-header .actions {
+  display: flex;
+  gap: 12px;
+  color: #475569;
+}
+
+.app-header .actions i {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* 하단 탭바 (고정) */
+.tabbar {
+  position: relative;
+  background: var(--surface);
+  border-top: 1px solid #E8EAEE;
+  border-radius: 0 0 28px 28px;
+  display: flex;
+  padding: 8px 0 14px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 20;
+  flex-shrink: 0;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  color: #94A3B8;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-item i {
+  font-size: 22px;
+  display: block;
+}
+
+.tab-item span {
+  font-size: 10px;
+  margin-top: 2px;
+  display: block;
+}
+
+.tab-item.active {
+  color: #1F4FE0;
+}
+
+.tab-item.center {
+  flex: 0 0 60px;
+  margin-top: -22px;
+}
+
+.tab-fab {
+  width: 52px;
+  height: 52px;
+  background: #1F4FE0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(31, 79, 224, 0.35);
+  transition: transform 0.15s;
+}
+
+.tab-fab:active {
+  transform: scale(0.92);
+}
+
+.tab-fab i {
+  font-size: 24px;
+  display: inline;
+}
+
+/* 콘텐츠 스크롤 영역 */
+.content {
+  flex: 1;
+  padding-bottom: 16px;
+}
