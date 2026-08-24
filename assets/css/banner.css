@@ -1,0 +1,151 @@
+/* 이벤트 배너 캐러셀 */
+.banner-carousel {
+  position: relative;
+  margin: 0 18px 18px;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+}
+
+.banner-slides {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.event-banner {
+  margin: 0;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 340 / 160;
+  background: #cfe0f5 center / cover no-repeat;
+  color: var(--text-1);
+  flex-shrink: 0;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* 텍스트 가독성용 좌측 흰색 그라데이션 오버레이 */
+.event-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, .38) 36%, rgba(255, 255, 255, 0) 68%);
+}
+
+/* 3번째 배너(이용수칙)는 밝은 배경이라 흰색 오버레이 제거 */
+.event-banner[data-img="banner-third"]::after {
+  display: none;
+}
+
+.event-banner .ev-text,
+.event-banner .pager {
+  z-index: 2;
+}
+
+.event-banner .ev-text {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.event-banner .label {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--brand-dark);
+  padding: 4px 10px;
+  border-radius: var(--pill);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.event-banner .cta {
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: var(--pill);
+  background: #2c84f2;
+}
+
+.event-banner .title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--text-1);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.event-banner .sub {
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text-2);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.event-banner .seni-img {
+  display: none;
+}
+
+.event-banner .pager {
+  position: absolute;
+  left: 20px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: var(--pill);
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.event-banner .pager b {
+  font-weight: 800;
+}
+
+/* 배너 캐로셀 컨트롤 */
+.banner-controls {
+  position: absolute;
+  bottom: 14px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+}
+
+.banner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.banner-dot.active {
+  background: rgba(255, 255, 255, 0.9);
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* 섹션 헤더 */

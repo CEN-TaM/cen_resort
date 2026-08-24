@@ -1,0 +1,236 @@
+/* MY 페이지 · 배지 그리드 */
+/* === MY 페이지 === */
+.my-header {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  padding: 24px 22px 60px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.my-header .name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.my-header .role {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.82);
+  margin-top: 4px;
+}
+
+.my-header .seni-mascot {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 86px;
+  height: 86px;
+  object-fit: contain;
+}
+
+.point-card {
+  margin: -40px 18px 20px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 4px 16px rgba(44, 31, 18, 0.08);
+  position: relative;
+  z-index: 5;
+}
+
+.point-card .row1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.point-card .plabel {
+  font-size: 11px;
+  color: #475569;
+}
+
+.point-card .pnum {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1F4FE0;
+  margin-top: 4px;
+}
+
+.point-card .pnum span {
+  font-size: 14px;
+  color: #0F172A;
+  font-weight: 400;
+}
+
+.point-card .use-btn {
+  background: #0F172A;
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.point-card .ranking {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #E8EAEE;
+  font-size: 11px;
+  color: #475569;
+}
+
+.point-card .ranking b {
+  color: #F59E0B;
+  font-weight: 700;
+}
+
+.menu-list {
+  margin: 0 18px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.menu-list:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.menu-row {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #E8EAEE;
+  cursor: pointer;
+}
+
+.menu-row:last-child {
+  border-bottom: none;
+}
+
+.menu-row .micon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #F1F3F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+}
+
+.menu-row .mlabel {
+  flex: 1;
+  font-size: 13px;
+  color: #0F172A;
+}
+
+.menu-row .mext {
+  font-size: 11px;
+  color: #475569;
+}
+
+.menu-row .mext.point {
+  color: #F59E0B;
+  font-weight: 700;
+}
+
+/* === 배지 그리드 === */
+.badge-stat {
+  margin: 14px 18px 20px;
+  padding: 16px;
+  background: #F1F3F6;
+  border-radius: 16px;
+  display: flex;
+  text-align: center;
+}
+
+.badge-stat .bcell {
+  flex: 1;
+  border-right: 1px solid #E8EAEE;
+}
+
+.badge-stat .bcell:last-child {
+  border-right: none;
+}
+
+.badge-stat .bn {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.badge-stat .bl {
+  font-size: 10px;
+  color: #475569;
+  margin-top: 2px;
+}
+
+.badge-grid {
+  margin: 0 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.badge-item {
+  aspect-ratio: 1;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+  padding: 12px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.badge-item:hover:not(.locked) {
+  border-color: var(--border-strong);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.badge-item:active {
+  transform: scale(0.96);
+}
+
+.badge-item.locked {
+  opacity: 0.4;
+}
+
+.badge-item .b-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.badge-item .b-icon i {
+  font-size: 28px;
+}
+
+.badge-item .bname {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.badge-item .bdesc {
+  font-size: 9px;
+  color: #475569;
+  margin-top: 2px;
+}

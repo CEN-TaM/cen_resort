@@ -1,0 +1,288 @@
+/* 꿀팁 게시판 */
+/* === 꿀팁 게시판 === */
+.tip-cats {
+  padding: 14px 18px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tip-cats::-webkit-scrollbar {
+  display: none;
+}
+
+.tip-cat {
+  min-width: 70px;
+  padding: 12px 8px;
+  background: #FFFFFF;
+  border: 1px solid #E8EAEE;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tip-cat.active {
+  background: #FFF5E0;
+  border-color: #F59E0B;
+}
+
+.tip-cat i {
+  font-size: 22px;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.tip-cat .tname {
+  font-size: 10px;
+  color: #0F172A;
+  font-weight: 700;
+}
+
+.tip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px 12px;
+}
+
+.tip-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.tip-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.tip-arrow:hover {
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+.tip-arrow:active {
+  transform: scale(0.9);
+}
+
+.tip-arrow i {
+  font-size: 16px;
+}
+
+/* 꿀팁 작성 폼 */
+.tip-form {
+  padding: 14px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tip-field {
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-1);
+  outline: none;
+  background: #fff;
+}
+
+.tip-field::placeholder {
+  color: var(--text-3);
+}
+
+.tip-field:focus {
+  border-color: var(--brand);
+}
+
+.tip-textarea {
+  min-height: 96px;
+  resize: none;
+  line-height: 1.5;
+}
+
+.tip-submit {
+  padding: 12px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.tip-submit:active {
+  transform: scale(0.98);
+}
+
+.tip-card {
+  margin: 0 18px 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  cursor: default;
+}
+
+.tip-card .tag-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: var(--pill);
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.tag.hot {
+  background: var(--coral-bg);
+  color: var(--coral-fg);
+}
+
+.tip-card .ttitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 6px;
+}
+
+.tip-card .tcontent {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.tip-card .tfoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #E8EAEE;
+  font-size: 10px;
+  color: #475569;
+}
+
+/* 공유하기 시트 */
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 16px 18px 24px;
+}
+
+.share-opt {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  font-family: inherit;
+}
+
+.share-ic {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s;
+}
+
+.share-ic i {
+  font-size: 26px;
+}
+
+.share-ic.kakao {
+  background: #FEE500;
+  color: #3C1E1E;
+}
+
+.share-ic.sms {
+  background: #34C759;
+  color: #fff;
+}
+
+.share-ic.insta {
+  background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+  color: #fff;
+}
+
+.share-ic.link {
+  background: var(--surface-3);
+  color: var(--text-2);
+}
+
+.share-opt:active .share-ic {
+  transform: scale(0.92);
+}
+
+.share-label {
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+/* 즐겨찾기 정렬 시트 */
+.sort-options {
+  padding: 6px 12px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sort-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 14px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-1);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sort-opt:hover {
+  background: var(--surface-3);
+}
+
+.sort-opt i {
+  font-size: 18px;
+  color: var(--brand);
+  visibility: hidden;
+}
+
+.sort-opt.active {
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+
+.sort-opt.active i {
+  visibility: visible;
+}

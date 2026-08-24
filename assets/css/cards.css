@@ -1,0 +1,148 @@
+/* 섹션 헤더 · 정렬 메뉴 · 카드 / 스와이프 행 */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 18px 12px;
+}
+
+.section-head .title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.section-head .more {
+  font-size: 11px;
+  color: #475569;
+  cursor: pointer;
+}
+
+/* 실시간 리뷰 정렬 드롭다운 */
+.review-sort {
+  position: relative;
+}
+
+.review-sort>span {
+  cursor: pointer;
+}
+
+.sort-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 6px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  padding: 4px;
+  min-width: 96px;
+  z-index: 30;
+  display: none;
+}
+
+.sort-menu.open {
+  display: block;
+}
+
+.sort-menu-item {
+  padding: 9px 12px;
+  font-size: 12px;
+  color: var(--text-2);
+  cursor: pointer;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+
+.sort-menu-item:hover {
+  background: var(--surface-3);
+}
+
+.sort-menu-item.active {
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+
+/* 가로 스크롤 카드 */
+.hcards {
+  display: flex;
+  gap: 10px;
+  padding: 0 18px 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 18px;
+}
+
+.hcards::-webkit-scrollbar {
+  display: none;
+}
+
+.hcards::after {
+  content: '';
+  flex: 0 0 1px;
+  height: 1px;
+}
+
+.hcards .place-card {
+  scroll-snap-align: start;
+}
+
+/* 카드 가로 스와이프 */
+.swipe-row {
+  display: flex;
+  gap: 12px;
+  padding: 0 18px 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 18px;
+}
+
+.swipe-row::-webkit-scrollbar {
+  display: none;
+}
+
+.swipe-row>* {
+  margin: 0 !important;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+.swipe-row::after {
+  content: '';
+  flex: 0 0 1px;
+  height: 1px;
+}
+
+.swipe-row .review-card {
+  width: 268px;
+}
+
+.swipe-row .tip-card {
+  width: 260px;
+}
+
+.place-card {
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.place-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.place-card:active {
+  transform: scale(0.97);
+}
+
+.place-card {
+  position: relative;
+}

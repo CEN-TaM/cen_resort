@@ -1,0 +1,485 @@
+/* 전국 휴양소 지도 */
+/* ============ 전국 휴양소 지도 (session-05 통합) ============ */
+/* 홈 진입 버튼 */
+.map-entry {
+  margin: 2px 18px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: border-color .15s, box-shadow .15s, transform .12s;
+}
+
+.map-entry:active {
+  transform: scale(.99);
+}
+
+.map-entry:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+}
+
+.map-entry .me-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  background: var(--brand-50);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.map-entry .me-txt {
+  flex: 1;
+}
+
+.map-entry .me-txt .t {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-1);
+}
+
+.map-entry .me-txt .s {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 1px;
+}
+
+.map-entry .me-arrow {
+  color: var(--text-3);
+  font-size: 20px;
+}
+
+/* 지도 화면 상단바 */
+.map-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.map-topbar .back {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--surface-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 0;
+  color: var(--text-1);
+  font-size: 18px;
+}
+
+.map-topbar .ttl {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.map-screen .content {
+  overflow-y: auto;
+}
+
+/* 검색 입력 (map-topbar 내) */
+.map-topbar .search-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.map-topbar .search-group {
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.map-topbar .search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-1);
+  box-sizing: border-box;
+}
+
+.map-topbar .search-btn {
+  flex: 0 0 auto;
+  margin-left: 6px;
+  padding: 8px 10px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(180deg, #2E6BFF, #1F4FE0);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-topbar .search-btn .ms {
+  display: none;
+}
+
+.map-topbar .search-btn .label {
+  display: inline;
+}
+
+@media (max-width:420px) {
+  .map-topbar .search-input {
+    padding: 8px;
+    font-size: 16px;
+  }
+
+  .map-topbar .search-btn {
+    padding: 8px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .map-topbar .search-btn .ms {
+    display: block;
+    color: #fff;
+    font-size: 18px;
+  }
+
+  .map-topbar .search-btn .label {
+    display: none;
+  }
+}
+
+/* Prevent iOS Safari from auto-zooming inputs by disabling text-size adjust */
+html,
+body,
+input,
+textarea {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 지도 카드 */
+.map-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  position: relative;
+}
+
+.map-head {
+  padding: 14px 14px 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.map-head strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.map-head small {
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* 지도 위에 떠 있는 확대/축소 컨트롤 */
+.map-zoom {
+  position: absolute;
+  right: 12px;
+  bottom: 14px;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.map-control {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, .95);
+  color: var(--text-1);
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, .16);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: transform .1s, background .12s;
+}
+
+.map-control:hover {
+  background: #fff;
+  color: var(--brand);
+}
+
+.map-control:active {
+  transform: scale(.92);
+}
+
+.map-filter {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 0 14px 12px;
+}
+
+.map-filter::-webkit-scrollbar {
+  height: 0;
+}
+
+.map-chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  border-radius: var(--pill);
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.map-chip.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.map-viewport {
+  height: 340px;
+  background: linear-gradient(180deg, #eaf4ff, #f8fbff);
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--surface-3);
+}
+
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-origin: center center;
+  transition: transform .2s ease;
+}
+
+.korea-map {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 300px;
+  width: auto;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+}
+
+.map-land-group {
+  filter: drop-shadow(0 3px 5px rgba(15, 23, 42, .14));
+}
+
+.map-land {
+  fill: url(#landGrad);
+  stroke: #9cc0ef;
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+}
+
+.map-sea-label {
+  fill: #8fb0d8;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  opacity: .7;
+}
+
+/* SVG 마커 (지도 좌표계에 정확히 정렬) */
+.marker {
+  cursor: pointer;
+}
+
+.marker .pin-dot {
+  stroke: #fff;
+  stroke-width: 1.5;
+  transition: r .12s;
+}
+
+.marker.basic .pin-dot {
+  fill: var(--brand);
+}
+
+.marker.winter .pin-dot {
+  fill: #64748B;
+}
+
+.marker.summer .pin-dot {
+  fill: #0284C7;
+}
+
+.marker.both .pin-dot {
+  fill: #7C3AED;
+}
+
+.marker .pin-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  fill: var(--text-1);
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.marker:hover .pin-dot {
+  stroke-width: 2.2;
+}
+
+.marker.hide {
+  display: none;
+}
+
+/* 확대 후 드래그 이동 */
+.map-viewport.zoomed {
+  cursor: grab;
+}
+
+.map-viewport.grabbing {
+  cursor: grabbing;
+}
+
+.map-viewport.grabbing .map-canvas {
+  transition: none;
+}
+
+.map-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px 14px;
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 700;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.dot-basic {
+  background: var(--brand);
+}
+
+.dot-winter {
+  background: #64748B;
+}
+
+.dot-summer {
+  background: #0284C7;
+}
+
+.dot-both {
+  background: #7C3AED;
+}
+
+/* 마커 클릭 바텀시트 */
+.map-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, .32);
+  opacity: 0;
+  visibility: hidden;
+  transition: .25s;
+  z-index: 30;
+}
+
+.map-sheet-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.map-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding: 18px 18px 22px;
+  transform: translateY(100%);
+  transition: transform .28s cubic-bezier(.4, 1, .5, 1);
+}
+
+.map-sheet-backdrop.show .map-sheet {
+  transform: translateY(0);
+}
+
+.map-sheet h4 {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.map-sheet .ms-sub {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-bottom: 14px;
+}
+
+.map-place-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.map-place-item:active,
+.map-place-item:hover {
+  border-color: var(--brand);
+  background: var(--brand-50);
+}
+
+.map-place-item .nm {
+  font-weight: 700;
+  font-size: 14px;
+}

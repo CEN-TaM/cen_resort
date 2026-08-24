@@ -1,0 +1,158 @@
+/* 댓글 모달 */
+/* === 댓글 모달 === */
+.comment-modal {
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 31, 18, 0.5);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+}
+
+.comment-modal.show {
+  display: flex;
+  animation: fadeIn 0.25s ease;
+}
+
+.comment-sheet {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 20px 20px 0 0;
+  max-height: 70%;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.comment-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #D7DAE0;
+  border-radius: 2px;
+  margin: 10px auto 6px;
+}
+
+.comment-sheet-header {
+  padding: 6px 18px 12px;
+  border-bottom: 1px solid #E8EAEE;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-sheet-header .ct {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.comment-sheet-header i {
+  cursor: pointer;
+  color: #475569;
+  font-size: 20px;
+}
+
+.comment-list-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 18px 8px;
+  min-height: 120px;
+  max-height: 320px;
+}
+
+.comment-input-area {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid #E8EAEE;
+}
+
+.comment-input-area input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #E8EAEE;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+  background: #fff;
+}
+
+.comment-input-area input:focus {
+  border-color: #1F4FE0;
+}
+
+.comment-input-area button {
+  padding: 10px 16px;
+  background: #1F4FE0;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.comment-input-area button:active {
+  transform: scale(0.95);
+}
+
+.comment-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #E8EAEE;
+}
+
+.comment-row:last-child {
+  border-bottom: none;
+}
+
+.comment-row .ch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.comment-row .cavatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+}
+
+.comment-row .cname {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.comment-row .cbody {
+  font-size: 12px;
+  color: #475569;
+  padding-left: 32px;
+  line-height: 1.5;
+}
+
+.comment-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94A3B8;
+  font-size: 12px;
+}
