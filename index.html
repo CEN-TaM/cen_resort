@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="assets/css/signup.css">
   <link rel="stylesheet" href="assets/css/device.css">
   <link rel="stylesheet" href="assets/css/map.css">
+  <link rel="stylesheet" href="assets/css/notification.css">
   <link rel="stylesheet" href="assets/css/tooltip.css">
 </head>
 
@@ -2084,8 +2085,12 @@
             <div class="ttl">알림</div>
           </div>
         </div>
-        <div class="content" style="padding:14px;">
-          <div id="notifications-list"></div>
+        <div class="content">
+          <div class="noti-head">
+            <div class="ttl">알림</div>
+            <button id="noti-read-all" onclick="markAllNotiRead()">모두 읽음</button>
+          </div>
+          <div id="notifications-list" class="noti-list"></div>
         </div>
       </div>
 
@@ -2225,11 +2230,13 @@
   <script src="assets/js/banner.js"></script>
   <script src="assets/js/filters.js"></script>
   <script src="assets/js/notice.js"></script>
+  <script src="assets/js/notification.js"></script>
   <script src="assets/js/detail.js"></script>
   <script src="assets/js/resort.js"></script>
   <script src="assets/js/common-ui.js"></script>
   <script src="assets/js/qna.js"></script>
   <script src="assets/js/tips.js"></script>
+  <script src="assets/js/review-comments.js"></script>
   <script src="assets/js/lightbox.js"></script>
   <script src="assets/js/review-server.js"></script>
   <script src="assets/js/hscroll.js"></script>

@@ -53,8 +53,12 @@ function clampScore(v) {
 function loadReview(row) {
   const photos = db.prepare('SELECT path FROM review_photos WHERE review_id = ? ORDER BY id')
     .all(row.id).map(p => p.path);
-  const comments = db.prepare('SELECT author, color, text, created_at FROM review_comments WHERE review_id = ? ORDER BY id')
-    .all(row.id);
+  const comments = db.prepare(
+    'SELECT id, parent_id, empno, author, color, text, created_at FROM review_comments WHERE review_id = ? ORDER BY id'
+  ).all(row.id).map(c => ({
+    id: c.id, parentId: c.parent_id, empno: c.empno,
+    author: c.author, color: c.color, text: c.text, created_at: c.created_at,
+  }));
   let companions = [];
   try { companions = JSON.parse(row.companions || '[]'); } catch { companions = []; }
   return {
@@ -188,21 +192,106 @@ app.post('/api/reviews/:id/like', (req, res) => {
 });
 
 // 댓글 등록
+// 댓글 / 답글 등록. parentId 가 있으면 답글이다.
+// 등록과 동시에 알림을 만든다 — 내 글에 댓글(comment), 내 댓글에 답글(reply).
 app.post('/api/reviews/:id/comments', (req, res) => {
   try {
     const id = Number(req.params.id);
     const text = (req.body?.text || '').trim();
     if (!text) return res.status(400).json({ error: '댓글 내용을 입력해주세요.' });
-    const row = db.prepare('SELECT id FROM reviews WHERE id = ?').get(id);
-    if (!row) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
+
+    const review = db.prepare('SELECT id, empno, resort_name FROM reviews WHERE id = ?').get(id);
+    if (!review) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
+
+    // 답글이면 부모 댓글이 같은 후기에 있어야 한다. 답글의 답글은 만들지 않는다(1단계까지).
+    const parentId = req.body?.parentId ? Number(req.body.parentId) : null;
+    let parent = null;
+    if (parentId) {
+      parent = db.prepare('SELECT id, review_id, empno, parent_id FROM review_comments WHERE id = ?').get(parentId);
+      if (!parent || parent.review_id !== id) return res.status(400).json({ error: '원 댓글을 찾을 수 없습니다.' });
+      if (parent.parent_id) return res.status(400).json({ error: '답글에는 다시 답글을 달 수 없습니다.' });
+    }
+
+    const empno = (req.body?.empno || '').trim() || null;
+    const author = req.body?.author || '나';
     const createdAt = new Date().toISOString();
-    db.prepare('INSERT INTO review_comments (review_id, author, color, text, created_at) VALUES (?, ?, ?, ?, ?)')
-      .run(id, req.body?.author || '나', req.body?.color || '#047857', text, createdAt);
-    const comments = db.prepare('SELECT author, color, text, created_at FROM review_comments WHERE review_id = ? ORDER BY id').all(id);
+
+    const info = db.prepare(
+      'INSERT INTO review_comments (review_id, parent_id, empno, author, color, text, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).run(id, parentId, empno, author, req.body?.color || '#047857', text, createdAt);
+    const commentId = Number(info.lastInsertRowid);
+
+    // 알림 생성 — 받는 사람이 본인이면 만들지 않는다.
+    const notify = (recipient, type) => {
+      if (!recipient || recipient === empno) return;
+      db.prepare(
+        'INSERT INTO notifications (empno, type, actor_name, review_id, comment_id, resort_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+      ).run(recipient, type, author, id, commentId, review.resort_name, createdAt);
+    };
+    if (parent) notify(parent.empno, 'reply');       // 내 댓글에 답글
+    else notify(review.empno, 'comment');            // 내 글에 댓글
+
+    const comments = db.prepare(
+      'SELECT id, parent_id, empno, author, color, text, created_at FROM review_comments WHERE review_id = ? ORDER BY id'
+    ).all(id).map(c => ({
+      id: c.id, parentId: c.parent_id, empno: c.empno,
+      author: c.author, color: c.color, text: c.text, created_at: c.created_at,
+    }));
     res.status(201).json({ comments });
   } catch (err) {
     console.error('POST comment 실패:', err);
     res.status(500).json({ error: '댓글 등록 실패' });
+  }
+});
+
+// ───────────────────────── 알림 ─────────────────────────
+
+// 내 알림 목록 (댓글·답글) + 읽음 처리된 key 목록
+// 공지 알림은 클라이언트가 NOTICES 로 만들고, 읽음 여부만 readKeys 로 대조한다.
+app.get('/api/notifications', (req, res) => {
+  try {
+    const empno = (req.query.empno || '').trim();
+    if (!empno) return res.json({ notifications: [], readKeys: [] });
+
+    const rows = db.prepare(
+      'SELECT * FROM notifications WHERE empno = ? ORDER BY datetime(created_at) DESC, id DESC LIMIT 100'
+    ).all(empno);
+    const readKeys = db.prepare('SELECT key FROM notification_reads WHERE empno = ?')
+      .all(empno).map(r => r.key);
+
+    res.json({
+      notifications: rows.map(n => ({
+        key: `n:${n.id}`,
+        type: n.type,                 // comment | reply
+        actorName: n.actor_name,
+        reviewId: n.review_id,
+        commentId: n.comment_id,
+        resortName: n.resort_name,
+        createdAt: n.created_at,
+      })),
+      readKeys,
+    });
+  } catch (err) {
+    console.error('GET /api/notifications 실패:', err);
+    res.status(500).json({ error: '알림 조회 실패' });
+  }
+});
+
+// 읽음 처리. keys 배열을 그대로 기록한다 ('모두 읽음'도 화면의 전체 key 를 보내면 된다)
+app.post('/api/notifications/read', (req, res) => {
+  try {
+    const empno = (req.body?.empno || '').trim();
+    const keys = Array.isArray(req.body?.keys) ? req.body.keys.filter(k => typeof k === 'string') : [];
+    if (!empno || keys.length === 0) return res.json({ ok: true, added: 0 });
+
+    const readAt = new Date().toISOString();
+    const stmt = db.prepare('INSERT OR IGNORE INTO notification_reads (empno, key, read_at) VALUES (?, ?, ?)');
+    for (const k of keys.slice(0, 500)) stmt.run(empno, k, readAt);
+
+    res.json({ ok: true, added: Math.min(keys.length, 500) });
+  } catch (err) {
+    console.error('POST /api/notifications/read 실패:', err);
+    res.status(500).json({ error: '읽음 처리 실패' });
   }
 });
 

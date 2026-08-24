@@ -156,3 +156,155 @@
   color: #94A3B8;
   font-size: 12px;
 }
+
+/* ===== 서버 후기의 댓글 · 답글 (상세 화면) ===== */
+
+.rc-wrap {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.rc-head {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+
+.rc-head b {
+  color: var(--brand);
+}
+
+.rc-empty {
+  padding: 12px 0;
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.rc-item {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+/* 답글은 한 단계 들여쓰고 왼쪽 선으로 소속을 보여준다 */
+.rc-item.reply {
+  margin-left: 16px;
+  padding-left: 10px;
+  border-left: 2px solid var(--border);
+}
+
+.rc-avatar {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.rc-item.reply .rc-avatar {
+  width: 22px;
+  height: 22px;
+  font-size: 10px;
+}
+
+.rc-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.rc-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.rc-time {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.rc-text {
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-2);
+  word-break: break-word;
+}
+
+.rc-reply-btn {
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.rc-reply-btn:hover {
+  color: var(--brand);
+}
+
+/* 입력 줄 — 댓글/답글 공용 */
+.rc-input,
+.rc-reply-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.rc-reply-form {
+  margin: 4px 0 8px 42px;
+}
+
+.rc-input input,
+.rc-reply-form input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+  background: var(--surface-2);
+  font-size: 12.5px;
+  color: var(--text-1);
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.rc-input input:focus,
+.rc-reply-form input:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+}
+
+.rc-input button,
+.rc-reply-form button {
+  flex: none;
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--pill);
+  background: var(--brand);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.rc-input button:hover,
+.rc-reply-form button:hover {
+  background: var(--brand-dark);
+}
