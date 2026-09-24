@@ -188,13 +188,40 @@ body {
 }
 
 .tab-item span {
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 2px;
   display: block;
+  color: #1B1B1B;
+  font-weight: 500;
 }
 
 .tab-item.active {
   color: #1F4FE0;
+}
+
+.tab-item.active span {
+  color: #1B1B1B;
+  font-weight: 800;
+}
+
+/* 탭 아이콘 이미지 (기본 _1 / 활성 _2) */
+.tab-item .tab-ico {
+  width: 24px;
+  height: 24px;
+  display: block;
+  margin: 0 auto;
+}
+
+.tab-item .ico-on {
+  display: none;
+}
+
+.tab-item.active .ico-off {
+  display: none;
+}
+
+.tab-item.active .ico-on {
+  display: block;
 }
 
 .tab-item.center {

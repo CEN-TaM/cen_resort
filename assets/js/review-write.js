@@ -1,7 +1,7 @@
 // 후기 작성 — 백엔드 연동 · 폼 · 사진 첨부
 // ===== 후기 백엔드 연동 =====
-// 서버에서 열면(''=같은 출처), 파일로 열면(file://) 로컬 서버로 요청
-const API_BASE = (location.protocol === 'file:') ? 'http://localhost:8999' : '';
+// 서버에서 열면(''=같은 출처), 파일로 열면(file://) 개발서버(VPN)로 요청
+const API_BASE = (location.protocol === 'file:') ? 'http://192.168.64.57:8999' : '';
 
 // 작성 폼에서 값들을 모아 서버 전송용 객체로 만든다
 function collectReviewForm() {

@@ -65,6 +65,7 @@ function fmtDate(iso) {
 function serverReviewCard(rv) {
   const name = escapeHtml(rv.authorName || '동료');
   const avatarCh = (rv.authorName || '동').trim()[0] || '동';
+  const srvAc = (typeof avatarColor === 'function') ? avatarColor(rv.authorName || rv.id) : { bg: '#DCE9FB', fg: '#1F4FE0' };
   const comp = (rv.companions && rv.companions.length) ? ' · ' + escapeHtml(rv.companions.join(', ')) + '와 함께' : '';
   const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
   const starFull = Math.round(rv.ratings?.avg || 0);
@@ -75,14 +76,12 @@ function serverReviewCard(rv) {
   const photoGrid = photos ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:10px 0 12px">${photos}</div>` : '';
   const content = rv.content ? `<div style="font-size:13px;color:#0F172A;line-height:1.7">${escapeHtml(rv.content)}</div>` : '';
   return `
-  <div class="review-head" id="rev-srv-${rv.id}">
-    <div class="avatar" style="background:#1F4FE0">${escapeHtml(avatarCh)}</div>
-    <div class="who">
-      <div class="name">${name} ${reviewBadge(rv)}</div>
-      <div class="meta">${fmtDate(rv.createdAt)} 작성${comp}</div>
-      ${orgLine(rv)}
+  <div class="review-head rt-head" id="rev-srv-${rv.id}">
+    <div class="rt-avatar" style="background:${srvAc.bg};color:${srvAc.fg}">${escapeHtml(avatarCh)}</div>
+    <div class="rt-who">
+      <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}${comp}</span></div>
+      ${rtOrgRow(rv)}
     </div>
-    <span class="badge verified"><i class="ti ti-check"></i> 인증</span>
   </div>
   <div class="rating-line" style="margin-top:10px"><span class="stars">${stars}</span><span class="rating-num">${avg}</span></div>
   <div style="background:#F1F3F6;padding:12px 14px;border-radius:12px;margin:10px 0">
