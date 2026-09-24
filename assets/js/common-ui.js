@@ -74,3 +74,32 @@ function sortFav(mode) {
   closeFavSort();
   if (typeof showToast === 'function') showToast('정렬: ' + (FAV_SORT_LABEL[mode] || ''));
 }
+
+// ===== 홈 상단 햄버거 메뉴 (지도 · 알림) =====
+function toggleHomeMenu(e) {
+  if (e) e.stopPropagation();
+  const m = document.getElementById('homeMenu');
+  if (m) m.classList.toggle('show');
+}
+function closeHomeMenu() {
+  const m = document.getElementById('homeMenu');
+  if (m) m.classList.remove('show');
+}
+// 바깥 클릭 시 닫기
+document.addEventListener('click', function (e) {
+  const inside = e.target.closest && e.target.closest('.top-menu-wrap');
+  if (!inside) closeHomeMenu();
+});
+
+// ===== 휴양소 화면: 정기 / 이벤트 탭 전환 =====
+function switchResortTab(el, idx) {
+  const screen = document.querySelector('.screen[data-screen="resorts"]');
+  if (!screen) return;
+  screen.querySelectorAll('.main-tab .mtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  screen.querySelectorAll('.mtab-pane').forEach(p => p.classList.remove('active'));
+  const pane = screen.querySelector('.mtab-pane[data-mtab-pane="' + idx + '"]');
+  if (pane) pane.classList.add('active');
+  const content = screen.querySelector('.content');
+  if (content) content.scrollTop = 0;
+}

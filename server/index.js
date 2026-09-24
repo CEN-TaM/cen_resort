@@ -17,7 +17,7 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 // CORS: file://로 열어 테스트할 때도 API 호출이 되도록 허용
 app.use('/api', (req, res, next) => {
   res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.set('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
@@ -172,6 +172,36 @@ app.get('/api/reviews/mine', (req, res) => {
   } catch (err) {
     console.error('GET /api/reviews/mine 실패:', err);
     res.status(500).json({ error: '목록 조회 실패' });
+  }
+});
+
+// 내 후기 삭제 (본인 사번 검증). 사진·댓글은 CASCADE, 알림·사진파일은 수동 정리.
+app.delete('/api/reviews/:id', (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const empno = (req.query.empno || '').trim();
+    if (!empno) return res.status(400).json({ error: '사번이 필요합니다.' });
+    const row = db.prepare('SELECT id, empno FROM reviews WHERE id = ?').get(id);
+    if (!row) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
+    if (String(row.empno) !== String(empno)) {
+      return res.status(403).json({ error: '본인 후기만 삭제할 수 있습니다.' });
+    }
+    // 업로드된 사진 파일 삭제
+    const photos = db.prepare('SELECT path FROM review_photos WHERE review_id = ?').all(id);
+    photos.forEach(p => {
+      try {
+        const fp = path.join(UPLOADS_DIR, path.basename(p.path || ''));
+        if (fs.existsSync(fp)) fs.unlinkSync(fp);
+      } catch (e) { /* 파일 없으면 무시 */ }
+    });
+    // 알림 정리 (FK 없음)
+    db.prepare('DELETE FROM notifications WHERE review_id = ?').run(id);
+    // 리뷰 삭제 → 사진/댓글 CASCADE
+    db.prepare('DELETE FROM reviews WHERE id = ?').run(id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('DELETE /api/reviews/:id 실패:', err);
+    res.status(500).json({ error: '삭제 실패' });
   }
 });
 

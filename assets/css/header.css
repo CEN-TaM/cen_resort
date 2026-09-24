@@ -64,13 +64,20 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px 8px;
+  padding: 8px 16px 8px;
 }
 
 .top-logo {
   width: 22px;
   height: 22px;
   flex-shrink: 0;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  padding: 4px 2px;
 }
 
 .top-logo svg {
@@ -83,13 +90,13 @@
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 8px;
-  background: #fff;
+  background: #EDEFF3;
   border: none;
   border-radius: 999px;
   padding: 8px 14px;
-  font-size: 12px;
+  font-size: 14px;
   color: #475569;
   cursor: pointer;
   min-width: 0;
@@ -102,9 +109,19 @@
 }
 
 .search-bar span {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #969696;
+}
+
+.search-bar .search-ico {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
 }
 
 .top-actions {
@@ -146,4 +163,108 @@
   align-items: center;
   justify-content: center;
   letter-spacing: -0.02em;
+}
+
+/* === 상단 햄버거 메뉴 === */
+.top-menu-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.top-menu {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+}
+
+.top-menu i {
+  font-size: 24px;
+  color: #0F172A;
+}
+
+.top-menu .top-menu-ico {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.top-menu .badge-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: #E94A4A;
+  color: #fff;
+  border-radius: var(--pill);
+  border: 2px solid var(--surface-2);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.02em;
+}
+
+.home-menu {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16);
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  min-width: 148px;
+  z-index: 40;
+}
+
+.home-menu.show {
+  display: flex;
+}
+
+.home-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #0F172A;
+  cursor: pointer;
+  border-radius: 8px;
+  white-space: nowrap;
+  width: 100%;
+  text-align: left;
+}
+
+.home-menu button i {
+  font-size: 18px;
+  color: #475569;
+}
+
+.home-menu button:hover {
+  background: #F1F3F6;
+}
+
+.home-menu .hm-badge {
+  margin-left: auto;
+  background: #E94A4A;
+  color: #fff;
+  border-radius: var(--pill);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  line-height: 1.4;
 }

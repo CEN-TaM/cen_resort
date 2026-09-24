@@ -13,9 +13,16 @@
 }
 
 .section-head .more {
-  font-size: 11px;
-  color: #475569;
+  font-size: 12px;
+  color: #64748B;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.section-head .more i {
+  font-size: 15px;
 }
 
 /* 실시간 리뷰 정렬 드롭다운 */
@@ -145,4 +152,144 @@
 
 .place-card {
   position: relative;
+}
+
+/* === 홈 여백 스펙 (피그마) — 홈 탭에만 적용 === */
+[data-mtab-pane="0"] .section-head {
+  padding-bottom: 20px;
+}
+
+[data-mtab-pane="0"] .hcards {
+  padding-bottom: 28px;
+}
+
+/* === 실시간 리뷰 카드 (신규 디자인) === */
+.rt-review {
+  padding: 16px;
+}
+
+.rt-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-bottom: 12px;
+}
+
+.rt-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  background: #DCE9FB;
+  color: #1F4FE0;
+}
+
+.rt-who {
+  flex: 1;
+  min-width: 0;
+}
+
+.rt-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rt-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.rt-date {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+.rt-org {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.rt-verify {
+  color: #1F4FE0;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.rt-company {
+  color: #1F4FE0;
+  font-weight: 600;
+}
+
+.rt-dept {
+  color: #64748B;
+}
+
+.rt-resort {
+  flex-shrink: 0;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 16px;
+  background: #EDEBFB;
+  color: #6D5FE0;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.rt-text {
+  font-size: 14px;
+  color: #1B1B1B;
+  line-height: 1.55;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rt-photos {
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.rt-photos .ph {
+  height: 104px;
+  aspect-ratio: auto;
+  border-radius: 10px;
+}
+
+.rt-actions {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+.rt-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748B;
+  cursor: pointer;
+}
+
+.rt-act i {
+  font-size: 18px;
 }
