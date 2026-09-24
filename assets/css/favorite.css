@@ -314,22 +314,6 @@
   transform: scale(0.92);
 }
 
-/* 내 리뷰 삭제 버튼 */
-.action-btn.del-btn {
-  margin-left: auto;
-  color: #DC2626;
-  border-color: #FECACA;
-  font-family: inherit;
-}
-
-.action-btn.del-btn:hover {
-  background: #FEF2F2;
-}
-
-.action-btn.del-btn i {
-  color: #DC2626;
-}
-
 .action-btn i {
   font-size: 14px;
 }
