@@ -2113,7 +2113,7 @@
             <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
             <div class="search-group">
               <input id="global-search-input" type="search" inputmode="search" autocomplete="off" autocapitalize="none"
-                class="search-input" placeholder="휴양소 검색" oninput="performSearch(this.value)">
+                class="search-input" placeholder="휴양소를 검색해 보세요" oninput="performSearch(this.value)">
               <button class="search-btn"
                 onclick="performSearch(document.getElementById('global-search-input').value)" aria-label="검색">
                 <img class="search-ico" src="assets/images/ico_search.svg" alt="검색">
@@ -2140,6 +2140,19 @@
             <button id="noti-read-all" onclick="markAllNotiRead()">모두 읽음</button>
           </div>
           <div id="notifications-list" class="noti-list"></div>
+        </div>
+      </div>
+
+      <!-- 리뷰 삭제 확인 모달 -->
+      <div class="modal-backdrop" id="delete-review-modal" onclick="closeDeleteReviewModal(event)">
+        <div class="confirm-modal" onclick="event.stopPropagation()">
+          <div class="cm-icon"><i class="ti ti-trash"></i></div>
+          <div class="cm-title">리뷰를 삭제할까요?</div>
+          <div class="cm-desc">삭제하면 사진·댓글까지 함께 지워지고<br>되돌릴 수 없어요.</div>
+          <div class="cm-actions">
+            <button class="cm-btn cancel" onclick="closeDeleteReviewModal()">취소</button>
+            <button class="cm-btn danger" onclick="confirmDeleteReview()">삭제</button>
+          </div>
         </div>
       </div>
 

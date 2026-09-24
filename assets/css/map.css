@@ -502,3 +502,20 @@ textarea {
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
+
+/* 검색 화면 헤더를 홈 상단바(.top-bar)와 동일 위치로 — 검색창 점프 방지 */
+.screen[data-screen="search"] .map-topbar {
+  padding: 8px 16px;
+  gap: 10px;
+  background: var(--surface-2);
+  border-bottom: none;
+}
+
+.screen[data-screen="search"] .map-topbar .back {
+  width: 22px;
+  height: 22px;
+  background: none;
+  border-radius: 0;
+  color: #0F172A;
+  font-size: 20px;
+}

@@ -82,6 +82,7 @@ function serverReviewCard(rv) {
       <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}${comp}</span></div>
       ${rtOrgRow(rv)}
     </div>
+    ${isMyReview(rv) ? `<button class="rev-del-btn" onclick="askDeleteReview(${rv.id})" aria-label="리뷰 삭제"><i class="ti ti-trash"></i></button>` : ''}
   </div>
   <div class="rating-line" style="margin-top:10px"><span class="stars">${stars}</span><span class="rating-num">${avg}</span></div>
   <div style="background:#F1F3F6;padding:12px 14px;border-radius:12px;margin:10px 0">
@@ -117,6 +118,7 @@ function syncDetailStats(reviews) {
 }
 
 async function loadServerReviews(resortName) {
+  window._detailResort = resortName; // 삭제 후 상세 새로고침용
   const pane = document.querySelector('.screen[data-screen="detail"] .dtab-pane[data-dtab="reviews"]');
   if (!pane) return;
   const samples = pane.querySelector('#sample-reviews');

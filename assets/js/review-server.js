@@ -225,6 +225,7 @@ function myReviewCard(rv) {
         ${rtOrgRow(rv)}
       </div>
       <span class="rt-resort" data-painted="1" style="background:${myRc.bg};color:${myRc.fg}">${escapeHtml(rv.resortName)}</span>
+      <button class="rev-del-btn" onclick="deleteMyReview(event, ${rv.id})" aria-label="리뷰 삭제"><i class="ti ti-trash"></i></button>
     </div>
     <div class="rating-line">${stars}<span class="rating-num">${avg}</span></div>
     ${photoRow}
@@ -232,29 +233,58 @@ function myReviewCard(rv) {
     <div class="review-actions">
       <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>${rv.likes || 0}</b></span>
       <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>${(rv.comments || []).length}</b></span>
-      <button class="action-btn del-btn" onclick="deleteMyReview(event, ${rv.id})"><i class="ti ti-trash"></i> 삭제</button>
     </div>
   </div>`;
 }
 
-// 내 리뷰 삭제 (본인 사번으로 서버에 요청)
-async function deleteMyReview(e, id) {
+// ===== 내 리뷰 삭제 (모달 확인 → DELETE) =====
+let _pendingDeleteReviewId = null;
+
+// 삭제 확인 모달 열기 (상세·내리뷰 공용)
+function askDeleteReview(id) {
+  _pendingDeleteReviewId = id;
+  const m = document.getElementById('delete-review-modal');
+  if (m) m.classList.add('show');
+}
+// 내리뷰 카드 삭제 버튼: 카드 클릭(상세 이동) 막고 모달 열기
+function deleteMyReview(e, id) {
   if (e) e.stopPropagation();
+  askDeleteReview(id);
+}
+function closeDeleteReviewModal(e) {
+  // 배경 클릭 또는 버튼(인자 없음)일 때만 닫기
+  if (e && e.target && !e.target.classList.contains('modal-backdrop')) return;
+  const m = document.getElementById('delete-review-modal');
+  if (m) m.classList.remove('show');
+  _pendingDeleteReviewId = null;
+}
+// 모달의 '삭제' 버튼 → 실제 서버 삭제
+async function confirmDeleteReview() {
+  const id = _pendingDeleteReviewId;
+  if (id == null) return;
   const p = (typeof getProfile === 'function' && getProfile()) || {};
-  if (!p.empno) { if (typeof showToast === 'function') showToast('로그인이 필요합니다'); return; }
-  if (!confirm('이 리뷰를 삭제할까요?\n삭제하면 사진·댓글까지 함께 지워지고 되돌릴 수 없어요.')) return;
+  if (!p.empno) {
+    if (typeof showToast === 'function') showToast('로그인이 필요합니다');
+    closeDeleteReviewModal();
+    return;
+  }
   try {
     const res = await fetch(API_BASE + '/api/reviews/' + id + '?empno=' + encodeURIComponent(p.empno), { method: 'DELETE' });
     if (!res.ok) {
       if (typeof showToast === 'function') showToast('삭제에 실패했습니다');
+      closeDeleteReviewModal();
       return;
     }
     if (typeof showToast === 'function') showToast('리뷰를 삭제했어요');
-    loadMyReviews();
+    // 관련 화면 새로고침
+    if (typeof loadMyReviews === 'function') loadMyReviews();
     if (typeof loadHomeReviews === 'function') loadHomeReviews();
+    if (typeof loadServerReviews === 'function' && window._detailResort) loadServerReviews(window._detailResort);
   } catch (err) {
     console.error('리뷰 삭제 실패:', err);
     if (typeof showToast === 'function') showToast('삭제 중 오류가 발생했습니다');
+  } finally {
+    closeDeleteReviewModal();
   }
 }
 async function loadMyReviews() {
