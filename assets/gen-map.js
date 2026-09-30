@@ -9,7 +9,7 @@ const geo = JSON.parse(fs.readFileSync(path.join(DIR, '_skorea-provinces.json'),
 
 // ---- 마커: 실제 위경도 (lat, lng) ----
 const MARKERS = [
-  { type:'basic',  label:'속초', lat:38.207, lng:128.591, places:['속초(힐스) 휴양소','속초(서희) 휴양소'] },
+  { type:'basic',  label:'속초', lat:38.207, lng:128.591, places:['속초(힐스)','속초(서희)'] },
   { type:'basic',  label:'과천', lat:37.429, lng:126.989, places:['과천휴양소(1001호)','과천휴양소(504호)'] },
   { type:'basic',  label:'보령', lat:36.333, lng:126.613, places:['보령 휴양소'] },
   { type:'basic',  label:'여수', lat:34.760, lng:127.662, places:['여수휴양소'] },

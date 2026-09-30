@@ -3,7 +3,8 @@
 function R(name, loc, type, rating, reviews, img) {
   return { name, loc, type, rating, reviews, img };
 }
-const _sokchoHills = R('속초(힐스) 휴양소', '강원 속초시', 'regular', 4.8, 32, 'sokcho');
+const _sokchoHills = R('속초(힐스)', '강원 속초시', 'regular', 4.8, 32, 'sokcho');
+const _sokchoSeohee = R('속초(서희)', '강원 속초시', 'regular', 4.6, 17, 'sokcho');
 const _jocheon = R('조천 휴양소', '제주 제주시 조천읍', 'regular', 4.8, 24, 'jocheon');
 const _yeosu = R('여수휴양소', '전남 여수시', 'regular', 4.6, 19, 'yeosu');
 const _gwa1001 = R('과천휴양소(1001호)', '경기 과천시', 'regular', 4.5, 12, 'gwacheon');
@@ -13,9 +14,12 @@ const RESORT = {
   // 정기 휴양소 12곳
   '부산휴양소(해운대)': R('부산휴양소(해운대)', '부산 해운대구', 'regular', 4.7, 21, 'yeosu'),
   '부산휴양소(기장)': R('부산휴양소(기장)', '부산 기장군', 'regular', 4.5, 14, 'aewol'),
+  '속초(힐스)': _sokchoHills,
+  '속초(서희)': _sokchoSeohee,
+  // 옛 표기 — 예전에 저장된 후기·즐겨찾기가 이 이름을 쓰고 있어 함께 받아준다
   '속초(힐스) 휴양소': _sokchoHills,
   '속초 (힐스)': _sokchoHills,
-  '속초(서희) 휴양소': R('속초(서희) 휴양소', '강원 속초시', 'regular', 4.6, 17, 'sokcho'),
+  '속초(서희) 휴양소': _sokchoSeohee,
   '경주휴양소': R('경주휴양소', '경북 경주시', 'regular', 4.5, 11, 'gwacheon'),
   '조천 휴양소': _jocheon,
   '조천': _jocheon,

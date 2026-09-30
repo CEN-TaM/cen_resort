@@ -60,9 +60,9 @@ const NOTICES = {
   },
   n4: {
     pinned: false, category: '이벤트', categoryTone: 'coral',
-    title: '첫 리뷰 작성하고 +500P 받기 이벤트',
+    title: '첫 후기 작성하고 +500P 받기 이벤트',
     author: '인사복지팀', authorInitial: '인', date: '2026.05.13', views: '1,341',
-    body: `<p>아직 휴양소 리뷰를 한 번도 작성하지 않으셨나요? 지금이 기회입니다!</p>
+    body: `<p>아직 휴양소 후기를 한 번도 작성하지 않으셨나요? 지금이 기회입니다!</p>
     <h4>참여 조건</h4>
     <ul>
       <li>사진 <strong>4장 이상</strong> 첨부</li>
@@ -70,7 +70,7 @@ const NOTICES = {
       <li>이용일 기준 2주 이내 작성</li>
     </ul>
     <h4>적립 혜택</h4>
-    <p>위 조건 충족 시 <strong>첫 1회에 한해 +500P</strong>가 즉시 적립됩니다. 이미 리뷰를 작성하신 분도 이번 기회에 한 번 더!</p>
+    <p>위 조건 충족 시 <strong>첫 1회에 한해 +500P</strong>가 즉시 적립됩니다. 이미 후기를 작성하신 분도 이번 기회에 한 번 더!</p>
     <div class="callout">이벤트 기간: ~ 2026.06.30 / 동료들의 솔직한 후기가 모두의 휴가를 더 빛나게 합니다.</div>`,
     files: [
       { name: '이벤트_포스터.png', size: '1.8MB', type: 'img', date: '2026.05.13' }

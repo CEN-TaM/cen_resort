@@ -1,4 +1,4 @@
-// 홈 메인 탭 · 하계/동계 전환 · 실시간 리뷰 정렬
+// 홈 메인 탭 · 하계/동계 전환 · 실시간 후기 정렬
 // ===== 홈 메인 탭 (정기 / 이벤트 / 인기) =====
 function switchMainTab(el, idx) {
   el.parentElement.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
@@ -37,7 +37,7 @@ function selectEventSeg(btn, group) {
   });
 }
 
-// ===== 실시간 리뷰 정렬 =====
+// ===== 실시간 후기 정렬 =====
 function toggleReviewSort(event) {
   if (event) event.stopPropagation();
   const menu = document.getElementById('review-sort-menu');

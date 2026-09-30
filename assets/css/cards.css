@@ -258,10 +258,7 @@
   color: #1B1B1B;
   line-height: 1.55;
   margin-bottom: 12px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  /* 몇 줄까지 보일지는 .rv-clamp 가 정한다 (review-server.js) */
 }
 
 .rt-photos {
@@ -292,4 +289,72 @@
 
 .rt-act i {
   font-size: 18px;
+}
+
+/* === 후기 미리보기: 본문 5줄 접기 · 사진 3장 === */
+
+/* 접힌 상태. '더보기'를 누르면 이 클래스가 빠진다 (toggleReviewText) */
+.rv-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rv-more {
+  display: block;
+  margin: -6px 0 12px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+/* 3장을 넘는 사진은 숨겨 두되 DOM 에는 남긴다 — 라이트박스가 전체를 이어서 보여준다 */
+.rv-ph-hidden {
+  display: none !important;
+}
+
+.photo-row .ph,
+.rv-photo-grid .ph {
+  position: relative;
+}
+
+/* 마지막 칸에 덮이는 +N */
+.rv-ph-more {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* 휴양소 상세의 후기 사진 */
+.rv-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 10px 0 12px;
+}
+
+.rv-photo-grid .ph {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rv-content {
+  font-size: 13px;
+  color: var(--text-1);
+  line-height: 1.7;
 }

@@ -51,11 +51,11 @@ function showScreen(deviceId, screenName, opts) {
       if (sb) sb.scrollTop = 0;
     }
   }
-  // '내가 쓴 리뷰' 진입 시 서버에서 내 후기 로드
+  // '내가 쓴 후기' 진입 시 서버에서 내 후기 로드
   if (screenName === 'my-reviews' && typeof loadMyReviews === 'function') loadMyReviews();
   // '내가 쓴 꿀팁' 진입 시 목록 갱신
   if (screenName === 'my-tips' && typeof renderMyTips === 'function') renderMyTips();
-  // 나의페이지 진입 시 리뷰 개수 갱신
+  // 나의페이지 진입 시 후기 개수 갱신
   if (screenName === 'my' && typeof updateMyReviewsCount === 'function') updateMyReviewsCount();
 }
 
