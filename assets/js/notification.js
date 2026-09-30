@@ -74,10 +74,14 @@ function notiUnreadCount() {
   return notiItems.filter(n => !notiReadKeys.has(n.key)).length;
 }
 
-// 헤더 종 아이콘의 빨간 점 — 읽지 않은 알림이 있을 때만
+// 읽지 않은 알림 개수 배지 — 홈 햄버거, 나의 페이지 종 아이콘
+// 표시 대상은 data-noti-badge 속성으로 찾는다 (붙이는 곳이 늘어도 이 함수는 그대로)
 function syncNotiBadge() {
   const n = notiUnreadCount();
-  document.querySelectorAll('.top-actions .icon-btn .badge-dot').forEach(el => {
+  const text = n > 99 ? '99+' : String(n);
+  document.querySelectorAll('[data-noti-badge]').forEach(el => {
+    el.textContent = text;
+    el.classList.toggle('wide', text.length > 1);   // 한 자리는 정원, 두 자리부터 알약
     el.style.display = n > 0 ? '' : 'none';
   });
 }
@@ -116,6 +120,7 @@ async function markNotiRead(keys) {
   if (fresh.length === 0) return;
   fresh.forEach(k => notiReadKeys.add(k));
   renderNotifications();
+  syncNotiBadge();          // 읽은 만큼 배지 숫자도 바로 줄인다
 
   const p = (typeof getProfile === 'function' ? getProfile() : null) || {};
   if (!p.empno) return;
@@ -165,7 +170,13 @@ async function openNotifications() {
   showScreen('device1', 'notifications');
   await loadNotifications();
   renderNotifications();
+  syncNotiBadge();
+}
+
+// 로그인 직후처럼 사용자가 바뀐 시점에 배지를 다시 맞춘다
+function refreshNotiBadge() {
+  return loadNotifications().then(syncNotiBadge).catch(() => { });
 }
 
 // 첫 진입 시 배지 상태만 맞춰둔다 (목록은 화면 열 때 불러온다)
-loadNotifications().then(syncNotiBadge).catch(() => { });
+refreshNotiBadge();

@@ -286,3 +286,81 @@
 .sort-opt.active i {
   visibility: visible;
 }
+
+/* === 내가 쓴 꿀팁 · 빈 목록 === */
+
+.tip-empty {
+  padding: 28px 18px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-3);
+}
+
+.mytip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 18px;
+}
+
+.mytip-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+}
+
+.mytip-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mytip-resort {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.mytip-del {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  padding: 2px;
+  line-height: 1;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.mytip-del .ms {
+  font-size: 18px;
+}
+
+.mytip-del:hover {
+  color: #E94A4A;
+}
+
+.mytip-card .ttitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+}
+
+.mytip-card .tcontent {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
+  margin-top: 6px;
+}
+
+.mytip-card .tfoot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 10px;
+}
