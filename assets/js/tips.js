@@ -171,7 +171,7 @@ function deleteMyTip(id) {
 
 updateMyTipsCount();
 
-// 리뷰 탭에서 특정 리뷰로 스크롤 (없으면 첫 리뷰로)
+// 후기 탭에서 특정 후기로 스크롤 (없으면 첫 후기로)
 function scrollToReview(reviewId) {
   const pane = document.querySelector('.screen[data-screen="detail"] .dtab-pane[data-dtab="reviews"]');
   if (!pane) return;
@@ -211,12 +211,12 @@ function openResort(name, tab, reviewId) {
   const heroTag = d.querySelector('.hero .hero-tag'); if (heroTag) heroTag.textContent = tag;
   const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = r.rating.toFixed(1);
   const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(r.rating);
-  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${r.reviews}개</b> 리뷰의 평균`;
+  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${r.reviews}개</b> 후기의 평균`;
   const items = d.querySelectorAll('.score-breakdown .score-item');
   setScoreItem(items[0], clampScore(r.rating - 0.1)); // 위치
   setScoreItem(items[1], clampScore(r.rating + 0.1)); // 시설
   setScoreItem(items[2], clampScore(r.rating));        // 청결
-  const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `리뷰 ${r.reviews}`;
+  const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `후기 ${r.reviews}`;
   const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = r.reviews;
 
   // 이 휴양소의 꿀팁으로 갈아끼운다 (작성도 이 휴양소 기준이 된다)

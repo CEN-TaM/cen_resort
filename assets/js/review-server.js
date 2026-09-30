@@ -1,4 +1,49 @@
-// 서버 후기 렌더링 · 홈 실시간 리뷰 · 내가 쓴 리뷰
+// 서버 후기 렌더링 · 홈 실시간 후기 · 내가 쓴 후기
+
+// ===== 후기 카드 공통: 사진 미리보기 · 본문 접기 =====
+// 카드에는 사진을 3장만 보이고, 나머지는 숨긴 채 DOM 에 둔다.
+// 숨긴 것도 data-full 을 그대로 갖고 있어서 라이트박스를 열면 전체가 이어진다.
+const REVIEW_PHOTO_PREVIEW = 3;
+
+// urls: 이미 완성된 이미지 주소 배열
+function reviewPhotosHtml(urls, cls) {
+  const list = urls || [];
+  if (!list.length) return '';
+  const rest = list.length - REVIEW_PHOTO_PREVIEW;
+  const cells = list.map((url, i) => {
+    const hidden = i >= REVIEW_PHOTO_PREVIEW ? ' rv-ph-hidden' : '';
+    const more = (rest > 0 && i === REVIEW_PHOTO_PREVIEW - 1)
+      ? `<span class="rv-ph-more">+${rest}</span>` : '';
+    return `<div class="ph${hidden}" data-full="${url}" onclick="openReviewLightbox(this,event)"
+      style="background:#E8EAEE center/cover no-repeat;background-image:url('${url}')">${more}</div>`;
+  }).join('');
+  return `<div class="${cls}">${cells}</div>`;
+}
+
+// 5줄이 넘을 만한 글에만 '더보기'를 붙인다.
+// 카드가 안 보이는 화면에 있으면 높이를 잴 수 없어, 줄 수와 길이로 판단한다.
+function reviewNeedsMore(text) {
+  const t = text || '';
+  return t.split('\n').length > 5 || t.length > 130;
+}
+
+function reviewTextHtml(text, cls) {
+  const raw = text || '';
+  if (!raw) return '';
+  const html = escapeHtml(raw).replace(/\n/g, '<br>');
+  if (!reviewNeedsMore(raw)) return `<div class="${cls}">${html}</div>`;
+  return `<div class="${cls} rv-clamp">${html}</div>
+    <button type="button" class="rv-more" onclick="toggleReviewText(this,event)">더보기</button>`;
+}
+
+function toggleReviewText(btn, ev) {
+  if (ev) ev.stopPropagation();          // 카드 전체 클릭(상세 이동)과 겹치지 않게
+  const box = btn.previousElementSibling;
+  if (!box) return;
+  const folded = box.classList.toggle('rv-clamp');
+  btn.textContent = folded ? '더보기' : '접기';
+}
+
 // ===== 서버 후기 렌더링 =====
 // 로그인한 본인이 쓴 후기인지(사번 일치) 판별
 function isMyReview(rv) {
@@ -7,10 +52,10 @@ function isMyReview(rv) {
     return !!(p && p.empno && rv && rv.empno && String(p.empno) === String(rv.empno));
   } catch (e) { return false; }
 }
-// 후기 카드용 배지 HTML (내 리뷰 / NEW)
+// 후기 카드용 배지 HTML (내 후기 / NEW)
 function reviewBadge(rv) {
   return isMyReview(rv)
-    ? '<span class="badge" style="background:#1F4FE0;color:#fff">내 리뷰</span>'
+    ? '<span class="badge" style="background:#1F4FE0;color:#fff">내 후기</span>'
     : '<span class="badge" style="background:#DCFCE7;color:#047857">NEW</span>';
 }
 function escapeHtml(s) {
@@ -130,15 +175,11 @@ function homeReviewCard(rv) {
   const avatarCh = (rv.authorName || '동').trim()[0] || '동';
   const ac = avatarColor(rv.authorName || rv.id || rv.resortName);
   const rc = resortColor(rv.resortName);
-  const real = (rv.photos || []).slice(0, 3);
+  const real = rv.photos || [];
   const photoSrcs = real.length
     ? real.map(src => `${API_BASE}${escapeHtml(src)}`)
-    : fallbackPhotos(rv.id || rv.authorName || rv.resortName, 3);
-  const photos = photoSrcs.map(u =>
-    `<div class="ph" style="background:#E8EAEE center/cover no-repeat;background-image:url('${u}')"></div>`
-  ).join('');
-  const photoRow = photos ? `<div class="photo-row rt-photos">${photos}</div>` : '';
-  const text = escapeHtml(rv.content || '');
+    : fallbackPhotos(rv.id || rv.authorName || rv.resortName, REVIEW_PHOTO_PREVIEW);
+  const photoRow = reviewPhotosHtml(photoSrcs, 'photo-row rt-photos');
   const company = escapeHtml(cleanCompany(rv.company));
   const dept = escapeHtml(rv.department || '');
   const orgRow = (company || dept) ? `
@@ -147,7 +188,7 @@ function homeReviewCard(rv) {
         ${dept ? `<span class="rt-dept">${dept}</span>` : ''}
       </div>` : '';
   const dateTxt = timeAgo(rv.createdAt) || '방금 전';
-  const myBadge = isMyReview(rv) ? '<span class="badge" style="background:#1F4FE0;color:#fff">내 리뷰</span>' : '';
+  const myBadge = isMyReview(rv) ? '<span class="badge" style="background:#1F4FE0;color:#fff">내 후기</span>' : '';
   const resortAttr = escapeHtml(rv.resortName).replace(/"/g, '&quot;');
   return `
   <div class="review-card rt-review server-home-card" onclick="openResort('${resortAttr}','reviews')">
@@ -159,7 +200,7 @@ function homeReviewCard(rv) {
       </div>
       <span class="rt-resort" data-painted="1" style="background:${rc.bg};color:${rc.fg}">${escapeHtml(rv.resortName)}</span>
     </div>
-    <div class="rt-text">${text}</div>
+    ${reviewTextHtml(rv.content, 'rt-text')}
     ${photoRow}
     <div class="rt-actions">
       <span class="rt-act"><i class="ti ti-heart"></i> 좋아요 ${rv.likes || 0}</span>
@@ -194,14 +235,14 @@ async function loadHomeReviews() {
     wrap.innerHTML = recent.map(homeReviewCard).join('');
     head.parentNode.insertBefore(wrap, head.nextSibling);
   } catch (e) {
-    console.error('홈 리뷰 로드 실패:', e);
+    console.error('홈 후기 로드 실패:', e);
   }
 }
-// 최초 진입 시 홈 실시간 리뷰 로드
+// 최초 진입 시 홈 실시간 후기 로드
 loadHomeReviews();
 
-// ===== '내가 쓴 리뷰' 페이지 (서버 연동) =====
-// 내 후기 카드: 클릭 시 해당 휴양소 상세 리뷰로 이동
+// ===== '내가 쓴 후기' 페이지 (서버 연동) =====
+// 내 후기 카드: 클릭 시 해당 휴양소 상세 후기로 이동
 function myReviewCard(rv) {
   const myAc = avatarColor(rv.authorName || rv.id || '나');
   const myRc = resortColor(rv.resortName);
@@ -209,27 +250,23 @@ function myReviewCard(rv) {
   const full = Math.round(rv.ratings?.avg || 0);
   const stars = `<span class="stars">${'★'.repeat(full)}</span>` +
     (full < 5 ? `<span class="stars empty">${'★'.repeat(5 - full)}</span>` : '');
-  const photos = (rv.photos || []).slice(0, 3).map(src =>
-    `<div class="ph" style="background:#E8EAEE center/cover no-repeat;background-image:url('${API_BASE}${escapeHtml(src)}')"></div>`
-  ).join('');
-  const photoRow = photos ? `<div class="photo-row">${photos}</div>` : '';
-  let text = escapeHtml(rv.content || '');
-  if (text.length > 90) text = text.slice(0, 90) + '...';
+  const photoRow = reviewPhotosHtml(
+    (rv.photos || []).map(src => `${API_BASE}${escapeHtml(src)}`), 'photo-row');
   const resortAttr = escapeHtml(rv.resortName).replace(/"/g, '&quot;');
   return `
   <div class="review-card" onclick="openResort('${resortAttr}','reviews')">
     <div class="review-head rt-head">
       <div class="rt-avatar" style="background:${myAc.bg};color:${myAc.fg}">${escapeHtml((rv.authorName || '나').trim()[0] || '나')}</div>
       <div class="rt-who">
-        <div class="rt-name-row"><span class="rt-name">${escapeHtml(rv.authorName || '나')}</span><span class="badge" style="background:#1F4FE0;color:#fff">내 리뷰</span><span class="rt-date">· ${fmtDate(rv.createdAt)}</span></div>
+        <div class="rt-name-row"><span class="rt-name">${escapeHtml(rv.authorName || '나')}</span><span class="badge" style="background:#1F4FE0;color:#fff">내 후기</span><span class="rt-date">· ${fmtDate(rv.createdAt)}</span></div>
         ${rtOrgRow(rv)}
       </div>
       <span class="rt-resort" data-painted="1" style="background:${myRc.bg};color:${myRc.fg}">${escapeHtml(rv.resortName)}</span>
-      <button class="rev-del-btn" onclick="deleteMyReview(event, ${rv.id})" aria-label="리뷰 삭제"><i class="ti ti-trash"></i></button>
+      <button class="rev-del-btn" onclick="deleteMyReview(event, ${rv.id})" aria-label="후기 삭제"><i class="ti ti-trash"></i></button>
     </div>
     <div class="rating-line">${stars}<span class="rating-num">${avg}</span></div>
     ${photoRow}
-    <div class="review-text">${text}</div>
+    ${reviewTextHtml(rv.content, 'review-text')}
     <div class="review-actions">
       <span class="action-btn"><i class="ti ti-heart"></i> 좋아요 <b>${rv.likes || 0}</b></span>
       <span class="action-btn"><i class="ti ti-message-circle"></i> 댓글 <b>${(rv.comments || []).length}</b></span>
@@ -237,16 +274,16 @@ function myReviewCard(rv) {
   </div>`;
 }
 
-// ===== 내 리뷰 삭제 (모달 확인 → DELETE) =====
+// ===== 내 후기 삭제 (모달 확인 → DELETE) =====
 let _pendingDeleteReviewId = null;
 
-// 삭제 확인 모달 열기 (상세·내리뷰 공용)
+// 삭제 확인 모달 열기 (상세·내후기 공용)
 function askDeleteReview(id) {
   _pendingDeleteReviewId = id;
   const m = document.getElementById('delete-review-modal');
   if (m) m.classList.add('show');
 }
-// 내리뷰 카드 삭제 버튼: 카드 클릭(상세 이동) 막고 모달 열기
+// 내후기 카드 삭제 버튼: 카드 클릭(상세 이동) 막고 모달 열기
 function deleteMyReview(e, id) {
   if (e) e.stopPropagation();
   askDeleteReview(id);
@@ -275,13 +312,13 @@ async function confirmDeleteReview() {
       closeDeleteReviewModal();
       return;
     }
-    if (typeof showToast === 'function') showToast('리뷰를 삭제했어요');
+    if (typeof showToast === 'function') showToast('후기를 삭제했어요');
     // 관련 화면 새로고침
     if (typeof loadMyReviews === 'function') loadMyReviews();
     if (typeof loadHomeReviews === 'function') loadHomeReviews();
     if (typeof loadServerReviews === 'function' && window._detailResort) loadServerReviews(window._detailResort);
   } catch (err) {
-    console.error('리뷰 삭제 실패:', err);
+    console.error('후기 삭제 실패:', err);
     if (typeof showToast === 'function') showToast('삭제 중 오류가 발생했습니다');
   } finally {
     closeDeleteReviewModal();
@@ -294,28 +331,28 @@ async function loadMyReviews() {
   const p = (typeof getProfile === 'function' && getProfile()) || {};
   if (!p.empno) {
     list.innerHTML = '';
-    if (head) head.textContent = '로그인 후 내 리뷰를 확인할 수 있어요';
+    if (head) head.textContent = '로그인 후 내 후기를 확인할 수 있어요';
     return;
   }
   list.innerHTML = '';
-  if (head) head.textContent = '작성한 리뷰를 불러오는 중...';
+  if (head) head.textContent = '작성한 후기를 불러오는 중...';
   try {
     const res = await fetch(API_BASE + '/api/reviews/mine?empno=' + encodeURIComponent(p.empno));
     const { reviews } = res.ok ? await res.json() : { reviews: [] };
     if (!reviews || !reviews.length) {
-      if (head) head.textContent = '아직 작성한 리뷰가 없어요';
+      if (head) head.textContent = '아직 작성한 후기가 없어요';
       list.innerHTML = '<div style="text-align:center;color:#94A3B8;font-size:13px;padding:40px 0">첫 후기를 남겨보세요! ✍️</div>';
       return;
     }
-    if (head) head.innerHTML = `총 <b>${reviews.length}건</b>의 리뷰를 작성했어요`;
+    if (head) head.innerHTML = `총 <b>${reviews.length}건</b>의 후기를 작성했어요`;
     list.innerHTML = reviews.map(myReviewCard).join('');
   } catch (e) {
-    console.error('내 리뷰 로드 실패:', e);
-    if (head) head.textContent = '리뷰를 불러오지 못했어요';
+    console.error('내 후기 로드 실패:', e);
+    if (head) head.textContent = '후기를 불러오지 못했어요';
   }
 }
 
-// 나의페이지 '내가 쓴 리뷰' 개수 배지 갱신
+// 나의페이지 '내가 쓴 후기' 개수 배지 갱신
 async function updateMyReviewsCount() {
   const el = document.getElementById('my-reviews-count');
   if (!el) return;
@@ -326,7 +363,7 @@ async function updateMyReviewsCount() {
     const { reviews } = res.ok ? await res.json() : { reviews: [] };
     el.textContent = (reviews ? reviews.length : 0) + '건';
   } catch (e) {
-    console.error('내 리뷰 개수 조회 실패:', e);
+    console.error('내 후기 개수 조회 실패:', e);
   }
 }
 // 최초 로드 시 개수 반영

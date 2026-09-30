@@ -76,9 +76,9 @@ async function submitReview(deviceId) {
     document.getElementById('modal-' + deviceId).classList.add('show');
     // 폼 초기화
     resetReviewForm();
-    // 홈 '실시간 리뷰' 즉시 갱신
+    // 홈 '실시간 후기' 즉시 갱신
     if (typeof loadHomeReviews === 'function') loadHomeReviews();
-    // 나의페이지 리뷰 개수 갱신
+    // 나의페이지 후기 개수 갱신
     if (typeof updateMyReviewsCount === 'function') updateMyReviewsCount();
   } catch (err) {
     console.error('후기 등록 실패:', err);
@@ -103,9 +103,9 @@ function closeModal(deviceId) {
   showScreen(deviceId, 'home');
 }
 
-// 리뷰 작성: 휴양소 구분 → 휴양소 선택 (2단계)
+// 후기 작성: 휴양소 구분 → 휴양소 선택 (2단계)
 const REVIEW_RESORTS = {
-  regular: ['부산휴양소(해운대)', '부산휴양소(기장)', '속초(힐스) 휴양소', '속초(서희) 휴양소', '경주휴양소', '조천 휴양소', '애월 1호점', '애월 2호점', '보령 휴양소', '여수휴양소', '과천휴양소(1001호)', '과천휴양소(504호)'],
+  regular: ['부산휴양소(해운대)', '부산휴양소(기장)', '속초(힐스)', '속초(서희)', '경주휴양소', '조천 휴양소', '애월 1호점', '애월 2호점', '보령 휴양소', '여수휴양소', '과천휴양소(1001호)', '과천휴양소(504호)'],
   summer: ['제주(서귀포)', '부산(송도)', '여수(금오도)', '인천(영흥도)', '인천(강화)', '경기(포천)', '경기(가평)', '충남(태안)'],
   winter: ['무주', '고성', '평창', '가평', '홍천', '충남']
 };

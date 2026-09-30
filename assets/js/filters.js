@@ -1,11 +1,11 @@
-// 지역 칩 · 리뷰 필터 칩 · 공지사항 카테고리/검색
+// 지역 칩 · 후기 필터 칩 · 공지사항 카테고리/검색
 // ===== 지역 칩 선택 =====
 function selectRegion(el) {
   el.parentElement.querySelectorAll('.region-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
 }
 
-// ===== 리뷰 필터 칩 토글 (다중 선택) =====
+// ===== 후기 필터 칩 토글 (다중 선택) =====
 function toggleRevChip(el) {
   el.classList.toggle('active');
 }

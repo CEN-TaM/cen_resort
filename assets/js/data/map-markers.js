@@ -2,7 +2,7 @@
 // 휴양소 위치 데이터 — mx/my 는 실제 위경도를 지도 SVG(viewBox 200x280)로 투영한 좌표
 const SENI_MARKERS = [
   // 정기 휴양소 (12곳)
-  { type: 'basic', label: '속초', mx: 131, my: 32.5, places: ['속초(힐스) 휴양소', '속초(서희) 휴양소'] },
+  { type: 'basic', label: '속초', mx: 131, my: 32.5, places: ['속초(힐스)', '속초(서희)'] },
   { type: 'basic', label: '과천', mx: 59.1, my: 75.6, places: ['과천휴양소(1001호)', '과천휴양소(504호)'] },
   { type: 'basic', label: '보령', mx: 42.3, my: 136.2, places: ['보령 휴양소'] },
   { type: 'basic', label: '여수', mx: 89.3, my: 223.3, places: ['여수휴양소'] },

@@ -1,5 +1,5 @@
 // 상세 화면 탭 · 즐겨찾기(찜)
-// ===== 상세 화면 탭 (리뷰 / 꿀팁 / Q&A) =====
+// ===== 상세 화면 탭 (후기 / 꿀팁 / Q&A) =====
 function showDetailTab(trigger, name) {
   const navParent = trigger.parentElement;
   navParent.querySelectorAll('.tnav').forEach(t => t.classList.remove('active'));

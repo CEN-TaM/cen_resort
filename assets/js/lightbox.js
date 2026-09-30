@@ -70,11 +70,10 @@ function serverReviewCard(rv) {
   const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
   const starFull = Math.round(rv.ratings?.avg || 0);
   const stars = '★'.repeat(starFull) + '☆'.repeat(5 - starFull);
-  const photos = (rv.photos || []).slice(0, 4).map(src =>
-    `<div class="rv-photo" data-full="${API_BASE}${escapeHtml(src)}" onclick="openReviewLightbox(this,event)" style="aspect-ratio:1;border-radius:8px;cursor:pointer;background:#E8EAEE center/cover no-repeat;background-image:url('${API_BASE}${escapeHtml(src)}')"></div>`
-  ).join('');
-  const photoGrid = photos ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:10px 0 12px">${photos}</div>` : '';
-  const content = rv.content ? `<div style="font-size:13px;color:#0F172A;line-height:1.7">${escapeHtml(rv.content)}</div>` : '';
+  // 사진 3장까지만 깔고 나머지는 +N 으로 접는다 (라이트박스에선 전체가 보인다)
+  const photoGrid = reviewPhotosHtml(
+    (rv.photos || []).map(src => `${API_BASE}${escapeHtml(src)}`), 'rv-photo-grid');
+  const content = reviewTextHtml(rv.content, 'rv-content');
   return `
   <div class="review-head rt-head" id="rev-srv-${rv.id}">
     <div class="rt-avatar" style="background:${srvAc.bg};color:${srvAc.fg}">${escapeHtml(avatarCh)}</div>
@@ -82,7 +81,7 @@ function serverReviewCard(rv) {
       <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}${comp}</span></div>
       ${rtOrgRow(rv)}
     </div>
-    ${isMyReview(rv) ? `<button class="rev-del-btn" onclick="askDeleteReview(${rv.id})" aria-label="리뷰 삭제"><i class="ti ti-trash"></i></button>` : ''}
+    ${isMyReview(rv) ? `<button class="rev-del-btn" onclick="askDeleteReview(${rv.id})" aria-label="후기 삭제"><i class="ti ti-trash"></i></button>` : ''}
   </div>
   <div class="rating-line" style="margin-top:10px"><span class="stars">${stars}</span><span class="rating-num">${avg}</span></div>
   <div style="background:#F1F3F6;padding:12px 14px;border-radius:12px;margin:10px 0">
@@ -95,7 +94,7 @@ function serverReviewCard(rv) {
   ${typeof reviewCommentsHtml === 'function' ? reviewCommentsHtml(rv) : ''}
   <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>`;
 }
-// 상세페이지 총계(리뷰 수·평균·항목별 점수)를 실제 후기로 동기화
+// 상세페이지 총계(후기 수·평균·항목별 점수)를 실제 후기로 동기화
 function syncDetailStats(reviews) {
   const d = document.querySelector('.screen[data-screen="detail"]');
   if (!d) return;
@@ -106,11 +105,11 @@ function syncDetailStats(reviews) {
   const avgFac = mean(reviews.map(r => r.ratings?.facility));
   const avgCln = mean(reviews.map(r => r.ratings?.clean));
 
-  const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `리뷰 ${n}`;
+  const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `후기 ${n}`;
   const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = n;
   const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = avg.toFixed(1);
   const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(avg);
-  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${n}개</b> 리뷰의 평균`;
+  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${n}개</b> 후기의 평균`;
   const items = d.querySelectorAll('.score-breakdown .score-item');
   setScoreItem(items[0], clampScore(avgLoc));
   setScoreItem(items[1], clampScore(avgFac));
@@ -130,7 +129,7 @@ async function loadServerReviews(resortName) {
     if (!res.ok) return;
     const { reviews } = await res.json();
     if (!reviews || !reviews.length) {
-      // 서버 후기 없음 → 샘플 리뷰 노출(더미 총계 유지)
+      // 서버 후기 없음 → 샘플 후기 노출(더미 총계 유지)
       if (samples) samples.style.display = '';
       return;
     }

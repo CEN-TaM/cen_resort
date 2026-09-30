@@ -30,41 +30,41 @@ const TIP_SEED = [
     daysAgo: 30, views: 67, likes: 12,
   },
 
-  // ── 속초(힐스) 휴양소
+  // ── 속초(힐스)
   {
-    id: 'seed-sokcho-hills-1', resort: '속초(힐스) 휴양소', tag: '시장', hot: true,
+    id: 'seed-sokcho-hills-1', resort: '속초(힐스)', tag: '시장', hot: true,
     title: '중앙시장은 걸어서 5분',
     content: '숙소에서 속초중앙시장까지 도보 5분이라 저녁거리 사 오기 좋아요. 닭강정은 포장 줄이 기니 이른 시간 추천.',
     author: '김OO 수석', daysAgo: 5, views: 186, likes: 34,
   },
   {
-    id: 'seed-sokcho-hills-2', resort: '속초(힐스) 휴양소', tag: '뷰',
+    id: 'seed-sokcho-hills-2', resort: '속초(힐스)', tag: '뷰',
     title: '일출 보려면 거실 커튼 미리 열어두기',
     content: '고층 오션뷰라 침대에서도 일출이 보입니다. 전날 밤에 커튼 살짝 열어두면 아침에 그대로 볼 수 있어요.',
     daysAgo: 12, views: 121, likes: 26, mine: true,
   },
   {
-    id: 'seed-sokcho-hills-3', resort: '속초(힐스) 휴양소', tag: '준비물',
+    id: 'seed-sokcho-hills-3', resort: '속초(힐스)', tag: '준비물',
     title: '수건은 3장, 더 필요하면 챙겨가세요',
     content: '식기류·비닐봉투·쓰레기봉투는 잘 구비돼 있습니다. 수건만 인원수보다 부족할 수 있어요.',
     author: '박OO 책임', daysAgo: 18, views: 98, likes: 21,
   },
 
-  // ── 속초(서희) 휴양소
+  // ── 속초(서희)
   {
-    id: 'seed-sokcho-seohee-1', resort: '속초(서희) 휴양소', tag: '주차',
+    id: 'seed-sokcho-seohee-1', resort: '속초(서희)', tag: '주차',
     title: '주차는 시장 공영주차장이 편해요',
     content: '건물 주차장이 좁은 편입니다. 중앙시장 공영주차장에 대고 걸어오는 게 오히려 빠를 때가 많아요.',
     author: '정OO 팀장', daysAgo: 9, views: 77, likes: 15,
   },
   {
-    id: 'seed-sokcho-seohee-2', resort: '속초(서희) 휴양소', tag: '맛집', hot: true,
+    id: 'seed-sokcho-seohee-2', resort: '속초(서희)', tag: '맛집', hot: true,
     title: '해수욕장 앞 생선구이 골목',
     content: '도보 10분 거리에 생선구이 집이 모여 있어요. 저녁엔 웨이팅이 있으니 6시 전에 가시면 바로 앉습니다.',
     author: '손OO 수석', daysAgo: 16, views: 203, likes: 39,
   },
   {
-    id: 'seed-sokcho-seohee-3', resort: '속초(서희) 휴양소', tag: '아이동반',
+    id: 'seed-sokcho-seohee-3', resort: '속초(서희)', tag: '아이동반',
     title: '아이랑 가면 과자의 성 추천',
     content: '차로 10분 거리에 과자 만들기 체험장이 있어요. 5~8세 아이들이 특히 좋아합니다.',
     author: '신OO 수석', daysAgo: 25, views: 112, likes: 24,
