@@ -8,6 +8,16 @@
   overflow: hidden;
 }
 
+/* 나의 페이지는 하단 탭에 없고 햄버거로만 들어오므로 나갈 버튼이 필요하다 */
+.my-header .back {
+  display: inline-block;
+  margin-bottom: 14px;
+  font-size: 22px;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+}
+
 .my-header .name {
   font-size: 20px;
   font-weight: 800;

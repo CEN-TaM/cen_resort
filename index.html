@@ -213,7 +213,7 @@
       <!-- EDIT PROFILE : 회원정보 수정 -->
       <div class="screen auth-flow" data-screen="edit-profile">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','edit-profile','my')"></i>
           <div class="title">회원정보 수정</div>
           <div class="actions" style="width:22px"></div>
         </div>
@@ -893,7 +893,7 @@
       <!-- DETAIL -->
       <div class="screen" data-screen="detail">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','detail')"></i>
           <div class="title">조천 휴양소</div>
           <div class="actions"><i class="ti ti-share" onclick="openShareSheet()"></i><span
               class="fav-btn inline header-style" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i
@@ -1379,7 +1379,7 @@
       <!-- WRITE -->
       <div class="screen" data-screen="write">
         <div class="app-header">
-          <i class="ti ti-x back" onclick="showScreen('device1','home')"></i>
+          <i class="ti ti-x back" onclick="goBack('device1','write')"></i>
           <div class="title">리뷰 작성</div>
           <div class="actions" style="visibility:hidden"><i class="ti ti-x"></i></div>
         </div>
@@ -1642,7 +1642,7 @@
       <!-- NOTICE DETAIL -->
       <div class="screen" data-screen="notice-detail">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','tips')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','notice-detail','tips')"></i>
           <div class="title">공지사항</div>
           <div class="actions">
             <i class="ti ti-share-2"></i>
@@ -1790,6 +1790,8 @@
       <div class="screen" data-screen="my">
         <div class="content">
           <div class="my-header">
+            <i class="ti ti-arrow-left back" onclick="goBack('device1','my')" role="button" tabindex="0"
+              aria-label="뒤로 가기"></i>
             <div class="name" id="my-name">관리자</div>
             <div class="role">전략기획팀 · 사번 인증 완료</div>
           </div>
@@ -1888,7 +1890,7 @@
       <!-- BADGES -->
       <div class="screen" data-screen="badges">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','badges','my')"></i>
           <div class="title">내 배지</div>
           <div class="actions"><i class="ti ti-share"></i></div>
         </div>
@@ -1981,7 +1983,7 @@
       <!-- MY REVIEWS : 내가 쓴 리뷰 -->
       <div class="screen" data-screen="my-reviews">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','my-reviews','my')"></i>
           <div class="title">내가 쓴 리뷰</div>
           <div class="actions"></div>
         </div>
@@ -2110,7 +2112,7 @@
       <div class="screen" data-screen="search">
         <div class="sticky-header">
           <div class="map-topbar">
-            <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
+            <button class="back" onclick="goBack('device1','search')"><i class="ti ti-arrow-left"></i></button>
             <div class="search-group">
               <input id="global-search-input" type="search" inputmode="search" autocomplete="off" autocapitalize="none"
                 class="search-input" placeholder="휴양소를 검색해 보세요" oninput="performSearch(this.value)">
@@ -2130,7 +2132,7 @@
       <div class="screen" data-screen="notifications">
         <div class="sticky-header">
           <div class="map-topbar">
-            <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
+            <button class="back" onclick="goBack('device1','notifications')"><i class="ti ti-arrow-left"></i></button>
             <div class="ttl">알림</div>
           </div>
         </div>

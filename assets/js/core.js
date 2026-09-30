@@ -18,10 +18,18 @@ function saveScreenScroll(screenEl) {
   const sb = screenEl.querySelector('.scroll-body');
   scrollPos[name] = { top: screenEl.scrollTop || 0, body: sb ? sb.scrollTop : 0 };
 }
+// 화면별 "직전에 어디서 왔는지" (뒤로가기 목적지용)
+// 예: 휴양소 목록 → 상세 로 들어왔으면 prevScreen['detail'] = 'resorts'
+const prevScreen = {};
+
 function showScreen(deviceId, screenName, opts) {
   const device = document.getElementById(deviceId);
+  const leaving = device.querySelector('.screen.active');
   // 떠나는 화면의 스크롤 위치 저장
-  saveScreenScroll(device.querySelector('.screen.active'));
+  saveScreenScroll(leaving);
+  // 어디서 왔는지 기록 (뒤로가기로 이동할 때는 기록하지 않는다 — 서로 되돌아가며 갇힌다)
+  const from = leaving ? leaving.getAttribute('data-screen') : null;
+  if (from && from !== screenName && !(opts && opts.back)) prevScreen[screenName] = from;
   const screens = device.querySelectorAll('.screen');
   screens.forEach(s => s.classList.remove('active'));
   const target = device.querySelector(`[data-screen="${screenName}"]`);
@@ -47,4 +55,9 @@ function showScreen(deviceId, screenName, opts) {
   if (screenName === 'my-reviews' && typeof loadMyReviews === 'function') loadMyReviews();
   // 나의페이지 진입 시 리뷰 개수 갱신
   if (screenName === 'my' && typeof updateMyReviewsCount === 'function') updateMyReviewsCount();
+}
+
+// 뒤로가기: 들어왔던 화면으로 돌아간다. 기록이 없으면 fallback(기본 홈)으로.
+function goBack(deviceId, screenName, fallback) {
+  showScreen(deviceId, prevScreen[screenName] || fallback || 'home', { back: true });
 }
