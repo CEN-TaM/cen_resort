@@ -199,9 +199,11 @@
   position: absolute;
   top: 0;
   right: 0;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
+  /* 한 자리 숫자는 너비를 고정해 정원으로 둔다.
+     두 자리부터 syncNotiBadge 가 .wide 를 붙여 알약으로 늘어난다. */
+  width: 18px;
+  height: 18px;
+  padding: 0;
   background: #E94A4A;
   color: #fff;
   border-radius: var(--pill);
@@ -213,6 +215,12 @@
   align-items: center;
   justify-content: center;
   letter-spacing: -0.02em;
+}
+
+.top-menu .badge-dot.wide {
+  width: auto;
+  min-width: 18px;
+  padding: 0 5px;
 }
 
 .home-menu {

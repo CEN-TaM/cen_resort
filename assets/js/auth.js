@@ -124,6 +124,8 @@ function doLogin(event) {
   applyUserInfo();
   showScreen('device1', 'home');
   showScrollTooltip();
+  // 로그인 전에는 사번이 없어 내 알림을 못 받아온다. 이제 다시 맞춘다.
+  if (typeof refreshNotiBadge === 'function') refreshNotiBadge();
   return false;
 }
 

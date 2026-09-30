@@ -213,7 +213,7 @@
       <!-- EDIT PROFILE : 회원정보 수정 -->
       <div class="screen auth-flow" data-screen="edit-profile">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','edit-profile','my')"></i>
           <div class="title">회원정보 수정</div>
           <div class="actions" style="width:22px"></div>
         </div>
@@ -330,6 +330,7 @@
               <div class="top-menu-wrap">
                 <button type="button" class="top-menu" onclick="showScreen('device1','my')" aria-label="나의페이지">
                   <img class="top-menu-ico" src="assets/images/ico_menu.svg" alt="메뉴">
+                  <span class="badge-dot" data-noti-badge style="display:none"></span>
                 </button>
               </div>
             </div>
@@ -893,7 +894,7 @@
       <!-- DETAIL -->
       <div class="screen" data-screen="detail">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','detail')"></i>
           <div class="title">조천 휴양소</div>
           <div class="actions"><i class="ti ti-share" onclick="openShareSheet()"></i><span
               class="fav-btn inline header-style" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i
@@ -1248,58 +1249,8 @@
               </div>
             </div>
 
-            <div class="swipe-row">
-              <div class="tip-card">
-                <div class="tag-row">
-                  <span class="tag tone-coral">HOT</span>
-                  <span class="tag tone-peach">주차</span>
-                </div>
-                <div class="ttitle">조천 휴양소 주차장 꿀팁</div>
-                <div class="tcontent">정문 주차장은 협소하니 후문 공용 주차장 이용 추천! 도보 3분, 무료입니다.</div>
-                <div class="tfoot">
-                  <span>박OO 책임 · 1주 전</span>
-                  <span>👁 142 · 👍 28</span>
-                </div>
-              </div>
-
-              <div class="tip-card">
-                <div class="tag-row">
-                  <span class="tag tone-teal">마트</span>
-                </div>
-                <div class="ttitle">근처 마트는 GS25 + 농협하나로마트</div>
-                <div class="tcontent">차로 10분 거리 농협하나로마트가 가격 좋아요. 도착 전 미리 장보고 가는 게 베스트!</div>
-                <div class="tfoot">
-                  <span>최OO 매니저 · 2주 전</span>
-                  <span>👁 89 · 👍 17</span>
-                </div>
-              </div>
-
-              <div class="tip-card">
-                <div class="tag-row">
-                  <span class="tag tone-coral">HOT</span>
-                  <span class="tag tone-pink">맛집</span>
-                </div>
-                <div class="ttitle">조천 흑돼지 맛집 BEST 3</div>
-                <div class="tcontent">1. 돈사돈 (현지인 추천) <br>2. 흑돈가 (가성비) <br>3. 제주아침 (포장 가능)</div>
-                <div class="tfoot">
-                  <span>이OO 선임 · 3주 전</span>
-                  <span>👁 234 · 👍 45</span>
-                </div>
-              </div>
-
-              <div class="tip-card">
-                <div class="tag-row">
-                  <span class="tag tone-lilac">준비물</span>
-                </div>
-                <div class="ttitle">꼭 챙겨가세요 - 비치타올 & 모기약</div>
-                <div class="tcontent">바다 가까워서 비치타올 필수! 여름엔 모기가 좀 있어서 모기약도 챙기시면 좋아요.</div>
-                <div class="tfoot">
-                  <span>정OO 책임 · 1개월 전</span>
-                  <span>👁 67 · 👍 12</span>
-                </div>
-              </div>
-
-            </div>
+            <!-- 꿀팁 목록은 tips.js 가 휴양소별로 그린다 -->
+            <div class="swipe-row" id="tip-row"></div>
             <button class="qna-write-btn" style="margin:0 18px;width:calc(100% - 36px)" onclick="openTipModal()">+ 나도 꿀팁
               공유하기</button>
           </div>
@@ -1379,7 +1330,7 @@
       <!-- WRITE -->
       <div class="screen" data-screen="write">
         <div class="app-header">
-          <i class="ti ti-x back" onclick="showScreen('device1','home')"></i>
+          <i class="ti ti-x back" onclick="goBack('device1','write')"></i>
           <div class="title">리뷰 작성</div>
           <div class="actions" style="visibility:hidden"><i class="ti ti-x"></i></div>
         </div>
@@ -1642,7 +1593,7 @@
       <!-- NOTICE DETAIL -->
       <div class="screen" data-screen="notice-detail">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','tips')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','notice-detail','tips')"></i>
           <div class="title">공지사항</div>
           <div class="actions">
             <i class="ti ti-share-2"></i>
@@ -1790,6 +1741,14 @@
       <div class="screen" data-screen="my">
         <div class="content">
           <div class="my-header">
+            <div class="my-topbar">
+              <i class="ti ti-arrow-left back" onclick="goBack('device1','my')" role="button" tabindex="0"
+                aria-label="뒤로 가기"></i>
+              <button type="button" class="my-noti" onclick="openNotifications()" aria-label="알림">
+                <i class="ti ti-bell"></i>
+                <span class="badge-dot" data-noti-badge style="display:none"></span>
+              </button>
+            </div>
             <div class="name" id="my-name">관리자</div>
             <div class="role">전략기획팀 · 사번 인증 완료</div>
           </div>
@@ -1821,16 +1780,10 @@
               <div class="mext" id="my-reviews-count">0건</div>
               <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
             </div>
-            <div class="menu-row">
+            <div class="menu-row" onclick="showScreen('device1','my-tips')">
               <div class="micon tone-sky"><i class="ti ti-bulb"></i></div>
               <div class="mlabel">내가 쓴 꿀팁</div>
-              <div class="mext">6건</div>
-              <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
-            </div>
-            <div class="menu-row">
-              <div class="micon"><i class="ti ti-history"></i></div>
-              <div class="mlabel">이용 이력</div>
-              <div class="mext">8회 이용</div>
+              <div class="mext" id="my-tips-count">0건</div>
               <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
             </div>
           </div>
@@ -1844,15 +1797,10 @@
               <div class="mlabel">회원정보 수정</div>
               <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
             </div>
-            <div class="menu-row">
-              <div class="micon"><i class="ti ti-bell"></i></div>
-              <div class="mlabel">알림 설정</div>
-              <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
-            </div>
-            <div class="menu-row">
+            <div class="menu-row" onclick="showScreen('device1','font-size')">
               <div class="micon"><i class="ti ti-text-size"></i></div>
               <div class="mlabel">글자 크기</div>
-              <div class="mext">보통</div>
+              <div class="mext" id="font-size-current">보통</div>
               <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
             </div>
             <div class="menu-row">
@@ -1888,7 +1836,7 @@
       <!-- BADGES -->
       <div class="screen" data-screen="badges">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','badges','my')"></i>
           <div class="title">내 배지</div>
           <div class="actions"><i class="ti ti-share"></i></div>
         </div>
@@ -1981,7 +1929,7 @@
       <!-- MY REVIEWS : 내가 쓴 리뷰 -->
       <div class="screen" data-screen="my-reviews">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','my')"></i>
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','my-reviews','my')"></i>
           <div class="title">내가 쓴 리뷰</div>
           <div class="actions"></div>
         </div>
@@ -1989,6 +1937,48 @@
           <div class="resort-list-head" id="my-reviews-head">작성한 리뷰를 불러오는 중...</div>
 
           <div class="review-list" id="my-review-list"></div>
+          <div style="height:30px"></div>
+        </div>
+      </div>
+
+      <!-- MY TIPS : 내가 쓴 꿀팁 -->
+      <div class="screen" data-screen="my-tips">
+        <div class="app-header">
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','my-tips','my')"></i>
+          <div class="title">내가 쓴 꿀팁</div>
+          <div class="actions" style="width:22px"></div>
+        </div>
+        <div class="content">
+          <div class="resort-list-head" id="my-tips-head"></div>
+          <div class="mytip-list" id="my-tips-list"></div>
+          <div style="height:30px"></div>
+        </div>
+      </div>
+
+      <!-- FONT SIZE : 글자 크기 설정 -->
+      <div class="screen" data-screen="font-size">
+        <div class="app-header">
+          <i class="ti ti-arrow-left back" onclick="goBack('device1','font-size','my')"></i>
+          <div class="title">글자 크기</div>
+          <div class="actions" style="width:22px"></div>
+        </div>
+        <div class="content">
+          <div class="fs-preview">
+            <div class="fs-preview-label">미리보기</div>
+            <div class="fs-card">
+              <div class="fs-card-title">속초(힐스) 휴양소</div>
+              <div class="fs-card-body">숙소에서 바다와 일출을 볼 수 있어 좋았습니다. 중앙시장이 걸어서 5분 거리라 먹거리 사 오기도
+                편했어요.</div>
+              <div class="fs-card-meta">이진환 · 국세서비스팀</div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div class="title">크기 선택</div>
+          </div>
+          <div class="fs-options" id="fs-options"></div>
+
+          <p class="fs-help">고른 크기는 이 기기에 저장되어 다음에 접속할 때도 그대로 적용됩니다.</p>
           <div style="height:30px"></div>
         </div>
       </div>
@@ -2110,7 +2100,7 @@
       <div class="screen" data-screen="search">
         <div class="sticky-header">
           <div class="map-topbar">
-            <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
+            <button class="back" onclick="goBack('device1','search')"><i class="ti ti-arrow-left"></i></button>
             <div class="search-group">
               <input id="global-search-input" type="search" inputmode="search" autocomplete="off" autocapitalize="none"
                 class="search-input" placeholder="휴양소를 검색해 보세요" oninput="performSearch(this.value)">
@@ -2130,7 +2120,7 @@
       <div class="screen" data-screen="notifications">
         <div class="sticky-header">
           <div class="map-topbar">
-            <button class="back" onclick="showScreen('device1','home')"><i class="ti ti-arrow-left"></i></button>
+            <button class="back" onclick="goBack('device1','notifications')"><i class="ti ti-arrow-left"></i></button>
             <div class="ttl">알림</div>
           </div>
         </div>
@@ -2280,6 +2270,7 @@
   <script src="assets/js/data/images.js"></script>
   <script src="assets/js/data/resorts.js"></script>
   <script src="assets/js/data/map-markers.js"></script>
+  <script src="assets/js/data/tips-data.js"></script>
 
   <!-- 스크립트 -->
   <script src="assets/js/core.js"></script>
@@ -2305,6 +2296,7 @@
   <script src="assets/js/scroll-pattern.js"></script>
   <script src="assets/js/map.js"></script>
   <script src="assets/js/scroll-tooltip.js"></script>
+  <script src="assets/js/font-size.js"></script>
 
   <!-- 스크롤 안내 툴팁 -->
   <div id="scroll-tooltip" onclick="hideScrollTooltip()">
