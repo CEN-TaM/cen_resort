@@ -1,19 +1,20 @@
 /* 홈 사용자 상태 스트립 · 로그아웃 버튼 */
 /* ============ 홈 사용자 상태 스트립 ============ */
 .user-strip {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: 12px 16px 8px;
+  margin: 12px 18px 8px;
   padding: 16px 18px;
-  background: #eef1fc;
+  background: var(--surface);
   border: 0;
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .user-strip .us-point {
-  width: 44px;
-  height: 44px;
+  width: 35px;
+  height: 35px;
   flex-shrink: 0;
   object-fit: contain;
 }
@@ -22,6 +23,7 @@
   position: relative;
   min-width: 0;
   flex: 1;
+  padding-right: 18px; /* 우상단 닫기 버튼 자리 */
 }
 
 .user-strip .us-hi {
@@ -37,9 +39,9 @@
 }
 
 .user-strip .us-sub {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-1);
+  color: var(--text-2);
   margin-top: 4px;
   letter-spacing: -0.01em;
   overflow: hidden;
@@ -107,17 +109,25 @@
 }
 
 .user-strip .us-close {
-  flex-shrink: 0;
-  align-self: flex-start;
+  position: absolute;
+  top: 12px;
+  right: 12px;
   width: 20px;
   height: 20px;
   padding: 0;
   border: 0;
+  border-radius: 50%;
   background: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+  transition: opacity .15s;
+}
+
+.user-strip .us-close:active {
+  opacity: .6;
 }
 
 .user-strip .us-close img {

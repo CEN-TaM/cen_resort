@@ -5,22 +5,17 @@
   margin: 0 18px 28px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: var(--r-lg);
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
   cursor: pointer;
   background: var(--surface);
-  border: 1px solid var(--border);
-  transition: border-color .15s, box-shadow .15s, transform .12s;
+  border: 0;
+  transition: transform .12s;
 }
 
 .map-entry:active {
   transform: scale(.99);
-}
-
-.map-entry:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
 }
 
 .map-entry .me-ico {
@@ -49,14 +44,17 @@
 
 .map-entry .me-txt .t {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-1);
+  letter-spacing: -0.01em;
 }
 
 .map-entry .me-txt .s {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 1px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  margin-top: 4px;
+  letter-spacing: -0.01em;
 }
 
 .map-entry .me-arrow {

@@ -39,7 +39,7 @@
 /* === 스티키 헤더 === */
 .sticky-header {
   flex-shrink: 0;
-  background: var(--surface-2);
+  background: #FFFFFF;
   border-radius: 28px 28px 0 0;
   z-index: 15;
 }
@@ -50,11 +50,11 @@
 
 .sticky-header.scrolled .top-bar,
 .sticky-header.scrolled .main-tab {
-  background: var(--surface-2);
+  background: #FFFFFF;
 }
 
 .sticky-header.scrolled .region-chips {
-  background: rgba(248, 249, 251, 0.5);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: background-color 0.2s ease;
@@ -155,7 +155,7 @@
   background: #E94A4A;
   color: #fff;
   border-radius: var(--pill);
-  border: 2px solid var(--surface-2);
+  border: 2px solid #FFFFFF;
   font-size: 10px;
   font-weight: 800;
   line-height: 1;
@@ -207,7 +207,7 @@
   background: #E94A4A;
   color: #fff;
   border-radius: var(--pill);
-  border: 2px solid var(--surface-2);
+  border: 2px solid #FFFFFF;
   font-size: 9px;
   font-weight: 800;
   line-height: 1;
