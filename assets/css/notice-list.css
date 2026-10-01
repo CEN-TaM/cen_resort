@@ -1,0 +1,146 @@
+/* 공지사항 목록 */
+/* === 공지사항 === */
+.notice-search {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 18px 2px;
+  padding: 9px 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+}
+
+.notice-search.open {
+  display: flex;
+}
+
+.notice-search>i {
+  font-size: 18px;
+  color: var(--text-2);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.notice-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-1);
+}
+
+.notice-cats {
+  display: flex;
+  gap: 6px;
+  padding: 14px 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.notice-cats::-webkit-scrollbar {
+  display: none;
+}
+
+.notice-cat {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-radius: var(--pill);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.notice-cat:hover {
+  border-color: var(--border-strong);
+}
+
+.notice-cat.active {
+  background: var(--brand-50);
+  color: var(--brand-dark);
+  border-color: var(--brand-100);
+  font-weight: 700;
+}
+
+.notice-card {
+  margin: 0 18px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.notice-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.notice-card .notice-meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.notice-card .pin {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--brand-dark);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  background: var(--brand-50);
+  border-radius: var(--pill);
+  letter-spacing: -0.01em;
+}
+
+.notice-card .pin i {
+  font-size: 13px;
+}
+
+.notice-card .notice-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.notice-card .notice-body {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+.notice-card .notice-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.notice-card .notice-foot .views {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.notice-card .notice-foot .views i {
+  font-size: 13px;
+}

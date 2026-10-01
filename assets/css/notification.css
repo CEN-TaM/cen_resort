@@ -1,0 +1,139 @@
+/* 알림센터 — 공지 카드(.notice-card)와 같은 톤으로 맞춤 */
+
+.noti-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 10px;
+}
+
+.noti-head .ttl {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+}
+
+#noti-read-all {
+  border: 0;
+  background: none;
+  padding: 4px 2px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--brand);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+#noti-read-all:hover:not(:disabled) {
+  color: var(--brand-dark);
+}
+
+#noti-read-all:disabled {
+  color: var(--text-3);
+  cursor: default;
+}
+
+.noti-list {
+  padding: 0 18px 20px;
+}
+
+/* 알림 한 줄 — 타입 배지 · 문구 · 읽지 않음 점 */
+.noti-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.noti-row:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+/* 읽지 않은 알림은 은은한 브랜드 톤으로 구분 */
+.noti-row.unread {
+  background: var(--brand-50);
+  border-color: var(--brand-100);
+}
+
+.noti-row.unread:hover {
+  border-color: var(--brand);
+}
+
+/* 타입 배지 — 공지 카테고리와 같은 파스텔 계열 */
+.noti-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.noti-badge.comment {
+  background: var(--sky-bg);
+  color: var(--sky-fg);
+}
+
+.noti-badge.reply {
+  background: var(--mint-bg);
+  color: var(--mint-fg);
+}
+
+.noti-badge.notice {
+  background: var(--peach-bg);
+  color: var(--peach-fg);
+}
+
+.noti-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.noti-text {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  color: var(--text-1);
+}
+
+.noti-meta {
+  font-size: 12px;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 읽지 않음 표시 */
+.noti-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.noti-empty {
+  padding: 56px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3);
+}

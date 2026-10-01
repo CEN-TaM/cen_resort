@@ -1,0 +1,329 @@
+/* 즐겨찾기(찜) 버튼 */
+/* === 즐겨찾기 버튼 === */
+.fav-btn {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.fav-btn:active {
+  transform: scale(0.85);
+}
+
+.fav-btn i {
+  font-size: 16px;
+  color: #475569;
+  transition: color 0.15s;
+}
+
+.fav-btn.favorited i {
+  color: #F5A623;
+}
+
+.fav-btn.absolute {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+}
+
+.fav-btn.inline {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  width: auto;
+  height: auto;
+}
+
+/* 즐겨찾기 안 된 인라인 별은 빈(테두리) 별, 즐겨찾기한 별만 채움 */
+.fav-btn.inline i {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+.fav-btn.inline.favorited i {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+.fav-btn.header-style i {
+  font-size: 20px;
+  color: #0F172A;
+}
+
+.fav-btn.header-style.favorited i {
+  color: #F5A623;
+}
+
+.place-card .thumb {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.place-card .thumb i {
+  font-size: 28px;
+}
+
+.place-card .info {
+  padding: 9px 11px;
+}
+
+.place-card .info .name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.place-card .info .meta {
+  font-size: 10px;
+  color: #475569;
+  margin-top: 3px;
+}
+
+/* 이름 + 인라인 즐겨찾기 별 (인기 휴양소 카드) */
+.place-card .info .name-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.place-card .info .name-row .name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.place-card .info .name-row .fav-btn.inline {
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.place-card .info .meta .sep {
+  color: #CBD5E1;
+  margin: 0 5px;
+}
+
+/* 리뷰 카드 */
+.review-card {
+  margin: 0 18px 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.review-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+/* rt-head 와 동일한 구성 (44px 아바타 · 이름/날짜 · 우측 배지) */
+.review-head {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.review-head .avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.review-head .who {
+  flex: 1;
+  min-width: 0;
+}
+
+.review-head .name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.review-head .meta {
+  font-size: 12px;
+  color: #94A3B8;
+  margin-top: 4px;
+}
+
+.badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: var(--pill);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.badge.king {
+  background: var(--cream-bg);
+  color: var(--cream-fg);
+}
+
+.badge.verified {
+  background: var(--mint-bg);
+  color: var(--mint-fg);
+}
+
+.badge.regular {
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* 파스텔 카테고리 (.tone-*) */
+.tone-mint {
+  background: var(--mint-bg);
+  color: var(--mint-fg);
+}
+
+.tone-sky {
+  background: var(--sky-bg);
+  color: var(--sky-fg);
+}
+
+.tone-pink {
+  background: var(--pink-bg);
+  color: var(--pink-fg);
+}
+
+.tone-lilac {
+  background: var(--lilac-bg);
+  color: var(--lilac-fg);
+}
+
+.tone-peach {
+  background: var(--peach-bg);
+  color: var(--peach-fg);
+}
+
+.tone-cream {
+  background: var(--cream-bg);
+  color: var(--cream-fg);
+}
+
+.tone-coral {
+  background: var(--coral-bg);
+  color: var(--coral-fg);
+}
+
+.tone-teal {
+  background: var(--teal-bg);
+  color: var(--teal-fg);
+}
+
+.rating-line {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.stars {
+  color: #F59E0B;
+  letter-spacing: 1px;
+}
+
+.stars.empty {
+  color: #E8EAEE;
+}
+
+.rating-num {
+  color: #0F172A;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.photo-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.photo-row .ph {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 104px;
+  aspect-ratio: auto;
+  border-radius: 8px;
+}
+
+.review-text {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.review-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #475569;
+}
+
+.review-actions i {
+  font-size: 14px;
+  vertical-align: -2px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  border: 1px solid #E8EAEE;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  font-size: 11px;
+  color: #475569;
+}
+
+.action-btn:hover {
+  background: #F1F3F6;
+}
+
+.action-btn:active {
+  transform: scale(0.92);
+}
+
+.action-btn i {
+  font-size: 14px;
+}
+
+.action-btn.liked {
+  background: #FFE8EC;
+  border-color: #FFC4CC;
+  color: #E94A4A;
+}
+
+.action-btn.liked i {
+  color: #E94A4A;
+}

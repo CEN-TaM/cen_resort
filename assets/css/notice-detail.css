@@ -1,0 +1,351 @@
+/* 공지사항 상세 */
+/* === Notice Detail === */
+.notice-detail-hero {
+  margin: 4px 18px 16px;
+  padding: 4px 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: none;
+}
+
+.notice-detail-hero .nd-meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.notice-detail-hero .nd-title {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  color: var(--text-1);
+}
+
+.notice-detail-hero .nd-author {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.notice-detail-hero .nd-author-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notice-detail-hero .nd-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.notice-detail-hero .nd-stats {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.notice-detail-hero .nd-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.notice-detail-hero .nd-stats i {
+  font-size: 13px;
+}
+
+.notice-rich {
+  padding: 0 22px 8px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+}
+
+.notice-rich h4 {
+  font-size: 14px;
+  font-weight: 800;
+  margin: 4px 0 8px;
+}
+
+.notice-rich ul {
+  list-style: none;
+  padding-left: 14px;
+  margin: 8px 0;
+}
+
+.notice-rich ul li {
+  position: relative;
+  padding-left: 14px;
+  margin-bottom: 4px;
+}
+
+.notice-rich ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+
+.notice-rich strong {
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+.notice-rich p {
+  margin-bottom: 14px;
+  text-wrap: pretty;
+}
+
+.notice-rich .callout {
+  background: var(--surface-3);
+  border-left: 3px solid var(--brand);
+  padding: 12px 14px;
+  border-radius: 0 var(--r) var(--r) 0;
+  margin: 14px 0;
+}
+
+.notice-attachments {
+  margin: 16px 18px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.att-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.att-head-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+}
+
+.att-head-left i {
+  font-size: 16px;
+}
+
+.att-head-left .att-count {
+  color: var(--text-3);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+.att-all {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 4px;
+}
+
+.att-all i {
+  font-size: 14px;
+}
+
+.attach-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.attach-row:last-child {
+  border-bottom: none;
+}
+
+.attach-row:hover {
+  background: var(--surface-2);
+}
+
+.attach-row .att-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.attach-row .att-icon i {
+  font-size: 20px;
+}
+
+.attach-row .att-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.attach-row .att-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attach-row .att-meta {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.attach-row .att-actions {
+  display: inline-flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.attach-row .att-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-2);
+  padding: 0;
+}
+
+.attach-row .att-btn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.attach-row .att-btn i {
+  font-size: 18px;
+}
+
+.attach-row .att-btn.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.attach-row .att-btn.primary:hover {
+  background: var(--brand-dark);
+}
+
+.nd-action-bar {
+  display: flex;
+  gap: 8px;
+  padding: 12px 18px 20px;
+}
+
+.nd-action-bar button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-1);
+  transition: all 0.15s;
+}
+
+.nd-action-bar button:hover {
+  border-color: var(--border-strong);
+}
+
+.nd-action-bar button.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.nd-action-bar button.primary:hover {
+  background: var(--brand-dark);
+}
+
+.nd-action-bar button i {
+  font-size: 16px;
+}
+
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(15, 23, 42, 0.92);
+  color: #fff;
+  padding: 11px 16px;
+  border-radius: var(--pill);
+  font-size: 12.5px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 50;
+  backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 80%;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast i {
+  color: #4ADE80;
+  font-size: 16px;
+}
+
+#app-toast {
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}

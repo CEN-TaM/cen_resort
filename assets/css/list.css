@@ -1,0 +1,257 @@
+/* 즐겨찾기 화면 · 메인 탭 패널 · 휴양소 목록 */
+/* === 즐겨찾기 화면 === */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-state svg {
+  margin-bottom: 20px;
+}
+
+.empty-state .etitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 6px;
+}
+
+.empty-state .edesc {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.fav-grid {
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fav-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+
+.fav-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.fav-card .fthumb {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fav-card .finfo {
+  padding: 10px;
+}
+
+.fav-card .fname {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.fav-card .fmeta {
+  font-size: 10px;
+  color: #475569;
+  margin-top: 3px;
+}
+
+/* === 메인 탭 패널 (홈 / 정기 / 이벤트) === */
+.mtab-pane {
+  display: none;
+}
+
+.mtab-pane.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* === 휴양소 목록 (정기 / 이벤트) === */
+.resort-list-head {
+  padding: 16px 18px 8px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.resort-list-head b {
+  color: var(--text-1);
+  font-weight: 800;
+}
+
+/* 이벤트 휴양소 하계/동계 세그먼트 */
+.event-seg {
+  display: flex;
+  gap: 4px;
+  margin: 4px 18px 14px;
+  padding: 4px;
+  background: var(--surface-3);
+  border-radius: var(--pill);
+}
+
+.event-seg-btn {
+  flex: 1;
+  padding: 9px 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--pill);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.event-seg-btn em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--text-3);
+  margin-left: 3px;
+}
+
+.event-seg-btn.active {
+  background: #fff;
+  color: var(--brand-dark);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.event-seg-btn.active em {
+  color: var(--brand);
+}
+
+.event-group {
+  display: none;
+}
+
+.event-group.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.resort-group-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 18px 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+.resort-group-label .gl-tag {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--pill);
+}
+
+.resort-list {
+  padding: 0 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resort-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.resort-row:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.resort-row:active {
+  transform: scale(0.98);
+}
+
+.resort-row .r-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resort-row .r-thumb i {
+  font-size: 24px;
+}
+
+.resort-row .r-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.resort-row .r-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.resort-row .r-loc {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.resort-row .r-loc i {
+  font-size: 13px;
+}
+
+.resort-row .r-arrow {
+  color: var(--text-3);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* 정기/이벤트 목록 카드 (place-card 풀폭 버전) */
+.resort-list .place-card {
+  width: 100%;
+  min-width: 0;
+}
+
+.resort-list .place-card .thumb {
+  height: 120px;
+}
+
+.resort-list .place-card .info {
+  padding: 12px 14px;
+}
+
+.resort-list .place-card .info .name {
+  font-size: 15px;
+}
+
+.resort-list .place-card .info .meta {
+  font-size: 12px;
+  margin-top: 4px;
+}

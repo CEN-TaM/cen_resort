@@ -1,0 +1,48 @@
+/* 디자인 토큰 (색상·간격·그림자 등 CSS 변수) */
+/* ============ DESIGN TOKENS ============ */
+:root {
+  /* Neutral - cool slate */
+  --bg: #F4F5F7;
+  --surface: #FFFFFF;
+  --surface-2: #F8F9FB;
+  --surface-3: #F1F3F6;
+  --border: #E8EAEE;
+  --border-strong: #D7DAE0;
+  --text-1: #0F172A;
+  --text-2: #475569;
+  --text-3: #94A3B8;
+
+  /* Brand */
+  --brand: #1F4FE0;
+  --brand-dark: #1A3FB8;
+  --brand-50: #EEF3FF;
+  --brand-100: #DCE6FC;
+
+  /* Pastels (bg / fg pairs) */
+  --mint-bg: #DEF7EC;
+  --mint-fg: #047857;
+  --sky-bg: #DBEAFE;
+  --sky-fg: #1E40AF;
+  --pink-bg: #FCE7F3;
+  --pink-fg: #9D174D;
+  --lilac-bg: #EDE9FE;
+  --lilac-fg: #5B21B6;
+  --peach-bg: #FFEDD5;
+  --peach-fg: #9A3412;
+  --cream-bg: #FEF3C7;
+  --cream-fg: #92400E;
+  --coral-bg: #FFE4E6;
+  --coral-fg: #9F1239;
+  --teal-bg: #CCFBF1;
+  --teal-fg: #115E59;
+
+  /* Accent */
+  --star: #F59E0B;
+
+  /* Radius */
+  --r-sm: 8px;
+  --r: 12px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+  --pill: 999px;
+}

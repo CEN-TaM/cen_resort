@@ -1,0 +1,360 @@
+/* 섹션 헤더 · 정렬 메뉴 · 카드 / 스와이프 행 */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 18px 12px;
+}
+
+.section-head .title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.section-head .more {
+  font-size: 12px;
+  color: #64748B;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.section-head .more i {
+  font-size: 15px;
+}
+
+/* 실시간 리뷰 정렬 드롭다운 */
+.review-sort {
+  position: relative;
+}
+
+.review-sort>span {
+  cursor: pointer;
+}
+
+.sort-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 6px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  padding: 4px;
+  min-width: 96px;
+  z-index: 30;
+  display: none;
+}
+
+.sort-menu.open {
+  display: block;
+}
+
+.sort-menu-item {
+  padding: 9px 12px;
+  font-size: 12px;
+  color: var(--text-2);
+  cursor: pointer;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+
+.sort-menu-item:hover {
+  background: var(--surface-3);
+}
+
+.sort-menu-item.active {
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+
+/* 가로 스크롤 카드 */
+.hcards {
+  display: flex;
+  gap: 10px;
+  padding: 0 18px 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 18px;
+}
+
+.hcards::-webkit-scrollbar {
+  display: none;
+}
+
+.hcards::after {
+  content: '';
+  flex: 0 0 1px;
+  height: 1px;
+}
+
+.hcards .place-card {
+  scroll-snap-align: start;
+}
+
+/* 카드 가로 스와이프 */
+.swipe-row {
+  display: flex;
+  gap: 12px;
+  padding: 0 18px 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 18px;
+}
+
+.swipe-row::-webkit-scrollbar {
+  display: none;
+}
+
+.swipe-row>* {
+  margin: 0 !important;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+.swipe-row::after {
+  content: '';
+  flex: 0 0 1px;
+  height: 1px;
+}
+
+.swipe-row .review-card {
+  width: 268px;
+}
+
+.swipe-row .tip-card {
+  width: 260px;
+}
+
+.place-card {
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.place-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.place-card:active {
+  transform: scale(0.97);
+}
+
+.place-card {
+  position: relative;
+}
+
+/* === 홈 여백 스펙 (피그마) — 홈 탭에만 적용 === */
+[data-mtab-pane="0"] .section-head {
+  padding-bottom: 20px;
+}
+
+[data-mtab-pane="0"] .hcards {
+  padding-bottom: 28px;
+}
+
+/* === 실시간 리뷰 카드 (신규 디자인) === */
+.rt-review {
+  padding: 16px;
+}
+
+.rt-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-bottom: 12px;
+}
+
+.rt-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  background: #DCE9FB;
+  color: #1F4FE0;
+}
+
+.rt-who {
+  flex: 1;
+  min-width: 0;
+}
+
+.rt-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rt-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.rt-date {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+.rt-org {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.rt-verify {
+  color: #1F4FE0;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.rt-company {
+  color: #1F4FE0;
+  font-weight: 600;
+}
+
+.rt-dept {
+  color: #64748B;
+}
+
+.rt-resort {
+  flex-shrink: 0;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 16px;
+  background: #EDEBFB;
+  color: #6D5FE0;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.rt-text {
+  font-size: 14px;
+  color: #1B1B1B;
+  line-height: 1.55;
+  margin-bottom: 12px;
+  /* 몇 줄까지 보일지는 .rv-clamp 가 정한다 (review-server.js) */
+}
+
+.rt-photos {
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.rt-photos .ph {
+  height: 104px;
+  aspect-ratio: auto;
+  border-radius: 10px;
+}
+
+.rt-actions {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+.rt-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748B;
+  cursor: pointer;
+}
+
+.rt-act i {
+  font-size: 18px;
+}
+
+/* === 후기 미리보기: 본문 5줄 접기 · 사진 3장 === */
+
+/* 접힌 상태. '더보기'를 누르면 이 클래스가 빠진다 (toggleReviewText) */
+.rv-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rv-more {
+  display: block;
+  margin: -6px 0 12px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+/* 3장을 넘는 사진은 숨겨 두되 DOM 에는 남긴다 — 라이트박스가 전체를 이어서 보여준다 */
+.rv-ph-hidden {
+  display: none !important;
+}
+
+.photo-row .ph,
+.rv-photo-grid .ph {
+  position: relative;
+}
+
+/* 마지막 칸에 덮이는 +N */
+.rv-ph-more {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* 휴양소 상세의 후기 사진 */
+.rv-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 10px 0 12px;
+}
+
+.rv-photo-grid .ph {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rv-content {
+  font-size: 13px;
+  color: var(--text-1);
+  line-height: 1.7;
+}

@@ -1,0 +1,371 @@
+/* 편의시설 · 리뷰 섹션 · 상세 Q&A */
+/* === 편의시설 섹션 === */
+.feature-section {
+  padding: 4px 18px 20px;
+}
+
+.fs-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+  color: var(--text-1);
+}
+
+.fs-chips {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px 6px;
+}
+
+.feat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.4;
+  filter: grayscale(0.5);
+  transition: opacity 0.15s, filter 0.15s;
+}
+
+.feat-chip.active {
+  opacity: 1;
+  filter: none;
+}
+
+.feat-chip .fc-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feat-chip .fc-icon i {
+  font-size: 22px;
+}
+
+.feat-chip .fc-name {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-2);
+  letter-spacing: -0.01em;
+}
+
+.feat-chip.active .fc-name {
+  color: var(--text-1);
+}
+
+.feature-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 18px 16px;
+}
+
+/* === 리뷰 섹션 헤더 (Naver Place 스타일) === */
+.rev-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0 12px;
+}
+
+.rev-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+}
+
+.rev-title .rev-count {
+  color: var(--brand);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.rev-info {
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.rev-info i {
+  font-size: 16px;
+}
+
+.rev-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.rev-filter-toggle input {
+  accent-color: var(--brand);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.rev-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 0;
+  border-top: 1px solid var(--border);
+}
+
+.rev-filter-row:last-of-type {
+  border-bottom: 1px solid var(--border);
+}
+
+.rev-filter-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-1);
+  flex-shrink: 0;
+  padding-right: 6px;
+}
+
+.rev-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.rev-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.rev-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-2);
+  padding: 6px 11px;
+  border-radius: var(--pill);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.rev-chip em {
+  font-style: normal;
+  color: var(--text-3);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+.rev-chip:hover {
+  border-color: var(--border-strong);
+}
+
+.rev-chip.active {
+  border-color: var(--brand-100);
+  background: var(--brand-50);
+  color: var(--brand-dark);
+}
+
+.rev-chip.active em {
+  color: var(--brand);
+}
+
+.rev-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+/* === 상세 Q&A === */
+.qna-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.qna-item:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.qna-item .qhead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.qna-item .qhead .qavatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+}
+
+.qna-item .qhead .qname {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.qna-item .qhead .qdate {
+  font-size: 10px;
+  color: #475569;
+  margin-left: auto;
+}
+
+.qna-item .qtext {
+  font-size: 13px;
+  color: #0F172A;
+  padding-left: 30px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.qna-item .answer {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #F1F3F6;
+  border-radius: 10px;
+  border-left: 3px solid #1F4FE0;
+}
+
+.qna-item .answer .ahead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
+
+.qna-item .answer .atext {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.qna-item.unanswered .answer-cta {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #FFFFFF;
+  border: 1px dashed #D7DAE0;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 11px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.qna-item.unanswered .answer-cta:hover {
+  background: #F1F3F6;
+  border-color: #1F4FE0;
+  color: #1F4FE0;
+}
+
+.answer-form {
+  margin-top: 8px;
+}
+
+.answer-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #E8EAEE;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  resize: vertical;
+  min-height: 60px;
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+  color: #0F172A;
+}
+
+.answer-form textarea:focus {
+  border-color: #1F4FE0;
+}
+
+.answer-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.answer-form-actions button {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  border: 1px solid #E8EAEE;
+  transition: all 0.15s;
+}
+
+.answer-form-actions button:active {
+  transform: scale(0.95);
+}
+
+.answer-form-actions .cancel-btn {
+  background: #fff;
+  color: #475569;
+}
+
+.answer-form-actions .submit-btn {
+  background: #1F4FE0;
+  border-color: #1F4FE0;
+  color: white;
+  font-weight: 700;
+}
+
+.qna-write-btn {
+  width: 100%;
+  padding: 12px;
+  background: #FFFFFF;
+  border: 1px dashed #D7DAE0;
+  border-radius: 12px;
+  color: #475569;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.qna-write-btn:hover {
+  background: #F1F3F6;
+}

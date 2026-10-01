@@ -1,0 +1,117 @@
+/* 디바이스 프레임 · 라벨 */
+/* === 디바이스 라벨 === */
+.device-label {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.device-label .badge-active {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 7px;
+  background: var(--brand);
+  color: #fff;
+  border-radius: var(--pill);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.stage-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 24px;
+  color: #475569;
+}
+
+.stage-header h1 {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
+
+.stage-header p {
+  font-size: 13px;
+}
+
+/* 스타일 - 휴양소 색상 */
+.bg-mt {
+  background: linear-gradient(135deg, #C8DCC0, #9FBE94);
+  color: #3D5A2C;
+}
+
+.bg-beach {
+  background: linear-gradient(135deg, #B4D4E5, #7FB0CA);
+  color: #1B4A66;
+}
+
+.bg-sunset {
+  background: linear-gradient(135deg, #F5D4B0, #E8B580);
+  color: #804A1F;
+}
+
+.bg-city {
+  background: linear-gradient(135deg, #D5D2E8, #B4ADC9);
+  color: #3D3458;
+}
+
+.bg-warm {
+  background: linear-gradient(135deg, #E5C5B0, #C99A7F);
+  color: #5C3A20;
+}
+
+/* 가운데 가이드 텍스트 */
+.nav-guide {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 16px 20px;
+  font-size: 12px;
+  color: #475569;
+  max-width: 280px;
+  line-height: 1.7;
+  margin-top: 20px;
+}
+
+.nav-guide b {
+  color: #1F4FE0;
+  font-weight: 700;
+}
+
+.nav-guide kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  background: #FFFFFF;
+  border: 1px solid #D7DAE0;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 11px;
+  color: #0F172A;
+}
+
+/* 모바일 대응 */
+@media (max-width: 800px) {
+  body {
+    padding: 12px;
+  }
+
+  .device {
+    width: 100%;
+    max-width: 380px;
+    height: 720px;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+
+  .device-label {
+    font-size: 11px;
+  }
+
+  .stage-header h1 {
+    font-size: 22px;
+  }
+}

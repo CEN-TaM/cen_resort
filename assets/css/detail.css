@@ -1,0 +1,196 @@
+/* 휴양소 상세 화면 */
+/* === 휴양소 상세 === */
+.hero {
+  height: 220px;
+  margin: 0 18px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero i {
+  font-size: 48px;
+  opacity: 0.6;
+}
+
+.hero .hero-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0F172A;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.place-detail-head {
+  padding: 0 22px 16px;
+}
+
+.place-detail-head h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.place-detail-head .loc {
+  font-size: 12px;
+  color: #475569;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.score-board {
+  margin: 0 18px 18px;
+  padding: 22px 20px 18px;
+  background: linear-gradient(135deg, #fff 0%, #F1F3F6 100%);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(44, 31, 18, 0.08);
+}
+
+.score-main {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed #E8EAEE;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.score-main .big-num {
+  font-size: 44px;
+  font-weight: 800;
+  color: #1F4FE0;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.score-main .main-meta {
+  text-align: left;
+}
+
+.score-main .main-meta .stars {
+  color: #F59E0B;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+.score-main .main-meta .review-count {
+  font-size: 11px;
+  color: #475569;
+  margin-top: 4px;
+}
+
+.score-main .main-meta .review-count b {
+  color: #0F172A;
+}
+
+.score-breakdown {
+  display: flex;
+  gap: 8px;
+}
+
+.score-item {
+  flex: 1;
+  padding: 10px 6px;
+  background: #fff;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 2px 6px rgba(44, 31, 18, 0.04);
+}
+
+.score-item i {
+  font-size: 18px;
+  color: #1F4FE0;
+  margin-bottom: 2px;
+}
+
+.score-item .bl {
+  font-size: 10px;
+  color: #475569;
+}
+
+.score-item .bn {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.score-item .bbar {
+  width: 100%;
+  height: 3px;
+  background: #F1F3F6;
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.score-item .bbar>span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #1F4FE0, #569dff);
+  border-radius: 2px;
+}
+
+.tab-nav {
+  display: flex;
+  border-bottom: 1px solid #E8EAEE;
+  margin: 0 18px;
+}
+
+.tab-nav .tnav {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 13px;
+  color: #475569;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-nav .tnav.active {
+  color: #0F172A;
+  font-weight: 700;
+  border-bottom-color: #1F4FE0;
+}
+
+.dtab-pane {
+  display: none;
+}
+
+.dtab-pane.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* 상세 리뷰 탭 좋아요/댓글 버튼 정렬 */
+.dtab-pane[data-dtab="reviews"] [data-like],
+.dtab-pane[data-dtab="reviews"] [data-comment] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.dtab-pane[data-dtab="reviews"] [data-like] i,
+.dtab-pane[data-dtab="reviews"] [data-comment] i {
+  vertical-align: 0;
+  font-size: 15px;
+}
