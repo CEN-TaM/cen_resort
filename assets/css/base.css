@@ -78,7 +78,7 @@ body {
   max-width: 390px;
   height: calc(100vh - 40px);
   height: calc(100dvh - 40px);
-  background: #EDEFF3;
+  background: var(--surface-2);
   border-radius: 28px;
   overflow: hidden;
   position: relative;
@@ -94,9 +94,14 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  background: #EDEFF3;
+  background: var(--surface-2);
   display: none;
   flex-direction: column;
+}
+
+/* 홈 화면만 별도 배경 */
+.screen[data-screen="home"] {
+  background: #EDEFF3;
 }
 
 .screen.active {
@@ -131,7 +136,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #EDEFF3;
+  background: var(--surface-2);
   position: sticky;
   top: 0;
   z-index: 10;
