@@ -78,7 +78,7 @@ body {
   max-width: 390px;
   height: calc(100vh - 40px);
   height: calc(100dvh - 40px);
-  background: var(--surface-2);
+  background: #EDEFF3;
   border-radius: 28px;
   overflow: hidden;
   position: relative;
@@ -94,7 +94,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  background: var(--surface-2);
+  background: #EDEFF3;
   display: none;
   flex-direction: column;
 }
@@ -131,7 +131,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--surface-2);
+  background: #EDEFF3;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -165,7 +165,6 @@ body {
 .tabbar {
   position: relative;
   background: var(--surface);
-  border-top: 1px solid #E8EAEE;
   border-radius: 0 0 28px 28px;
   display: flex;
   padding: 8px 0 14px;
