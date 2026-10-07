@@ -296,7 +296,7 @@
 /* 접힌 상태. '더보기'를 누르면 이 클래스가 빠진다 (toggleReviewText) */
 .rv-clamp {
   display: -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

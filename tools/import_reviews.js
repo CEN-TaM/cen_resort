@@ -10,6 +10,7 @@
 const { DatabaseSync } = require('node:sqlite');
 const fs = require('fs');
 const path = require('path');
+const { cleanCompanyName } = require('./clean_company');
 
 const [, , DB_PATH, SP, ...flags] = process.argv;
 const COMMIT = flags.includes('--commit');
@@ -93,7 +94,7 @@ for (const rec of meta) {
   const r = toRatings(rec.ai_recommend_score);
   const info = insReview.run(null, rec.author_name, resort, 'regular', JSON.stringify(comp),
     c.content, r.location, r.facility, r.clean, r.avg, c.likes, createdAt,
-    rec.department || null, rec.company || null);
+    rec.department || null, cleanCompanyName(rec.company) || null);   // 법인 표기는 떼고 넣는다
 
   const rid = Number(info.lastInsertRowid);
   for (const p of (photos[rec.review_id] || [])) { insPhoto.run(rid, p); photoCount++; }

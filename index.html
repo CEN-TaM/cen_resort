@@ -328,9 +328,12 @@
                 <img class="search-ico" src="assets/images/ico_search.svg" alt="검색">
               </div>
               <div class="top-menu-wrap">
+                <button type="button" class="top-noti" onclick="openNotifications()" aria-label="알림">
+                  <i class="ti ti-bell"></i>
+                  <span class="badge-dot" data-noti-badge style="display:none"></span>
+                </button>
                 <button type="button" class="top-menu" onclick="showScreen('device1','my')" aria-label="나의페이지">
                   <img class="top-menu-ico" src="assets/images/ico_menu.svg" alt="메뉴">
-                  <span class="badge-dot" data-noti-badge style="display:none"></span>
                 </button>
               </div>
             </div>
@@ -1744,10 +1747,6 @@
             <div class="my-topbar">
               <i class="ti ti-arrow-left back" onclick="goBack('device1','my')" role="button" tabindex="0"
                 aria-label="뒤로 가기"></i>
-              <button type="button" class="my-noti" onclick="openNotifications()" aria-label="알림">
-                <i class="ti ti-bell"></i>
-                <span class="badge-dot" data-noti-badge style="display:none"></span>
-              </button>
             </div>
             <div class="name" id="my-name">관리자</div>
             <div class="role">전략기획팀 · 사번 인증 완료</div>
