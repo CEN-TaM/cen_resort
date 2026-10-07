@@ -33,7 +33,8 @@ function reviewTextHtml(text, cls) {
   if (!raw) return '';
   const html = escapeHtml(raw).replace(/\n/g, '<br>');
   if (!reviewNeedsMore(raw)) return `<div class="${cls}">${html}</div>`;
-  return `<div class="${cls} rv-clamp">${html}</div>
+  // rv-has-more 는 접었다 폈다 해도 유지된다 — 더보기 버튼과의 간격을 이 클래스가 맡는다
+  return `<div class="${cls} rv-clamp rv-has-more">${html}</div>
     <button type="button" class="rv-more" onclick="toggleReviewText(this,event)">더보기</button>`;
 }
 

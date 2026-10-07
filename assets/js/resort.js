@@ -28,7 +28,6 @@ function starStr(r) { const full = Math.round(r); return '★'.repeat(full) + '�
 function setScoreItem(item, v) {
   if (!item) return;
   const bn = item.querySelector('.bn'); if (bn) bn.textContent = v.toFixed(1);
-  const bar = item.querySelector('.bbar > span'); if (bar) bar.style.width = Math.round(v / 5 * 100) + '%';
 }
 
 // 꿀팁 카드 좌우 화살표 스크롤 (.tip-head 바로 다음의 .swipe-row 대상)
