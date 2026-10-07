@@ -109,7 +109,7 @@ function syncDetailStats(reviews) {
   const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = n;
   const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = avg.toFixed(1);
   const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(avg);
-  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${n}개</b> 후기의 평균`;
+  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `후기 <b>${n}개</b>`;
   const items = d.querySelectorAll('.score-breakdown .score-item');
   setScoreItem(items[0], clampScore(avgLoc));
   setScoreItem(items[1], clampScore(avgFac));

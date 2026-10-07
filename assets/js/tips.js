@@ -211,7 +211,7 @@ function openResort(name, tab, reviewId) {
   const heroTag = d.querySelector('.hero .hero-tag'); if (heroTag) heroTag.textContent = tag;
   const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = r.rating.toFixed(1);
   const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(r.rating);
-  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `전체 <b>${r.reviews}개</b> 후기의 평균`;
+  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `후기 <b>${r.reviews}개</b>`;
   const items = d.querySelectorAll('.score-breakdown .score-item');
   setScoreItem(items[0], clampScore(r.rating - 0.1)); // 위치
   setScoreItem(items[1], clampScore(r.rating + 0.1)); // 시설

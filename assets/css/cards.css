@@ -301,6 +301,12 @@
   overflow: hidden;
 }
 
+/* 더보기가 따라붙는 본문 — 버튼이 바짝 붙지 않도록 아래 여백을 둔다.
+   버튼이 -6px 로 당겨지므로 실제 간격은 6px 이 된다. (홈 카드와 같은 간격) */
+.rv-has-more {
+  margin-bottom: 12px;
+}
+
 .rv-more {
   display: block;
   margin: -6px 0 12px;
