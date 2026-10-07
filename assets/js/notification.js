@@ -13,6 +13,16 @@ const NOTI_TYPE = {
   notice: { label: '공지', cls: 'notice' },
 };
 
+// 알림에서는 직급을 떼고 이름만 쓴다.
+// 댓글 작성자는 '김솔이 책임' 처럼 저장되는데(composeDisplayName), 그대로 쓰면
+// 한 줄에 안 들어가 문장이 접힌다. 직급은 후기 카드에서 이미 보인다.
+const NOTI_POSITIONS = ['사원', '선임', '책임', '수석', '매니저', '팀장', '부장', '이사', '대리', '과장', '차장'];
+function notiActorName(name) {
+  const s = String(name || '').trim();
+  const m = s.match(/^(.+?)\s+(\S+)$/);
+  return (m && NOTI_POSITIONS.includes(m[2])) ? m[1] : s;
+}
+
 // 알림 한 줄의 제목과 부제를 만든다.
 //   제목  그 알림에만 있는 정보 (공지 제목 / 누가 무엇에 반응했는지)
 //   부제  맥락과 시간 (공지 분류 / 어느 휴양소 글인지)
@@ -21,7 +31,8 @@ function notiTexts(n) {
   if (n.type === 'notice') {
     return { text: n.title || '새 공지사항', sub: n.category || '' };
   }
-  const who = n.actorName ? `${n.actorName}님이` : '누군가';
+  const actor = notiActorName(n.actorName);
+  const who = actor ? `${actor}님이` : '누군가';
   const what = n.type === 'reply' ? '내 댓글에 답글을 남겼어요' : '내 후기에 댓글을 남겼어요';
   return { text: `${who} ${what}`, sub: n.resortName || '' };
 }
