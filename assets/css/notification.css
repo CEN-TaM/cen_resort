@@ -105,7 +105,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.35;
-  color: var(--text-1);
+  color: var(--text-3);
   /* 공지 제목이 들어오므로 길어질 수 있다. 목록이 들쭉날쭉해지지 않게 2줄까지만. */
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -115,10 +115,21 @@
 
 .noti-meta {
   font-size: 12px;
-  color: var(--text-3);
+  color: #B4BCC8;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 읽지 않은 알림은 글씨를 진하게 — 배경과 테두리는 그대로 두고 글자색과 점으로만 구분.
+   읽은 쪽을 충분히 내려야 안 읽은 것이 먼저 눈에 들어온다. */
+.noti-row.unread .noti-text {
+  color: var(--text-1);
+}
+
+.noti-row.unread .noti-meta {
+  color: var(--text-2);
+  font-weight: 600;
 }
 
 /* 읽지 않음 표시 */
