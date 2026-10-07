@@ -943,6 +943,96 @@
           </div>
 
           <!-- REVIEW 탭 -->
+          <div class="dtab-pane active" data-dtab="tips" style="padding: 14px 0;">
+
+            <div class="feature-list" id="feature-list">
+            <div class="feature-section" data-group="환경">
+              <div class="fs-title">환경</div>
+              <div class="fs-chips">
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-mint"><i class="ti ti-forest"></i></div>
+                  <div class="fc-name">바다</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-section" data-group="숙소 유형">
+              <div class="fs-title">숙소 유형</div>
+              <div class="fs-chips">
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-lilac"><i class="ti ti-villa"></i></div>
+                  <div class="fc-name">독채</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-section" data-group="편의시설">
+              <div class="fs-title">편의시설</div>
+              <div class="fs-chips">
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-sky"><i class="ti ti-wifi"></i></div>
+                  <div class="fc-name">와이파이</div>
+                </div>
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-peach"><i class="ti ti-soup-kitchen"></i></div>
+                  <div class="fc-name">주방</div>
+                </div>
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-coral"><i class="ti ti-outdoor-grill"></i></div>
+                  <div class="fc-name">바베큐</div>
+                </div>
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-mint"><i class="ti ti-local-parking"></i></div>
+                  <div class="fc-name">주차</div>
+                </div>
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-teal"><i class="ti ti-local-laundry-service"></i></div>
+                  <div class="fc-name">세탁기</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-section" data-group="주변 활동">
+              <div class="fs-title">주변 활동</div>
+              <div class="fs-chips">
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-sky"><i class="ti ti-pool"></i></div>
+                  <div class="fc-name">해수욕</div>
+                </div>
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-peach"><i class="ti ti-hiking"></i></div>
+                  <div class="fc-name">트레킹</div>
+                </div>
+                <div class="feat-chip active">
+                  <div class="fc-icon tone-cream"><i class="ti ti-wb-sunny"></i></div>
+                  <div class="fc-name">일출</div>
+                </div>
+              </div>
+            </div>
+            </div>
+            <button type="button" class="feature-more" onclick="openFeatureModal()">
+              전체보기 <i class="ti ti-chevron-right"></i>
+            </button>
+
+            <div class="feature-divider"></div>
+
+            <div class="tip-head">
+              <div style="font-size:11px;color:#475569">💡 다녀온 동료들의 꿀팁</div>
+              <div class="tip-nav">
+                <button class="tip-arrow" onclick="scrollSwipe(this,-1)" aria-label="이전 꿀팁"><i
+                    class="ti ti-chevron-left"></i></button>
+                <button class="tip-arrow" onclick="scrollSwipe(this,1)" aria-label="다음 꿀팁"><i
+                    class="ti ti-chevron-right"></i></button>
+              </div>
+            </div>
+
+            <!-- 꿀팁 목록은 tips.js 가 휴양소별로 그린다 -->
+            <div class="swipe-row" id="tip-row"></div>
+            <button class="tip-write-btn" style="margin:0 18px;width:calc(100% - 36px)" onclick="openTipModal()">+ 나도 꿀팁
+              공유하기</button>
+          </div>
+
+          <!-- 후기 -->
           <div class="dtab-pane" data-dtab="reviews" style="padding: 16px 18px;">
             <div class="rev-section-head">
               <div class="rev-title">
@@ -1108,96 +1198,6 @@
             </div>
 
           </div>
-          </div>
-
-          <!-- 편의시설 탭 -->
-          <div class="dtab-pane active" data-dtab="tips" style="padding: 14px 0;">
-
-            <div class="feature-list" id="feature-list">
-            <div class="feature-section" data-group="환경">
-              <div class="fs-title">환경</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-mint"><i class="ti ti-forest"></i></div>
-                  <div class="fc-name">바다</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-section" data-group="숙소 유형">
-              <div class="fs-title">숙소 유형</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-lilac"><i class="ti ti-villa"></i></div>
-                  <div class="fc-name">독채</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-section" data-group="편의시설">
-              <div class="fs-title">편의시설</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-sky"><i class="ti ti-wifi"></i></div>
-                  <div class="fc-name">와이파이</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-peach"><i class="ti ti-soup-kitchen"></i></div>
-                  <div class="fc-name">주방</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-coral"><i class="ti ti-outdoor-grill"></i></div>
-                  <div class="fc-name">바베큐</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-mint"><i class="ti ti-local-parking"></i></div>
-                  <div class="fc-name">주차</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-teal"><i class="ti ti-local-laundry-service"></i></div>
-                  <div class="fc-name">세탁기</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-section" data-group="주변 활동">
-              <div class="fs-title">주변 활동</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-sky"><i class="ti ti-pool"></i></div>
-                  <div class="fc-name">해수욕</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-peach"><i class="ti ti-hiking"></i></div>
-                  <div class="fc-name">트레킹</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-cream"><i class="ti ti-wb-sunny"></i></div>
-                  <div class="fc-name">일출</div>
-                </div>
-              </div>
-            </div>
-            </div>
-            <button type="button" class="feature-more" onclick="openFeatureModal()">
-              전체보기 <i class="ti ti-chevron-right"></i>
-            </button>
-
-            <div class="feature-divider"></div>
-
-            <div class="tip-head">
-              <div style="font-size:11px;color:#475569">💡 다녀온 동료들의 꿀팁</div>
-              <div class="tip-nav">
-                <button class="tip-arrow" onclick="scrollSwipe(this,-1)" aria-label="이전 꿀팁"><i
-                    class="ti ti-chevron-left"></i></button>
-                <button class="tip-arrow" onclick="scrollSwipe(this,1)" aria-label="다음 꿀팁"><i
-                    class="ti ti-chevron-right"></i></button>
-              </div>
-            </div>
-
-            <!-- 꿀팁 목록은 tips.js 가 휴양소별로 그린다 -->
-            <div class="swipe-row" id="tip-row"></div>
-            <button class="tip-write-btn" style="margin:0 18px;width:calc(100% - 36px)" onclick="openTipModal()">+ 나도 꿀팁
-              공유하기</button>
           </div>
 
         </div>
