@@ -20,11 +20,12 @@ function reviewPhotosHtml(urls, cls) {
   return `<div class="${cls}">${cells}</div>`;
 }
 
-// 5줄이 넘을 만한 글에만 '더보기'를 붙인다.
+// 4줄이 넘을 만한 글에만 '더보기'를 붙인다. (.rv-clamp 의 line-clamp 과 같은 줄 수)
 // 카드가 안 보이는 화면에 있으면 높이를 잴 수 없어, 줄 수와 길이로 판단한다.
+// 카드 폭에서 한 줄이 대략 26자라 4줄 ≈ 105자로 잡는다.
 function reviewNeedsMore(text) {
   const t = text || '';
-  return t.split('\n').length > 5 || t.length > 130;
+  return t.split('\n').length > 4 || t.length > 105;
 }
 
 function reviewTextHtml(text, cls) {
@@ -155,8 +156,16 @@ if (document.readyState === 'loading') {
 }
 
 // 회사명 표기 정규화 (예: '주식회사 아이티센엔텍' → '아이티센 엔텍')
+// 회사명에서 법인 표기를 떼어 낸다.
+// '주식회사' 를 '주' 보다 먼저 지워야 한다. 순서가 반대면 '주식회사 X' 가
+// '식회사 X' 로 남는다 (예전에 실제로 그렇게 보였다).
 function cleanCompany(c) {
-  let s = String(c || '').replace(/^\(?주\)?\s*/, '').replace(/^주식회사\s*/, '').trim();
+  let s = String(c || '').trim()
+    .replace(/^\(?\s*주식회사\s*\)?\s*/, '')
+    .replace(/^식회사\s*/, '')                  // 잘못 잘린 값이 들어와도 받아낸다
+    .replace(/^\(\s*주\s*\)\s*/, '')
+    .replace(/\s*(?:주식회사|\(\s*주\s*\))\s*$/, '')   // 뒤에 붙은 경우
+    .trim();
   if (s === '아이티센엔텍') s = '아이티센 엔텍';
   return s;
 }
