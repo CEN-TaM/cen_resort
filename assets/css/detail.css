@@ -1,12 +1,12 @@
 /* 휴양소 상세 화면 */
 /* === 휴양소 상세 === */
 .hero {
-  height: 140px;
+  height: 158px;
   margin: 0 18px 14px;
   border-radius: 20px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: flex-start;
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -15,6 +15,17 @@
 .hero i {
   font-size: 48px;
   opacity: 0.6;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(to top,
+      rgba(2, 6, 23, 0.72) 0%,
+      rgba(2, 6, 23, 0.34) 42%,
+      rgba(2, 6, 23, 0) 72%);
 }
 
 .hero .hero-tag {
@@ -27,16 +38,23 @@
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 999px;
+  z-index: 1;
 }
 
+/* 사진 위에 올라간 이름·위치 */
 .place-detail-head {
-  padding: 0 22px 16px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 0 16px 14px;
 }
 
 .place-detail-head h2 {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0F172A;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(2, 6, 23, 0.35);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -44,8 +62,9 @@
 
 .place-detail-head .loc {
   font-size: 12px;
-  color: #64748B;
-  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 3px rgba(2, 6, 23, 0.35);
+  margin-top: 5px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -53,7 +72,7 @@
 
 .place-detail-head .loc i {
   font-size: 15px;
-  color: #1F4FE0;
+  color: #fff;
 }
 
 .score-board {
@@ -62,7 +81,6 @@
   background: linear-gradient(135deg, #fff 0%, #F6F8FC 100%);
   border: 1px solid #EBEEF3;
   border-radius: 18px;
-  box-shadow: 0 4px 14px rgba(44, 31, 18, 0.06);
 }
 
 .score-main {
