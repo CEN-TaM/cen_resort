@@ -60,15 +60,8 @@
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
-/* 읽지 않은 알림은 은은한 브랜드 톤으로 구분 */
-.noti-row.unread {
-  background: var(--brand-50);
-  border-color: var(--brand-100);
-}
-
-.noti-row.unread:hover {
-  border-color: var(--brand);
-}
+/* 읽음 여부는 오른쪽 점(.noti-dot)으로만 구분한다.
+   배경과 테두리는 읽든 안 읽든 같게 두어 목록이 차분하게 보이도록. */
 
 /* 타입 배지 — 공지 카테고리와 같은 파스텔 계열 */
 .noti-badge {
@@ -112,6 +105,11 @@
   letter-spacing: -0.02em;
   line-height: 1.35;
   color: var(--text-1);
+  /* 공지 제목이 들어오므로 길어질 수 있다. 목록이 들쭉날쭉해지지 않게 2줄까지만. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .noti-meta {

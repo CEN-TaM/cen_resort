@@ -8,10 +8,23 @@
 // 읽음 상태는 서버에 저장한다(기기가 바뀌어도 유지). key 는 'n:{id}' / 'notice:{공지id}'.
 
 const NOTI_TYPE = {
-  comment: { label: '댓글', cls: 'comment', text: '내가 작성한 글에 새 댓글이 달렸습니다.' },
-  reply: { label: '답글', cls: 'reply', text: '내 댓글에 새로운 답글이 등록되었습니다.' },
-  notice: { label: '공지', cls: 'notice', text: '새로운 휴양소 공지사항이 등록되었습니다.' },
+  comment: { label: '댓글', cls: 'comment' },
+  reply: { label: '답글', cls: 'reply' },
+  notice: { label: '공지', cls: 'notice' },
 };
+
+// 알림 한 줄의 제목과 부제를 만든다.
+//   제목  그 알림에만 있는 정보 (공지 제목 / 누가 무엇에 반응했는지)
+//   부제  맥락과 시간 (공지 분류 / 어느 휴양소 글인지)
+// 종류 구분은 왼쪽 배지가 하므로 문장에서 '공지사항이 등록되었습니다' 처럼 되풀이하지 않는다.
+function notiTexts(n) {
+  if (n.type === 'notice') {
+    return { text: n.title || '새 공지사항', sub: n.category || '' };
+  }
+  const who = n.actorName ? `${n.actorName}님이` : '누군가';
+  const what = n.type === 'reply' ? '내 댓글에 답글을 남겼어요' : '내 후기에 댓글을 남겼어요';
+  return { text: `${who} ${what}`, sub: n.resortName || '' };
+}
 
 let notiItems = [];        // 화면에 뿌릴 알림 목록 (최신순)
 let notiReadKeys = new Set();
@@ -41,6 +54,7 @@ function buildNoticeNotifications() {
     key: `notice:${id}`,
     type: 'notice',
     title: n.title,
+    category: n.category,
     createdAt: noticeDateToIso(n.date),
     noticeId: id,
   }));
@@ -57,7 +71,8 @@ async function loadNotifications() {
         server = (j.notifications || []).map(n => ({
           key: n.key,
           type: n.type,
-          title: `${n.actorName || '누군가'}님 · ${n.resortName || ''}`.trim(),
+          actorName: n.actorName,
+          resortName: n.resortName,
           createdAt: n.createdAt,
           reviewId: n.reviewId,
         }));
@@ -96,13 +111,14 @@ function renderNotifications() {
     out.innerHTML = notiItems.map(n => {
       const t = NOTI_TYPE[n.type] || NOTI_TYPE.notice;
       const unread = !notiReadKeys.has(n.key);
-      const sub = n.type === 'notice' ? n.title : n.title;
+      const { text, sub } = notiTexts(n);
+      const meta = [escapeHtml(sub), notiTimeAgo(n.createdAt)].filter(Boolean).join(' · ');
       return `
       <button class="noti-row${unread ? ' unread' : ''}" onclick="openNotification('${n.key}')">
         <span class="noti-badge ${t.cls}">${t.label}</span>
         <span class="noti-main">
-          <span class="noti-text">${escapeHtml(t.text)}</span>
-          <span class="noti-meta">${escapeHtml(sub || '')}${sub ? ' · ' : ''}${notiTimeAgo(n.createdAt)}</span>
+          <span class="noti-text">${escapeHtml(text)}</span>
+          <span class="noti-meta">${meta}</span>
         </span>
         ${unread ? '<span class="noti-dot" aria-label="읽지 않음"></span>' : ''}
       </button>`;
