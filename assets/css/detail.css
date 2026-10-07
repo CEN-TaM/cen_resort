@@ -159,6 +159,12 @@
   display: flex;
   border-bottom: 1px solid #E8EAEE;
   margin: 0 18px;
+  /* 스크롤로 올라가면 app-header 바로 아래에 붙는다.
+     헤더 높이는 JS 가 재서 --detail-header-h 로 넣어 준다 (기본값은 대략치). */
+  position: sticky;
+  top: var(--detail-header-h, 46px);
+  z-index: 9;
+  background: var(--surface-2);
 }
 
 .tab-nav .tnav {
@@ -178,13 +184,10 @@
   border-bottom-color: #1F4FE0;
 }
 
+/* 탭으로 갈아끼우지 않고 한 페이지에 이어 둔다. 탭은 그 자리로 보내는 앵커다. */
 .dtab-pane {
-  display: none;
-}
-
-.dtab-pane.active {
   display: block;
-  animation: fadeIn 0.2s ease;
+  scroll-margin-top: 92px;          /* 고정된 헤더 + 탭 높이만큼 띄워 멈춘다 */
 }
 
 /* 상세 리뷰 탭 좋아요/댓글 버튼 정렬 */

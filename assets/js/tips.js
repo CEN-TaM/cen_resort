@@ -235,13 +235,21 @@ function openResortEl(el) {
 
 function openResort(name, tab, reviewId) {
   showScreen('device1', 'detail', { reset: true });
-  // 상세 탭 지정 (기본: 편의시설)
+  // 한 페이지 스크롤이라 그냥 열면 맨 위부터 본다.
+  // 후기를 보러 온 경우에만 그 자리로 내려 준다.
   const dt = document.querySelector('.screen[data-screen="detail"]');
   if (dt) {
-    const wantTab = tab || 'tips';
-    const nav = dt.querySelector(`.tab-nav .tnav[onclick*="'${wantTab}'"]`);
-    if (nav) showDetailTab(nav, wantTab);
-    if (wantTab === 'reviews') setTimeout(() => scrollToReview(reviewId), 80);
+    if (typeof syncDetailStickyTop === 'function') syncDetailStickyTop();
+    if (typeof bindDetailScroll === 'function') bindDetailScroll();
+    if (tab === 'reviews') {
+      const nav = dt.querySelector(`.tab-nav .tnav[onclick*="'reviews'"]`);
+      setTimeout(() => {
+        if (nav) showDetailTab(nav, 'reviews');
+        scrollToReview(reviewId);
+      }, 80);
+    } else if (typeof markDetailTab === 'function') {
+      markDetailTab(dt, 'tips');
+    }
   }
   const r = RESORT[name];
   const d = document.querySelector('.screen[data-screen="detail"]');
