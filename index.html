@@ -940,7 +940,6 @@
           <div class="tab-nav">
             <div class="tnav active" onclick="showDetailTab(this,'tips')">편의시설</div>
             <div class="tnav" onclick="showDetailTab(this,'reviews')">후기 32</div>
-            <div class="tnav" onclick="showDetailTab(this,'qna')">Q&A 8</div>
           </div>
 
           <!-- REVIEW 탭 -->
@@ -948,7 +947,6 @@
             <div class="rev-section-head">
               <div class="rev-title">
                 <span>후기</span><em class="rev-count">32</em>
-                <button class="rev-info" aria-label="안내"><i class="ti ti-help"></i></button>
               </div>
               <label class="rev-filter-toggle">
                 <input type="checkbox"> 사진 있는 후기만
@@ -1251,79 +1249,10 @@
 
             <!-- 꿀팁 목록은 tips.js 가 휴양소별로 그린다 -->
             <div class="swipe-row" id="tip-row"></div>
-            <button class="qna-write-btn" style="margin:0 18px;width:calc(100% - 36px)" onclick="openTipModal()">+ 나도 꿀팁
+            <button class="tip-write-btn" style="margin:0 18px;width:calc(100% - 36px)" onclick="openTipModal()">+ 나도 꿀팁
               공유하기</button>
           </div>
 
-          <!-- Q&A 탭 -->
-          <div class="dtab-pane" data-dtab="qna" style="padding: 14px 18px;">
-            <button class="qna-write-btn" onclick="openQnaModal()">❓ 궁금한 점을 물어보세요</button>
-
-            <div class="qna-item">
-              <div class="qhead">
-                <div class="qavatar" style="background:#F59E0B">최</div>
-                <div class="qname">최OO 매니저</div>
-                <div class="qdate">1일 전</div>
-              </div>
-              <div class="qtext">Q. 유아 식기는 있나요?</div>
-              <div class="answer">
-                <div class="ahead">
-                  <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
-                  박OO 책임 <span style="color:#475569;font-weight:400;font-size:10px">· 1일 전</span>
-                </div>
-                <div class="atext">네, 아기 의자와 어린이 식기 모두 구비되어 있어요! 분유 포트도 있습니다.</div>
-              </div>
-            </div>
-
-            <div class="qna-item">
-              <div class="qhead">
-                <div class="qavatar" style="background:#047857">김</div>
-                <div class="qname">김OO 선임</div>
-                <div class="qdate">3일 전</div>
-              </div>
-              <div class="qtext">Q. 와이파이 속도 어떤가요? 재택 가능한가요?</div>
-              <div class="answer">
-                <div class="ahead">
-                  <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
-                  이OO 선임 <span style="color:#475569;font-weight:400;font-size:10px">· 2일 전</span>
-                </div>
-                <div class="atext">500Mbps 정도로 빨라요. 화상회의나 일하기에 충분합니다.</div>
-              </div>
-            </div>
-
-            <div class="qna-item">
-              <div class="qhead">
-                <div class="qavatar" style="background:#1F4FE0">정</div>
-                <div class="qname">정OO 책임</div>
-                <div class="qdate">5일 전</div>
-              </div>
-              <div class="qtext">Q. 체크인 시간보다 일찍 가도 짐 보관 가능한가요?</div>
-              <div class="answer">
-                <div class="ahead">
-                  <i class="ti ti-corner-down-right" style="color:#1F4FE0"></i>
-                  관리사무소 <span class="badge verified" style="margin-left:4px">공식</span>
-                </div>
-                <div class="atext">관리실에서 보관 가능합니다. 도착 시 연락 주세요 (064-XXX-XXXX).</div>
-              </div>
-            </div>
-
-            <div class="qna-item unanswered" id="qna-q1">
-              <div class="qhead">
-                <div class="qavatar" style="background:#804A1F">홍</div>
-                <div class="qname">홍OO 선임</div>
-                <div class="qdate">방금 전</div>
-              </div>
-              <div class="qtext">Q. 반려동물 동반 가능한가요?</div>
-              <div class="answer-cta" id="qna-q1-cta" onclick="openAnswerInput('qna-q1')">아직 답변이 없어요. 답변을 남겨주세요 →</div>
-              <div class="answer-form" id="qna-q1-form" style="display:none">
-                <textarea id="qna-q1-input" placeholder="답변을 입력하세요..."></textarea>
-                <div class="answer-form-actions">
-                  <button class="cancel-btn" onclick="cancelAnswer('qna-q1')">취소</button>
-                  <button class="submit-btn" onclick="submitAnswer('qna-q1')">답변 등록</button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -2176,21 +2105,6 @@
         </div>
       </div>
 
-      <!-- Q&A 질문 작성 바텀시트 -->
-      <div class="comment-modal" id="qna-modal" onclick="closeQnaModal(event)">
-        <div class="comment-sheet" onclick="event.stopPropagation()">
-          <div class="comment-sheet-handle"></div>
-          <div class="comment-sheet-header">
-            <div class="ct">❓ 궁금한 점 물어보기</div>
-            <i class="ti ti-x" onclick="closeQnaModal()"></i>
-          </div>
-          <div class="tip-form">
-            <textarea id="qna-input" class="tip-field tip-textarea" placeholder="휴양소에 대해 궁금한 점을 자유롭게 물어보세요!"></textarea>
-            <button class="tip-submit" onclick="submitQna()">질문 등록</button>
-          </div>
-        </div>
-      </div>
-
       <!-- 즐겨찾기 정렬 바텀시트 -->
       <div class="comment-modal" id="fav-sort-modal" onclick="closeFavSort(event)">
         <div class="comment-sheet" onclick="event.stopPropagation()">
@@ -2283,7 +2197,6 @@
   <script src="assets/js/detail.js"></script>
   <script src="assets/js/resort.js"></script>
   <script src="assets/js/common-ui.js"></script>
-  <script src="assets/js/qna.js"></script>
   <script src="assets/js/tips.js"></script>
   <script src="assets/js/review-comments.js"></script>
   <script src="assets/js/lightbox.js"></script>
