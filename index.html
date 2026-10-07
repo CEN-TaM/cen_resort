@@ -898,7 +898,7 @@
       <div class="screen" data-screen="detail">
         <div class="app-header">
           <i class="ti ti-arrow-left back" onclick="goBack('device1','detail')"></i>
-          <div class="title">조천 휴양소</div>
+          <div class="title">휴양소</div>
           <div class="actions"><i class="ti ti-share" onclick="openShareSheet()"></i><span
               class="fav-btn inline header-style" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i
                 class="ti ti-star"></i></span></div>
@@ -906,10 +906,10 @@
         <div class="content">
           <div class="hero" data-img="hero-jocheon">
             <div class="hero-tag">정기 휴양소</div>
-          </div>
-          <div class="place-detail-head">
-            <h2 id="detail-resort-name">조천 휴양소</h2>
-            <div class="loc"><i class="ti ti-map-pin"></i> 제주 제주시 조천읍 · 4인실 · 정원 4명</div>
+            <div class="place-detail-head">
+              <h2 id="detail-resort-name">조천 휴양소</h2>
+              <div class="loc"><i class="ti ti-map-pin"></i> 제주 제주시 조천읍 · 4인실 · 정원 4명</div>
+            </div>
           </div>
           <div class="score-board">
             <div class="score-main">
@@ -938,7 +938,7 @@
             </div>
           </div>
           <div class="tab-nav">
-            <div class="tnav active" onclick="showDetailTab(this,'tips')">편의시설</div>
+            <div class="tnav active" onclick="showDetailTab(this,'tips')">휴양소 정보</div>
             <div class="tnav" onclick="showDetailTab(this,'reviews')">후기 32</div>
           </div>
 
@@ -1113,47 +1113,28 @@
           <!-- 편의시설 탭 -->
           <div class="dtab-pane active" data-dtab="tips" style="padding: 14px 0;">
 
-            <div class="feature-section">
+            <div class="feature-list" id="feature-list">
+            <div class="feature-section" data-group="환경">
               <div class="fs-title">환경</div>
               <div class="fs-chips">
                 <div class="feat-chip active">
                   <div class="fc-icon tone-mint"><i class="ti ti-forest"></i></div>
                   <div class="fc-name">바다</div>
                 </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-teal"><i class="ti ti-landscape"></i></div>
-                  <div class="fc-name">산</div>
-                </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-sky"><i class="ti ti-apartment"></i></div>
-                  <div class="fc-name">도시</div>
-                </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-peach"><i class="ti ti-park"></i></div>
-                  <div class="fc-name">전원</div>
-                </div>
               </div>
             </div>
 
-            <div class="feature-section">
+            <div class="feature-section" data-group="숙소 유형">
               <div class="fs-title">숙소 유형</div>
               <div class="fs-chips">
                 <div class="feat-chip active">
                   <div class="fc-icon tone-lilac"><i class="ti ti-villa"></i></div>
                   <div class="fc-name">독채</div>
                 </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-pink"><i class="ti ti-cottage"></i></div>
-                  <div class="fc-name">펜션</div>
-                </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-cream"><i class="ti ti-apartment"></i></div>
-                  <div class="fc-name">콘도</div>
-                </div>
               </div>
             </div>
 
-            <div class="feature-section">
+            <div class="feature-section" data-group="편의시설">
               <div class="fs-title">편의시설</div>
               <div class="fs-chips">
                 <div class="feat-chip active">
@@ -1176,14 +1157,10 @@
                   <div class="fc-icon tone-teal"><i class="ti ti-local-laundry-service"></i></div>
                   <div class="fc-name">세탁기</div>
                 </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-lilac"><i class="ti ti-hot-tub"></i></div>
-                  <div class="fc-name">스파</div>
-                </div>
               </div>
             </div>
 
-            <div class="feature-section">
+            <div class="feature-section" data-group="주변 활동">
               <div class="fs-title">주변 활동</div>
               <div class="fs-chips">
                 <div class="feat-chip active">
@@ -1198,42 +1175,12 @@
                   <div class="fc-icon tone-cream"><i class="ti ti-wb-sunny"></i></div>
                   <div class="fc-name">일출</div>
                 </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-mint"><i class="ti ti-directions-bike"></i></div>
-                  <div class="fc-name">자전거</div>
-                </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-lilac"><i class="ti ti-photo-camera"></i></div>
-                  <div class="fc-name">포토스팟</div>
-                </div>
               </div>
             </div>
-
-            <div class="feature-section">
-              <div class="fs-title">추천 동행</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-pink"><i class="ti ti-family-restroom"></i></div>
-                  <div class="fc-name">가족</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-coral"><i class="ti ti-favorite"></i></div>
-                  <div class="fc-name">연인</div>
-                </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-sky"><i class="ti ti-groups"></i></div>
-                  <div class="fc-name">친구</div>
-                </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-teal"><i class="ti ti-work"></i></div>
-                  <div class="fc-name">동료</div>
-                </div>
-                <div class="feat-chip">
-                  <div class="fc-icon tone-lilac"><i class="ti ti-self-improvement"></i></div>
-                  <div class="fc-name">혼자</div>
-                </div>
-              </div>
             </div>
+            <button type="button" class="feature-more" onclick="openFeatureModal()">
+              전체보기 <i class="ti ti-chevron-right"></i>
+            </button>
 
             <div class="feature-divider"></div>
 
@@ -2079,6 +2026,30 @@
             <input id="comment-input" placeholder="댓글을 입력하세요..." onkeypress="if(event.key==='Enter')addComment()">
             <button onclick="addComment()">등록</button>
           </div>
+        </div>
+      </div>
+
+      <!-- 휴양소 특징 전체보기 바텀시트 -->
+      <div class="comment-modal" id="feature-modal" onclick="closeFeatureModal(event)">
+        <div class="comment-sheet" onclick="event.stopPropagation()">
+          <div class="comment-sheet-handle"></div>
+          <div class="comment-sheet-header">
+            <div class="ct">휴양소 정보</div>
+            <i class="ti ti-x" onclick="closeFeatureModal()"></i>
+          </div>
+          <div class="feature-modal-body" id="feature-modal-body"></div>
+        </div>
+      </div>
+
+      <!-- 꿀팁 상세 바텀시트 -->
+      <div class="comment-modal" id="tip-detail-modal" onclick="closeTipDetail(event)">
+        <div class="comment-sheet" onclick="event.stopPropagation()">
+          <div class="comment-sheet-handle"></div>
+          <div class="comment-sheet-header">
+            <div class="ct">꿀팁</div>
+            <i class="ti ti-x" onclick="closeTipDetail()"></i>
+          </div>
+          <div class="tip-detail-body" id="tip-detail-body"></div>
         </div>
       </div>
 

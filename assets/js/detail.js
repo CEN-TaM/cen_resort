@@ -73,3 +73,20 @@ renderFavoriteList();
 
 // 배너 슬라이드 초기화
 goToBannerSlide(0);
+
+// ===== 휴양소 특징 전체보기 =====
+// 상세에는 '숙소 유형'과 '편의시설'만 보이고(CSS), 나머지 분류는 이 팝업에서 본다.
+// 본문 목록을 그대로 복제하므로 나중에 데이터로 빼도 한 곳만 그리면 된다.
+function openFeatureModal() {
+  const src = document.getElementById('feature-list');
+  const out = document.getElementById('feature-modal-body');
+  if (src && out) out.innerHTML = src.innerHTML;
+  const m = document.getElementById('feature-modal');
+  if (m) m.classList.add('show');
+}
+
+function closeFeatureModal(event) {
+  if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+  const m = document.getElementById('feature-modal');
+  if (m) m.classList.remove('show');
+}

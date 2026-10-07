@@ -8,7 +8,7 @@ const TIP_SEED = [
     id: 'seed-sokcho-hills-1', resort: '속초(힐스)', tag: '시장', mine: true,
     title: '중앙시장은 걸어서 5분',
     content: '숙소에서 속초중앙시장까지 도보 5분이라 저녁거리 사 오기 좋아요. 닭강정은 포장 줄이 기니 이른 시간에 들르시는 걸 추천합니다.',
-    daysAgo: 5, views: 186, likes: 34,
+    daysAgo: 5,
   },
 ];
 

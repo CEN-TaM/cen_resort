@@ -49,6 +49,45 @@ function tipWhen(t) {
   return `${Math.floor(d / 30)}개월 전`;
 }
 
+// ===== 꿀팁 좋아요 =====
+// 서버에 꿀팁 API 가 없어 '내가 누른 것'만 브라우저에 담는다.
+// 그래서 수는 0 또는 1 이다. 서버로 옮기면 모두의 합계가 된다.
+const TIP_LIKES_KEY = 'cen_tip_likes';
+
+function loadTipLikes() {
+  try {
+    const raw = localStorage.getItem(TIP_LIKES_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch (e) { return new Set(); }
+}
+
+function isTipLiked(id) {
+  return loadTipLikes().has(id);
+}
+
+function tipLikeCount(t) {
+  return (t.likes || 0) + (isTipLiked(t.id) ? 1 : 0);
+}
+
+function toggleTipLike(id, event) {
+  if (event) event.stopPropagation();      // 카드 전체 클릭(상세 열기)과 겹치지 않게
+  const set = loadTipLikes();
+  set.has(id) ? set.delete(id) : set.add(id);
+  try { localStorage.setItem(TIP_LIKES_KEY, JSON.stringify([...set])); } catch (e) { }
+  renderResortTips(currentTipResort);
+  renderMyTips();
+  const open = document.getElementById('tip-detail-modal');
+  if (open && open.classList.contains('show')) openTipDetail(id);   // 상세가 열려 있으면 거기도
+}
+
+// 하트 버튼 한 조각
+function tipLikeBtn(t) {
+  const on = isTipLiked(t.id);
+  return `<button type="button" class="tip-like${on ? ' on' : ''}" onclick="toggleTipLike('${t.id}',event)"
+    aria-label="좋아요"><i class="ti ti-heart${on ? '-filled' : ''}"></i>${tipLikeCount(t)}</button>`;
+}
+
 // 휴양소 하나의 꿀팁 (최신순)
 function getResortTips(resortName) {
   const seed = (typeof TIP_SEED !== 'undefined' ? TIP_SEED : []).filter(t => t.resort === resortName);
@@ -62,20 +101,27 @@ function getMyTips() {
   return [...loadMyTips(), ...seed];
 }
 
+// 태그는 글 아래 해시태그로 붙인다
+function tipTagHtml(t) {
+  return t.tag ? `<div class="tip-tags">#${escapeHtml(t.tag)}</div>` : '';
+}
+
+// NEW / HOT 은 상태 표시라 제목 위에 둔다
+function tipBadgeHtml(t) {
+  const b = t.isNew ? 'NEW' : (t.hot ? 'HOT' : '');
+  return b ? `<div class="tag-row"><span class="tag tone-coral">${b}</span></div>` : '';
+}
+
 function tipCardHtml(t) {
-  const tone = (typeof TIP_TAG_TONE !== 'undefined' && TIP_TAG_TONE[t.tag]) || 'mint';
-  const tags = [
-    t.isNew ? '<span class="tag tone-coral">NEW</span>' : (t.hot ? '<span class="tag tone-coral">HOT</span>' : ''),
-    t.tag ? `<span class="tag tone-${tone}">${escapeHtml(t.tag)}</span>` : '',
-  ].filter(Boolean).join('');
   const who = t.mine || t.createdAt ? tipAuthorName() : escapeHtml(t.author || '동료');
-  return `<div class="tip-card">
-    ${tags ? `<div class="tag-row">${tags}</div>` : ''}
+  return `<div class="tip-card" onclick="openTipDetail('${t.id}')">
+    ${tipBadgeHtml(t)}
     <div class="ttitle">${escapeHtml(t.title)}</div>
     <div class="tcontent">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
+    ${tipTagHtml(t)}
     <div class="tfoot">
       <span>${who} · ${tipWhen(t)}</span>
-      <span>👁 ${t.views || 0} · 👍 ${t.likes || 0}</span>
+      ${tipLikeBtn(t)}
     </div>
   </div>`;
 }
@@ -110,7 +156,7 @@ function submitTip() {
     title, content,
     empno: p.empno || null,
     createdAt: new Date().toISOString(),
-    views: 0, likes: 0, isNew: true, mine: true,
+    isNew: true, mine: true,
   };
   const list = loadMyTips();
   list.unshift(tip);
@@ -143,25 +189,25 @@ function renderMyTips() {
     return;
   }
   out.innerHTML = list.map(t => {
-    const tone = (typeof TIP_TAG_TONE !== 'undefined' && TIP_TAG_TONE[t.tag]) || 'mint';
     // 저장된 꿀팁만 지울 수 있다 (표본은 예시라 그대로 둔다)
     const del = t.id.startsWith('my-')
-      ? `<button class="mytip-del" onclick="deleteMyTip('${t.id}')" aria-label="삭제"><i class="ms">delete</i></button>`
+      ? `<button class="mytip-del" onclick="deleteMyTip('${t.id}',event)" aria-label="삭제"><i class="ms">delete</i></button>`
       : '';
-    return `<div class="mytip-card">
+    return `<div class="mytip-card" onclick="openTipDetail('${t.id}')">
       <div class="mytip-top">
-        <span class="mytip-resort" onclick="openResort('${escapeHtml(t.resort)}')">${escapeHtml(t.resort)}</span>
-        ${t.tag ? `<span class="tag tone-${tone}">${escapeHtml(t.tag)}</span>` : ''}
+        <span class="mytip-resort" onclick="event.stopPropagation();openResort('${escapeHtml(t.resort)}')">${escapeHtml(t.resort)}</span>
         ${del}
       </div>
       <div class="ttitle">${escapeHtml(t.title)}</div>
       <div class="tcontent">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
-      <div class="tfoot"><span>${tipWhen(t)}</span><span>👁 ${t.views || 0} · 👍 ${t.likes || 0}</span></div>
+      ${tipTagHtml(t)}
+      <div class="tfoot"><span>${tipWhen(t)}</span>${tipLikeBtn(t)}</div>
     </div>`;
   }).join('');
 }
 
-function deleteMyTip(id) {
+function deleteMyTip(id, event) {
+  if (event) event.stopPropagation();
   saveMyTips(loadMyTips().filter(t => t.id !== id));
   renderMyTips();
   updateMyTipsCount();
@@ -203,7 +249,7 @@ function openResort(name, tab, reviewId) {
   const tag = r.type === 'winter' ? '동계 이벤트 휴양소'
     : r.type === 'summer' ? '하계 이벤트 휴양소'
       : '정기 휴양소';
-  const title = d.querySelector('.app-header .title'); if (title) title.textContent = r.name;
+  // 휴양소 이름은 사진 위에 올라가 있어 헤더에는 넣지 않는다
   const h2 = d.querySelector('#detail-resort-name'); if (h2) h2.textContent = r.name;
   const locEl = d.querySelector('.place-detail-head .loc');
   if (locEl) locEl.innerHTML = `<i class="ti ti-map-pin"></i> ${r.loc} · 4인실 · 정원 4명`;
@@ -224,4 +270,37 @@ function openResort(name, tab, reviewId) {
 
   // 서버에 저장된 최신 후기 로드
   loadServerReviews(name);
+}
+
+// ===== 꿀팁 상세 =====
+// 카드에는 3줄까지만 보이므로(CSS) 전체 글은 이 바텀시트에서 본다.
+function findTip(id) {
+  const seed = (typeof TIP_SEED !== 'undefined' ? TIP_SEED : []);
+  return [...loadMyTips(), ...seed].find(t => t.id === id);
+}
+
+function openTipDetail(id) {
+  const t = findTip(id);
+  const out = document.getElementById('tip-detail-body');
+  if (!t || !out) return;
+  const who = t.mine || t.createdAt ? tipAuthorName() : escapeHtml(t.author || '동료');
+  out.innerHTML = `
+    <div class="td-top">
+      <span class="td-resort">${escapeHtml(t.resort || '')}</span>
+    </div>
+    <div class="td-title">${escapeHtml(t.title)}</div>
+    <div class="td-content">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
+    ${t.tag ? `<div class="tip-tags">#${escapeHtml(t.tag)}</div>` : ''}
+    <div class="td-foot">
+      <span>${who} · ${tipWhen(t)}</span>
+      ${tipLikeBtn(t)}
+    </div>`;
+  const m = document.getElementById('tip-detail-modal');
+  if (m) m.classList.add('show');
+}
+
+function closeTipDetail(event) {
+  if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+  const m = document.getElementById('tip-detail-modal');
+  if (m) m.classList.remove('show');
 }
