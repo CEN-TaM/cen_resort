@@ -64,8 +64,6 @@ function fmtDate(iso) {
 }
 function serverReviewCard(rv) {
   const name = escapeHtml(rv.authorName || '동료');
-  const avatarCh = (rv.authorName || '동').trim()[0] || '동';
-  const srvAc = (typeof avatarColor === 'function') ? avatarColor(rv.authorName || rv.id) : { bg: '#DCE9FB', fg: '#1F4FE0' };
   const comp = (rv.companions && rv.companions.length) ? ' · ' + escapeHtml(rv.companions.join(', ')) + '와 함께' : '';
   const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
   const starFull = Math.round(rv.ratings?.avg || 0);
@@ -76,7 +74,7 @@ function serverReviewCard(rv) {
   const content = reviewTextHtml(rv.content, 'rv-content');
   return `
   <div class="review-head rt-head" id="rev-srv-${rv.id}">
-    <div class="rt-avatar" style="background:${srvAc.bg};color:${srvAc.fg}">${escapeHtml(avatarCh)}</div>
+    ${seniAvatarHtml(rv.id || rv.authorName, rv.authorName || rv.id)}
     <div class="rt-who">
       <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}${comp}</span></div>
       ${rtOrgRow(rv)}
@@ -99,21 +97,24 @@ function syncDetailStats(reviews) {
   const d = document.querySelector('.screen[data-screen="detail"]');
   if (!d) return;
   const n = reviews.length;
-  const mean = arr => arr.length ? arr.reduce((a, b) => a + (Number(b) || 0), 0) / arr.length : 0;
-  const avg = Math.round(mean(reviews.map(r => r.ratings?.avg)) * 10) / 10;
-  const avgLoc = mean(reviews.map(r => r.ratings?.location));
-  const avgFac = mean(reviews.map(r => r.ratings?.facility));
-  const avgCln = mean(reviews.map(r => r.ratings?.clean));
+  // 점수가 없는 후기는 빼고 평균. 하나도 없으면 null → 화면엔 '-'
+  const mean = arr => {
+    const v = arr.filter(x => x != null && !isNaN(x)).map(Number);
+    return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
+  };
+  const avgRaw = mean(reviews.map(r => r.ratings?.avg));
+  const avg = avgRaw == null ? null : Math.round(avgRaw * 10) / 10;
+  const part = key => { const m = mean(reviews.map(r => r.ratings?.[key])); return m == null ? null : clampScore(m); };
 
-  const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `후기 ${n}`;
+  const tnav = d.querySelector('.tab-nav .tnav[data-dtab-target="reviews"]'); if (tnav) tnav.textContent = `후기 ${n}`;
   const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = n;
-  const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = avg.toFixed(1);
-  const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(avg);
-  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `후기 <b>${n}개</b>`;
+  const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = avg == null ? '-' : avg.toFixed(1);
+  const stars = d.querySelector('.score-main .stars'); if (stars) stars.innerHTML = starsHtml(avg || 0);
+  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.textContent = `· 후기 ${n}`;
   const items = d.querySelectorAll('.score-breakdown .score-item');
-  setScoreItem(items[0], clampScore(avgLoc));
-  setScoreItem(items[1], clampScore(avgFac));
-  setScoreItem(items[2], clampScore(avgCln));
+  setScoreItem(items[0], part('location'));
+  setScoreItem(items[1], part('facility'));
+  setScoreItem(items[2], part('clean'));
 }
 
 async function loadServerReviews(resortName) {

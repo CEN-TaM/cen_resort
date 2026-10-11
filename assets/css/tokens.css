@@ -37,7 +37,14 @@
   --teal-fg: #115E59;
 
   /* Accent */
-  --star: #F59E0B;
+  --star: #EA3A09;
+
+  /* 휴양소 상세 A안 */
+  --rating: #EA3A09;     /* 상단 평점 숫자·별 */
+  --star-off: #D7D7D7;   /* 상단 평점의 빈 별 */
+  --info-icon: #ADB2B9;  /* 정보 3줄 아이콘 */
+  --tip-card: #EDEFF3;   /* 꿀팁 카드 */
+  --gap: #F3F4F5;        /* 정보·후기 사이 굵은 구분 */
 
   /* Radius */
   --r-sm: 8px;

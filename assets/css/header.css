@@ -192,6 +192,12 @@
   color: #0F172A;
 }
 
+.top-noti .top-noti-ico {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
 /* 안 읽은 알림 개수 — 한 자리는 정원, 두 자리부터 .wide 가 붙어 알약이 된다 */
 .top-noti .badge-dot {
   position: absolute;

@@ -106,24 +106,12 @@ function tipTagHtml(t) {
   return t.tag ? `<div class="tip-tags">#${escapeHtml(t.tag)}</div>` : '';
 }
 
-// NEW / HOT 은 상태 표시라 제목 위에 둔다
-function tipBadgeHtml(t) {
-  const b = t.isNew ? 'NEW' : (t.hot ? 'HOT' : '');
-  return b ? `<div class="tag-row"><span class="tag tone-coral">${b}</span></div>` : '';
-}
-
+// 카드에는 따옴표로 감싼 본문 2줄만. 제목·태그·작성자·좋아요는 상세 시트(openTipDetail)에 있다
 function tipCardHtml(t) {
-  const who = t.mine || t.createdAt ? tipAuthorName() : escapeHtml(t.author || '동료');
-  return `<div class="tip-card" onclick="openTipDetail('${t.id}')">
-    ${tipBadgeHtml(t)}
-    <div class="ttitle">${escapeHtml(t.title)}</div>
-    <div class="tcontent">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
-    ${tipTagHtml(t)}
-    <div class="tfoot">
-      <span>${who} · ${tipWhen(t)}</span>
-      ${tipLikeBtn(t)}
-    </div>
-  </div>`;
+  return `<button type="button" class="tip-card" onclick="openTipDetail('${t.id}')" aria-label="${escapeHtml(t.title)}">
+    <span class="tcontent"><img class="tq-open" src="assets/images/ico_quote_open.png" alt="">${escapeHtml(t.content)}</span>
+    <img class="tq-close" src="assets/images/ico_quote_close.png" alt="">
+  </button>`;
 }
 
 // 휴양소 상세의 꿀팁 목록을 다시 그린다
@@ -135,7 +123,16 @@ function renderResortTips(resortName) {
   row.innerHTML = list.length
     ? list.map(tipCardHtml).join('')
     : '<div class="tip-empty">아직 등록된 꿀팁이 없어요. 첫 꿀팁을 남겨보세요!</div>';
+  syncSwipeArrows(row);
 }
+
+// 꿀팁 줄을 넘기거나 화면 폭이 바뀌면 화살표 상태를 다시 맞춘다
+(function bindTipRow() {
+  const row = document.getElementById('tip-row');
+  if (!row) return;
+  row.addEventListener('scroll', () => syncSwipeArrows(row), { passive: true });
+  window.addEventListener('resize', () => syncSwipeArrows(row));
+})();
 
 function submitTip() {
   const tagEl = document.getElementById('tip-tag-input');
@@ -185,7 +182,7 @@ function renderMyTips() {
   const list = getMyTips();
   if (head) head.textContent = list.length ? `내가 남긴 꿀팁 ${list.length}건` : '';
   if (list.length === 0) {
-    out.innerHTML = '<div class="tip-empty">아직 남긴 꿀팁이 없어요.<br>휴양소 상세에서 “나도 꿀팁 공유하기”를 눌러 보세요.</div>';
+    out.innerHTML = '<div class="tip-empty">아직 남긴 꿀팁이 없어요.<br>휴양소 상세에서 “꿀팁 작성하기”를 눌러 보세요.</div>';
     return;
   }
   out.innerHTML = list.map(t => {
@@ -233,6 +230,8 @@ function openResortEl(el) {
   openResort(name);
 }
 
+let currentResortName = '';   // 지금 열린 휴양소 정식명 (편의시설 팝업이 쓴다)
+
 function openResort(name, tab, reviewId) {
   showScreen('device1', 'detail', { reset: true });
   // 한 페이지 스크롤이라 그냥 열면 맨 위부터 본다.
@@ -242,7 +241,7 @@ function openResort(name, tab, reviewId) {
     if (typeof syncDetailStickyTop === 'function') syncDetailStickyTop();
     if (typeof bindDetailScroll === 'function') bindDetailScroll();
     if (tab === 'reviews') {
-      const nav = dt.querySelector(`.tab-nav .tnav[onclick*="'reviews'"]`);
+      const nav = dt.querySelector('.tab-nav .tnav[data-dtab-target="reviews"]');
       setTimeout(() => {
         if (nav) showDetailTab(nav, 'reviews');
         scrollToReview(reviewId);
@@ -251,33 +250,52 @@ function openResort(name, tab, reviewId) {
       markDetailTab(dt, 'tips');
     }
   }
-  const r = RESORT[name];
+  const r = resolveResort(name);
   const d = document.querySelector('.screen[data-screen="detail"]');
   if (!r || !d) return;
+  currentResortName = r.name;
   const tag = r.type === 'winter' ? '동계 이벤트 휴양소'
     : r.type === 'summer' ? '하계 이벤트 휴양소'
-      : '정기 휴양소';
-  // 휴양소 이름은 사진 위에 올라가 있어 헤더에는 넣지 않는다
+      : '정기휴양소';
   const h2 = d.querySelector('#detail-resort-name'); if (h2) h2.textContent = r.name;
-  const locEl = d.querySelector('.place-detail-head .loc');
-  if (locEl) locEl.innerHTML = `<i class="ti ti-map-pin"></i> ${r.loc} · 4인실 · 정원 4명`;
-  const hero = d.querySelector('.hero'); if (hero) applyBg(hero, r.img);
-  const heroTag = d.querySelector('.hero .hero-tag'); if (heroTag) heroTag.textContent = tag;
+  const typeEl = d.querySelector('#detail-resort-type'); if (typeEl) typeEl.textContent = tag;
+  const hero = d.querySelector('.hero');
+  if (hero) { applyBg(hero, r.img); hero.setAttribute('aria-label', `${r.name} 사진`); }
+  renderResortInfo(r);
+
+  // 헤더 별 버튼을 이 휴양소로 연결한다. 키는 즐겨찾기 화면(data-fav-card)과 같은 r.img
+  const fav = d.querySelector('#detail-fav');
+  if (fav) { fav.dataset.fav = r.img; syncFavoriteUI(r.img); }
+
+  // 후기를 불러오기 전 임시 값 (서버 후기가 있으면 syncDetailStats 가 실제 평균으로 바꾼다)
   const big = d.querySelector('.score-main .big-num'); if (big) big.textContent = r.rating.toFixed(1);
-  const stars = d.querySelector('.score-main .stars'); if (stars) stars.textContent = starStr(r.rating);
-  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.innerHTML = `후기 <b>${r.reviews}개</b>`;
+  const stars = d.querySelector('.score-main .stars'); if (stars) stars.innerHTML = starsHtml(r.rating);
+  const rc = d.querySelector('.score-main .review-count'); if (rc) rc.textContent = `· 후기 ${r.reviews}`;
   const items = d.querySelectorAll('.score-breakdown .score-item');
   setScoreItem(items[0], clampScore(r.rating - 0.1)); // 위치
   setScoreItem(items[1], clampScore(r.rating + 0.1)); // 시설
   setScoreItem(items[2], clampScore(r.rating));        // 청결
-  const tnavs = d.querySelectorAll('.tab-nav .tnav'); if (tnavs[1]) tnavs[1].textContent = `후기 ${r.reviews}`;
+  const tnav = d.querySelector('.tab-nav .tnav[data-dtab-target="reviews"]'); if (tnav) tnav.textContent = `후기 ${r.reviews}`;
   const revCount = d.querySelector('.rev-count'); if (revCount) revCount.textContent = r.reviews;
 
   // 이 휴양소의 꿀팁으로 갈아끼운다 (작성도 이 휴양소 기준이 된다)
   renderResortTips(r.name);
 
-  // 서버에 저장된 최신 후기 로드
-  loadServerReviews(name);
+  // 서버에 저장된 최신 후기 로드 — 클릭한 이름(별칭)이 아니라 정식명으로 조회한다
+  loadServerReviews(r.name);
+}
+
+// 휴양소 정보 3줄 — 데이터가 없는 줄은 숨긴다
+function renderResortInfo(r) {
+  const row = (rowId, txtId, text) => {
+    const rowEl = document.getElementById(rowId);
+    const txt = document.getElementById(txtId);
+    if (txt) { txt.textContent = text || ''; txt.title = text || ''; }
+    if (rowEl) rowEl.hidden = !text;
+  };
+  row('detail-address-row', 'detail-address', r.address || r.loc);
+  row('detail-room-row', 'detail-room', r.roomType ? `${r.roomType}(정원 ${r.capacity}명)` : '');
+  row('detail-amenities-row', 'detail-amenities', ((r.features && r.features['편의시설']) || []).join(', '));
 }
 
 // ===== 꿀팁 상세 =====

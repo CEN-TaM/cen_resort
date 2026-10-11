@@ -123,6 +123,21 @@ function avatarColor(seed) {
   return AVATAR_COLORS[h % AVATAR_COLORS.length];
 }
 
+// 후기 프로필은 이름 첫 글자 대신 세니 3종 중 하나. 배경색은 예전처럼 avatarColor.
+// 둘 다 seed 로 고르므로 후기마다 달라 보이고, 다시 그려도 같은 후기는 같은 모습이다.
+const SENI_AVATARS = [
+  'assets/images/seni-peek-1.png',
+  'assets/images/seni-peek-2.png',
+  'assets/images/seni-peek-3.png',
+];
+function seniAvatarHtml(seed, colorSeed) {
+  const s = String(seed || '');
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  const ac = avatarColor(colorSeed || seed);
+  return `<div class="rt-avatar seni" style="background:${ac.bg}"><img src="${SENI_AVATARS[h % SENI_AVATARS.length]}" alt=""></div>`;
+}
+
 // 휴양소 배지(.rt-resort) 색상 팔레트 (휴양소마다 다르게)
 const RESORT_COLORS = [
   { bg: '#EDEBFB', fg: '#6D5FE0' },
@@ -182,8 +197,6 @@ function rtOrgRow(rv) {
 // ===== 홈 '휴양소 최근 후기' 서버 후기 =====
 function homeReviewCard(rv) {
   const name = escapeHtml(rv.authorName || '동료');
-  const avatarCh = (rv.authorName || '동').trim()[0] || '동';
-  const ac = avatarColor(rv.authorName || rv.id || rv.resortName);
   const rc = resortColor(rv.resortName);
   const real = rv.photos || [];
   const photoSrcs = real.length
@@ -203,7 +216,7 @@ function homeReviewCard(rv) {
   return `
   <div class="review-card rt-review server-home-card" onclick="openResort('${resortAttr}','reviews')">
     <div class="rt-head">
-      <div class="rt-avatar" style="background:${ac.bg};color:${ac.fg}">${escapeHtml(avatarCh)}</div>
+      ${seniAvatarHtml(rv.id || rv.authorName, rv.authorName || rv.id || rv.resortName)}
       <div class="rt-who">
         <div class="rt-name-row"><span class="rt-name">${name}</span>${myBadge}<span class="rt-date">· ${dateTxt}</span></div>
         ${orgRow}
@@ -254,7 +267,6 @@ loadHomeReviews();
 // ===== '내가 쓴 후기' 페이지 (서버 연동) =====
 // 내 후기 카드: 클릭 시 해당 휴양소 상세 후기로 이동
 function myReviewCard(rv) {
-  const myAc = avatarColor(rv.authorName || rv.id || '나');
   const myRc = resortColor(rv.resortName);
   const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
   const full = Math.round(rv.ratings?.avg || 0);
@@ -266,7 +278,7 @@ function myReviewCard(rv) {
   return `
   <div class="review-card" onclick="openResort('${resortAttr}','reviews')">
     <div class="review-head rt-head">
-      <div class="rt-avatar" style="background:${myAc.bg};color:${myAc.fg}">${escapeHtml((rv.authorName || '나').trim()[0] || '나')}</div>
+      ${seniAvatarHtml(rv.id || rv.authorName, rv.authorName || rv.id || '나')}
       <div class="rt-who">
         <div class="rt-name-row"><span class="rt-name">${escapeHtml(rv.authorName || '나')}</span><span class="badge" style="background:#1F4FE0;color:#fff">내 후기</span><span class="rt-date">· ${fmtDate(rv.createdAt)}</span></div>
         ${rtOrgRow(rv)}

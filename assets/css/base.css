@@ -148,6 +148,13 @@ body {
   color: #0F172A;
 }
 
+/* 뒤로가기 아이콘 이미지 (assets/images/ico_back.png) */
+.app-header img.back {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
 .app-header .title {
   font-size: 16px;
   font-weight: 700;

@@ -1,9 +1,25 @@
 // 휴양소 상세 데이터
 // type: 'regular'(정규) | 'summer'(하계 이벤트) | 'winter'(동계 이벤트)
-function R(name, loc, type, rating, reviews, img) {
-  return { name, loc, type, rating, reviews, img };
+// ext: 상세 '휴양소 정보' 3줄과 편의시설 팝업에 쓰는 값 (없으면 그 줄을 숨긴다)
+//   id       고유키
+//   address  주소 (없으면 loc 를 보여준다)
+//   roomType, capacity  객실 · 정원
+//   features 분류별 편의시설 { 환경, 숙소 유형, 편의시설, 주변 활동 }
+function R(name, loc, type, rating, reviews, img, ext) {
+  return Object.assign({ name, loc, type, rating, reviews, img }, ext || {});
 }
-const _sokchoHills = R('속초(힐스)', '강원 속초시', 'regular', 4.8, 32, 'sokcho');
+const _sokchoHills = R('속초(힐스)', '강원 속초시', 'regular', 4.8, 32, 'sokcho', {
+  id: 'sokcho-hills',
+  address: '강원특별자치도 속초시 OO로 00, 힐스 OOO호',   // 더미 — 실제 주소 데이터 연동 필요
+  roomType: '4인실',
+  capacity: 4,
+  features: {
+    '환경': ['바다', '산'],
+    '숙소 유형': ['호텔형'],
+    '편의시설': ['와이파이', '주방', '바베큐', '주차', '세탁기', '에어컨', 'TV'],
+    '주변 활동': ['해수욕', '트레킹', '일출', '전통시장'],
+  },
+});
 const _sokchoSeohee = R('속초(서희)', '강원 속초시', 'regular', 4.6, 17, 'sokcho');
 const _jocheon = R('조천 휴양소', '제주 제주시 조천읍', 'regular', 4.8, 24, 'jocheon');
 const _yeosu = R('여수휴양소', '전남 여수시', 'regular', 4.6, 19, 'yeosu');
@@ -49,3 +65,19 @@ const RESORT = {
   '홍천': R('홍천', '강원 홍천군', 'winter', 4.6, 8, 'win-1'),
   '충남': R('충남', '충남', 'winter', 4.4, 6, 'win-2')
 };
+
+// 이름(별칭 포함) → 정식 데이터. 후기 조회는 항상 r.name(정식명)으로 한다
+function resolveResort(name) {
+  return RESORT[String(name || '').trim()] || null;
+}
+
+// 편의시설 이름 → [Material 아이콘, 색 톤]. 전체보기 팝업(detail.js featureSectionsHtml)에서 쓴다
+const FEATURE_META = {
+  '바다': ['waves', 'sky'], '산': ['landscape', 'mint'], '숲': ['forest', 'mint'],
+  '호텔형': ['apartment', 'lilac'], '독채': ['villa', 'lilac'],
+  '와이파이': ['wifi', 'sky'], '주방': ['soup_kitchen', 'peach'], '바베큐': ['outdoor_grill', 'coral'],
+  '주차': ['local_parking', 'mint'], '세탁기': ['local_laundry_service', 'teal'],
+  '에어컨': ['ac_unit', 'sky'], 'TV': ['tv', 'lilac'],
+  '해수욕': ['pool', 'sky'], '트레킹': ['hiking', 'peach'], '일출': ['wb_sunny', 'cream'], '전통시장': ['storefront', 'pink'],
+};
+const FEATURE_ORDER = ['환경', '숙소 유형', '편의시설', '주변 활동'];
