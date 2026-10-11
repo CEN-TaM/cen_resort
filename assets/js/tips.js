@@ -218,7 +218,7 @@ updateMyTipsCount();
 function scrollToReview(reviewId) {
   const pane = document.querySelector('.screen[data-screen="detail"] .dtab-pane[data-dtab="reviews"]');
   if (!pane) return;
-  const target = (reviewId && pane.querySelector('#rev-' + reviewId)) || pane.querySelector('.review-head');
+  const target = (reviewId && pane.querySelector('#rev-srv-' + reviewId)) || pane.querySelector('.rv-item');
   if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -281,8 +281,9 @@ function openResort(name, tab, reviewId) {
   // 이 휴양소의 꿀팁으로 갈아끼운다 (작성도 이 휴양소 기준이 된다)
   renderResortTips(r.name);
 
-  // 서버에 저장된 최신 후기 로드 — 클릭한 이름(별칭)이 아니라 정식명으로 조회한다
-  loadServerReviews(r.name);
+  // 서버에 저장된 최신 후기 로드 — 클릭한 이름(별칭)이 아니라 정식명으로 조회한다.
+  // 특정 후기를 보러 왔으면 카드가 그려진 뒤 그 자리로 내린다
+  loadServerReviews(r.name).then(() => { if (tab === 'reviews' && reviewId) scrollToReview(reviewId); });
 }
 
 // 휴양소 정보 3줄 — 데이터가 없는 줄은 숨긴다

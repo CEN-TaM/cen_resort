@@ -62,35 +62,55 @@ function fmtDate(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
   return m ? `${m[1]}.${m[2]}.${m[3]}` : '';
 }
+// 지금 상세에 떠 있는 후기 (좋아요·댓글이 이 객체를 고친다)
+let detailReviews = [];
+function findReview(id) { return detailReviews.find(r => String(r.id) === String(id)); }
+
+// '가족' → '가족과', '친구' → '친구와'. '아이와'처럼 이미 조사가 붙은 건 그대로
+function withJosa(word) {
+  const s = String(word || '');
+  if (/(와|과)$/.test(s)) return s;
+  const code = s.charCodeAt(s.length - 1);
+  const hasBatchim = code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 !== 0;
+  return s + (hasBatchim ? '과' : '와');
+}
+
+// 후기 카드 하나 — 서버 후기와 샘플 후기를 같은 모양으로 그린다.
+// 좋아요·댓글 버튼은 둘 다에 있고, 댓글은 카드 아래가 아니라 바텀시트(social.js openComments)로 연다.
 function serverReviewCard(rv) {
   const name = escapeHtml(rv.authorName || '동료');
-  const comp = (rv.companions && rv.companions.length) ? ' · ' + escapeHtml(rv.companions.join(', ')) + '와 함께' : '';
-  const avg = (rv.ratings && rv.ratings.avg != null) ? Number(rv.ratings.avg).toFixed(1) : '';
-  const starFull = Math.round(rv.ratings?.avg || 0);
-  const stars = '★'.repeat(starFull) + '☆'.repeat(5 - starFull);
-  // 사진 3장까지만 깔고 나머지는 +N 으로 접는다 (라이트박스에선 전체가 보인다)
-  const photoGrid = reviewPhotosHtml(
-    (rv.photos || []).map(src => `${API_BASE}${escapeHtml(src)}`), 'rv-photo-grid');
-  const content = reviewTextHtml(rv.content, 'rv-content');
+  const comp = (rv.companions && rv.companions.length) ? ' · ' + escapeHtml(withJosa(rv.companions.join(', '))) + ' 함께' : '';
+  const r = rv.ratings || {};
+  const avg = r.avg != null ? Number(r.avg).toFixed(1) : '';
+  const sc = v => (v == null ? '-' : Number(v).toFixed(1));
+  const photos = (rv.photos || []).map(src => rv._source === 'server' ? `${API_BASE}${escapeHtml(src)}` : escapeHtml(src));
+  const n = (rv.comments || []).length;
+  const idArg = escapeHtml(String(rv.id));
   return `
-  <div class="review-head rt-head" id="rev-srv-${rv.id}">
-    ${seniAvatarHtml(rv.id || rv.authorName, rv.authorName || rv.id)}
-    <div class="rt-who">
-      <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}${comp}</span></div>
-      ${rtOrgRow(rv)}
+  <article class="rv-item" id="rev-srv-${idArg}">
+    <div class="review-head rt-head">
+      ${seniAvatarHtml(rv.id || rv.authorName, rv.authorName || rv.id)}
+      <div class="rt-who">
+        <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}${comp}</span></div>
+        ${rtOrgRow(rv)}
+      </div>
+      ${isMyReview(rv) ? `<button type="button" class="rev-del-btn" onclick="askDeleteReview('${idArg}')" aria-label="내 후기 삭제"><i class="ms outline">delete</i></button>` : ''}
     </div>
-    ${isMyReview(rv) ? `<button class="rev-del-btn" onclick="askDeleteReview(${rv.id})" aria-label="후기 삭제"><i class="ti ti-trash"></i></button>` : ''}
-  </div>
-  <div class="rating-line" style="margin-top:10px"><span class="stars">${stars}</span><span class="rating-num">${avg}</span></div>
-  <div style="background:#F1F3F6;padding:12px 14px;border-radius:12px;margin:10px 0">
-    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#475569"><span>위치</span><span style="color:#0F172A;font-weight:700">${rv.ratings?.location ?? '-'}.0</span></div>
-    <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;color:#475569"><span>시설</span><span style="color:#0F172A;font-weight:700">${rv.ratings?.facility ?? '-'}.0</span></div>
-    <div style="display:flex;justify-content:space-between;font-size:11px;color:#475569"><span>청결도</span><span style="color:#0F172A;font-weight:700">${rv.ratings?.clean ?? '-'}.0</span></div>
-  </div>
-  ${photoGrid}
-  ${content}
-  ${typeof reviewCommentsHtml === 'function' ? reviewCommentsHtml(rv) : ''}
-  <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>`;
+    <div class="rating-line"><span class="stars" aria-label="5점 만점에 ${avg}점">${starsHtml(r.avg)}</span><span class="rating-num">${avg}</span></div>
+    <div class="rv-scores">
+      <div><span>위치</span><b>${sc(r.location)}</b></div>
+      <div><span>시설</span><b>${sc(r.facility)}</b></div>
+      <div><span>청결도</span><b>${sc(r.clean)}</b></div>
+    </div>
+    ${reviewPhotosHtml(photos, 'rv-photo-grid')}
+    ${reviewTextHtml(rv.content, 'rv-content')}
+    <div class="rv-actions">
+      <button type="button" class="detail-action${rv.liked ? ' liked' : ''}" data-like="${idArg}" aria-pressed="${!!rv.liked}"
+        onclick="toggleLike(event,'${idArg}')"><i class="ms${rv.liked ? '' : ' outline'}" aria-hidden="true">favorite</i> 좋아요 <b class="like-count">${rv.likes || 0}</b></button>
+      <button type="button" class="detail-action" data-comment="${idArg}"
+        onclick="openComments(event,'${idArg}')"><i class="ms outline" aria-hidden="true">chat_bubble</i> 댓글 <b class="comment-count">${n}</b></button>
+    </div>
+  </article>`;
 }
 // 상세페이지 총계(후기 수·평균·항목별 점수)를 실제 후기로 동기화
 function syncDetailStats(reviews) {
@@ -117,34 +137,31 @@ function syncDetailStats(reviews) {
   setScoreItem(items[2], part('clean'));
 }
 
+// 상세 후기 목록 — ReviewAPI 가 서버/샘플을 골라 준다.
+// 서버 후기나 그 휴양소 전용 샘플이면 총계(평점·후기 수)를 그 값으로 맞추고,
+// 공용 샘플(자기 샘플이 없는 휴양소)이면 openResort() 가 넣은 총계를 그대로 둔다 (예전 동작).
 async function loadServerReviews(resortName) {
   window._detailResort = resortName; // 삭제 후 상세 새로고침용
-  const pane = document.querySelector('.screen[data-screen="detail"] .dtab-pane[data-dtab="reviews"]');
-  if (!pane) return;
-  const samples = pane.querySelector('#sample-reviews');
-  // 이전에 주입한 서버 후기 제거
-  const old = pane.querySelector('#server-reviews');
-  if (old) old.remove();
+  let real = false;
   try {
-    const res = await fetch(API_BASE + '/api/reviews?resort=' + encodeURIComponent(resortName));
-    if (!res.ok) return;
-    const { reviews } = await res.json();
-    if (!reviews || !reviews.length) {
-      // 서버 후기 없음 → 샘플 후기 노출(더미 총계 유지)
-      if (samples) samples.style.display = '';
-      return;
-    }
-    // 서버 후기 있음 → 샘플 숨기고 총계를 실제 값으로 동기화
-    if (samples) samples.style.display = 'none';
-    const wrap = document.createElement('div');
-    wrap.id = 'server-reviews';
-    wrap.innerHTML = reviews.map(serverReviewCard).join('');
-    // 구분선(.rev-divider) 바로 다음에 최신 후기를 먼저 노출
-    const divider = pane.querySelector('.rev-divider');
-    if (divider && divider.nextSibling) pane.insertBefore(wrap, divider.nextSibling);
-    else pane.appendChild(wrap);
-    syncDetailStats(reviews);
+    const res = await ReviewAPI.list(resortName);
+    detailReviews = res.reviews;
+    real = res.real;
   } catch (e) {
-    console.error('서버 후기 로드 실패:', e);
+    console.error('후기 로드 실패:', e);
+    detailReviews = [];
+    if (typeof showToast === 'function') showToast('후기를 불러오지 못했어요');
   }
+  if (window._detailResort !== resortName) return;   // 그사이 다른 휴양소를 열었다
+  if (real) syncDetailStats(detailReviews);
+  renderReviewList();
+}
+
+// 후기 목록을 다시 그린다 (필터는 6단계에서 붙인다)
+function renderReviewList() {
+  const box = document.getElementById('server-reviews');
+  if (!box) return;
+  box.innerHTML = detailReviews.length
+    ? detailReviews.map(serverReviewCard).join('')
+    : '<div class="rv-empty">아직 등록된 후기가 없어요.<br>다녀오셨다면 첫 후기를 남겨 주세요!</div>';
 }

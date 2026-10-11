@@ -1,60 +1,56 @@
 // 좋아요 / 댓글
-// ===== 좋아요 / 댓글 기능 =====
-const reviewState = {
-  rv1: {
-    liked: false, likes: 24, comments: [
-      { author: '김OO 선임', color: '#1F4FE0', text: '저도 다음주에 가요! 정보 감사해요 😊' },
-      { author: '이OO 책임', color: '#F59E0B', text: '마트 정보 진짜 도움됐어요. 미리 장 봐서 갈게요!' }
-    ]
-  },
-  rv2: {
-    liked: false, likes: 18, comments: [
-      { author: '박OO 책임', color: '#1F4FE0', text: '주차 정보 감사합니다 👍 평일에 가야겠네요' }
-    ]
-  },
-  rv3: { liked: false, likes: 12, comments: [] },
-  rv4: { liked: false, likes: 9, comments: [] }
-};
-let currentReviewId = null;
+// 후기 카드는 lightbox.js serverReviewCard() 하나로 그리고, 데이터는 data-source.js ReviewAPI 로 오간다.
+// 서버 후기면 서버에, 샘플 후기면 브라우저 메모리(SampleDB)에 저장된다.
 
-function toggleLike(event, id) {
-  event.stopPropagation();
-  const s = reviewState[id];
-  if (!s) return;
-  s.liked = !s.liked;
-  s.likes += s.liked ? 1 : -1;
-  document.querySelectorAll(`[data-like="${id}"]`).forEach(btn => {
-    btn.classList.toggle('liked', s.liked);
-    const ico = btn.querySelector('i.ms, i.ti');
-    if (ico) {
-      ico.className = s.liked ? 'ms' : 'ms outline';
-      ico.textContent = 'favorite';
-    }
+// ===== 좋아요 =====
+// 누르는 즉시 바꾸고(기다리지 않게) 서버가 준 숫자로 맞춘다. 실패하면 되돌린다.
+const likeBusy = new Set();
+
+async function toggleLike(event, id) {
+  if (event) event.stopPropagation();
+  const rv = findReview(id);
+  if (!rv || likeBusy.has(rv.id)) return;
+  likeBusy.add(rv.id);
+  const next = !rv.liked;
+  rv.liked = next;
+  rv.likes = Math.max(0, (rv.likes || 0) + (next ? 1 : -1));
+  paintLike(rv);
+  try {
+    const res = await ReviewAPI.like(rv, next);
+    if (res && typeof res.likes === 'number') rv.likes = res.likes;
+  } catch (e) {
+    rv.liked = !next;
+    rv.likes = Math.max(0, rv.likes + (next ? -1 : 1));
+    if (typeof showToast === 'function') showToast('좋아요를 반영하지 못했어요');
+  } finally {
+    likeBusy.delete(rv.id);
+    paintLike(rv);
+  }
+}
+
+// 켜짐은 .liked 클래스 (색은 cards.css)
+function paintLike(rv) {
+  document.querySelectorAll(`[data-like="${rv.id}"]`).forEach(btn => {
+    btn.classList.toggle('liked', !!rv.liked);
+    btn.setAttribute('aria-pressed', String(!!rv.liked));
+    const ico = btn.querySelector('.ms');
+    if (ico) ico.classList.toggle('outline', !rv.liked);
     const cnt = btn.querySelector('.like-count');
-    if (cnt) cnt.textContent = s.likes;
-    // 상세 화면 인라인 스타일 버튼 컬러 동기화
-    if (btn.classList.contains('detail-action') || btn.hasAttribute('style')) {
-      if (s.liked) {
-        btn.style.background = '#FFE8EC';
-        btn.style.borderColor = '#FFC4CC';
-        btn.style.color = '#E94A4A';
-        if (cnt) cnt.style.color = '#E94A4A';
-      } else {
-        btn.style.background = '#FFFFFF';
-        btn.style.borderColor = '#E8EAEE';
-        btn.style.color = '#475569';
-        if (cnt) cnt.style.color = '#0F172A';
-      }
-    }
+    if (cnt) cnt.textContent = rv.likes || 0;
   });
 }
 
+// ===== 댓글 바텀시트 =====
+// 답글은 1단계까지 (서버 규칙). 댓글 아래 '답글' 을 누르면 그 자리에 입력줄이 열린다.
+let currentReviewId = null;
+
 function openComments(event, id) {
   if (event) event.stopPropagation();
+  if (!findReview(id)) return;
   currentReviewId = id;
   renderComments();
   document.getElementById('comment-modal').classList.add('show');
-  setTimeout(() => document.getElementById('comment-input').focus(), 300);
+  setTimeout(() => { const i = document.getElementById('comment-input'); if (i) i.focus(); }, 300);
 }
 
 function closeCommentModal(event) {
@@ -64,43 +60,56 @@ function closeCommentModal(event) {
 
 function renderComments() {
   const list = document.getElementById('comment-list');
-  const comments = reviewState[currentReviewId].comments;
-  document.getElementById('comment-count-label').textContent = comments.length;
-  if (comments.length === 0) {
+  const rv = findReview(currentReviewId);
+  if (!list || !rv) return;
+  const all = rv.comments || [];
+  const label = document.getElementById('comment-count-label');
+  if (label) label.textContent = all.length;
+  if (all.length === 0) {
     list.innerHTML = '<div class="comment-empty">아직 댓글이 없어요.<br>첫 댓글을 남겨보세요! ✨</div>';
     return;
   }
-  list.innerHTML = comments.map(c => `
-  <div class="comment-row">
-    <div class="ch">
-      <div class="cavatar" style="background:${c.color || '#1F4FE0'}">${c.author[0]}</div>
-      <div class="cname">${escapeHtml(c.author)}</div>
-    </div>
-    <div class="cbody">${escapeHtml(c.text)}</div>
-  </div>
-`).join('');
+  const roots = all.filter(c => !c.parentId);
+  const repliesOf = id => all.filter(c => c.parentId === id);
+  list.innerHTML = roots.map(c => `
+    <div class="rc-row">
+      ${rcOne(c, false)}
+      ${repliesOf(c.id).map(r => rcOne(r, true)).join('')}
+      <div class="rc-reply-form" id="rc-form-${c.id}" hidden>
+        <input type="text" id="rc-input-${c.id}" placeholder="답글을 입력하세요" maxlength="300"
+               onkeydown="if(event.key==='Enter'&&!event.isComposing&&event.keyCode!==229)addComment(${c.id})">
+        <button onclick="addComment(${c.id})">등록</button>
+      </div>
+    </div>`).join('');
 }
 
-function addComment() {
-  const input = document.getElementById('comment-input');
-  const text = input.value.trim();
-  if (!text || !currentReviewId) return;
-  reviewState[currentReviewId].comments.push({ author: '나', color: '#047857', text });
-  input.value = '';
-  renderComments();
-  updateCommentCounts();
-  const list = document.getElementById('comment-list');
-  list.scrollTop = list.scrollHeight;
+// parentId 가 있으면 답글, 없으면 댓글
+let commentBusy = false;
+async function addComment(parentId) {
+  const input = document.getElementById(parentId ? `rc-input-${parentId}` : 'comment-input');
+  const text = (input && input.value || '').trim();
+  const rv = findReview(currentReviewId);
+  if (!text || !rv || commentBusy) return;
+  commentBusy = true;
+  try {
+    const res = await ReviewAPI.addComment(rv, parentId || null, text);
+    rv.comments = res.comments || rv.comments;
+    input.value = '';
+    renderComments();
+    updateCommentCount(rv);
+    if (!parentId) {
+      const list = document.getElementById('comment-list');
+      if (list) list.scrollTop = list.scrollHeight;
+    }
+  } catch (e) {
+    if (typeof showToast === 'function') showToast(e.message || '댓글을 등록하지 못했어요');
+  } finally {
+    commentBusy = false;
+  }
 }
 
-function updateCommentCounts() {
-  Object.entries(reviewState).forEach(([id, s]) => {
-    document.querySelectorAll(`[data-comment="${id}"] .comment-count`).forEach(el => {
-      el.textContent = s.comments.length;
-    });
+function updateCommentCount(rv) {
+  document.querySelectorAll(`[data-comment="${rv.id}"] .comment-count`).forEach(el => {
+    el.textContent = (rv.comments || []).length;
   });
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }

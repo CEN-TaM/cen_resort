@@ -345,3 +345,14 @@
 .action-btn.liked i {
   color: #E94A4A;
 }
+
+/* 후기 카드 배지 (review-server.js reviewBadge) */
+.badge.new {
+  background: #DCFCE7;
+  color: #047857;
+}
+
+.badge.mine {
+  background: var(--brand);
+  color: #fff;
+}

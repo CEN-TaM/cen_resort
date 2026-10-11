@@ -268,6 +268,11 @@
   margin: 4px 0 8px 42px;
 }
 
+/* '답글'을 누르기 전에는 닫아 둔다 (display:flex 가 hidden 속성을 덮어쓰지 않게) */
+.rc-reply-form[hidden] {
+  display: none;
+}
+
 .rc-input input,
 .rc-reply-form input {
   flex: 1;
