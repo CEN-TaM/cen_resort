@@ -54,11 +54,13 @@ function isMyReview(rv) {
     return !!(p && p.empno && rv && rv.empno && String(p.empno) === String(rv.empno));
   } catch (e) { return false; }
 }
-// 후기 카드용 배지 HTML (내 후기 / NEW)
+// 후기 카드용 배지 HTML (내 후기 / NEW). NEW 는 쓴 지 7일 이내만
+// (예전엔 서버 후기면 전부 NEW 라, 엑셀로 옛 후기를 넣으면 모두 NEW 가 됐다)
+const NEW_BADGE_DAYS = 7;
 function reviewBadge(rv) {
-  return isMyReview(rv)
-    ? '<span class="badge" style="background:#1F4FE0;color:#fff">내 후기</span>'
-    : '<span class="badge" style="background:#DCFCE7;color:#047857">NEW</span>';
+  if (isMyReview(rv)) return '<span class="badge mine">내 후기</span>';
+  const t = Date.parse(rv.createdAt || '');
+  return (t && Date.now() - t < NEW_BADGE_DAYS * 864e5) ? '<span class="badge new">NEW</span>' : '';
 }
 function escapeHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => (
@@ -325,6 +327,20 @@ async function confirmDeleteReview() {
   if (!p.empno) {
     if (typeof showToast === 'function') showToast('로그인이 필요합니다');
     closeDeleteReviewModal();
+    return;
+  }
+  // 상세에 떠 있는 샘플 후기는 브라우저 메모리에서 지운다
+  const shown = typeof findReview === 'function' ? findReview(id) : null;
+  if (shown && shown._source === 'sample') {
+    try {
+      await ReviewAPI.deleteReview(shown);
+      if (typeof showToast === 'function') showToast('후기를 삭제했어요');
+      if (window._detailResort) loadServerReviews(window._detailResort);
+    } catch (err) {
+      if (typeof showToast === 'function') showToast(err.message || '삭제에 실패했습니다');
+    } finally {
+      closeDeleteReviewModal();
+    }
     return;
   }
   try {

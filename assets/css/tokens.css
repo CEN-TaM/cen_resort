@@ -45,6 +45,9 @@
   --info-icon: #ADB2B9;  /* 정보 3줄 아이콘 */
   --tip-card: #EDEFF3;   /* 꿀팁 카드 */
   --gap: #F3F4F5;        /* 정보·후기 사이 굵은 구분 */
+  --like-bg: #FFE8EC;    /* 좋아요 켜짐 */
+  --like-border: #FFC4CC;
+  --like: #E94A4A;
 
   /* Radius */
   --r-sm: 8px;
