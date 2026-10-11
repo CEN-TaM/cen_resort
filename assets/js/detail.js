@@ -19,6 +19,9 @@ function syncDetailStickyTop() {
   return h;
 }
 
+// 탭을 눌러 이동하는 동안에는 스크롤 판정이 탭을 되돌리지 않게 잠근다
+let detailTabLock = null;
+
 function showDetailTab(trigger, name) {
   const detail = trigger.closest('[data-screen="detail"]');
   const target = detail && detail.querySelector(`.dtab-pane[data-dtab="${name}"]`);
@@ -31,25 +34,53 @@ function showDetailTab(trigger, name) {
   const top = target.getBoundingClientRect().top
     - scroller.getBoundingClientRect().top
     + scroller.scrollTop - headH - navH;
-  scroller.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  const dest = Math.max(0, Math.min(top, scroller.scrollHeight - scroller.clientHeight));
+  if (Math.abs(scroller.scrollTop - dest) < 2) return;
+  detailTabLock = name;
+  scroller.scrollTo({ top: dest, behavior: 'smooth' });
+  releaseTabLock(scroller, detail);
+}
+
+// 스크롤이 멈추면(또는 0.9초 뒤) 잠금을 풀고 위치로 다시 맞춘다
+function releaseTabLock(scroller, detail) {
+  clearTimeout(releaseTabLock._t);
+  const done = () => {
+    clearTimeout(releaseTabLock._t);
+    scroller.removeEventListener('scrollend', done);
+    detailTabLock = null;
+    syncDetailTabByScroll(detail);
+  };
+  if ('onscrollend' in window) scroller.addEventListener('scrollend', done, { once: true });
+  releaseTabLock._t = setTimeout(done, 900);
 }
 
 function markDetailTab(detail, name) {
   detail.querySelectorAll('.tab-nav .tnav').forEach(t => {
-    t.classList.toggle('active', (t.getAttribute('onclick') || '').includes(`'${name}'`));
+    const on = t.dataset.dtabTarget === name;
+    t.classList.toggle('active', on);
+    if (on) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current');
   });
 }
 
 // 스크롤 위치에 맞춰 어떤 탭이 켜질지 정한다
 function syncDetailTabByScroll(detail) {
+  if (detailTabLock) return;
   const scroller = detailScroller(detail);
   if (!scroller) return;
+  // 끝까지 내렸는데 마지막 영역이 기준선에 못 닿으면(후기가 짧을 때) 마지막 탭을 켠다
+  const panes = detail.querySelectorAll('.dtab-pane');
+  if (panes.length && scroller.scrollTop > 0
+    && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2) {
+    markDetailTab(detail, panes[panes.length - 1].getAttribute('data-dtab'));
+    return;
+  }
   const header = detail.querySelector('.app-header');
   const headH = header ? header.offsetHeight : 0;
   const navH = (detail.querySelector('.tab-nav') || {}).offsetHeight || 0;
   const base = scroller.getBoundingClientRect().top + headH + navH + 4;
-  let current = null;
-  detail.querySelectorAll('.dtab-pane').forEach(pane => {
+  // 첫 영역이 아직 기준선 아래(맨 위 사진·평점을 보는 중)여도 첫 탭을 켠다
+  let current = panes.length ? panes[0].getAttribute('data-dtab') : null;
+  panes.forEach(pane => {
     if (pane.getBoundingClientRect().top <= base) current = pane.getAttribute('data-dtab');
   });
   if (current) markDetailTab(detail, current);
@@ -88,6 +119,7 @@ const favoriteState = {
 
 function toggleFavorite(event, id) {
   if (event) event.stopPropagation();
+  if (!id) return;   // 상세 별 버튼은 openResort() 가 data-fav 를 채우기 전엔 비어 있다
   favoriteState[id] = !favoriteState[id];
   syncFavoriteUI(id);
   renderFavoriteList();
@@ -100,6 +132,8 @@ function syncFavoriteUI(id) {
   const on = !!favoriteState[id];
   document.querySelectorAll(`[data-fav="${id}"]`).forEach(el => {
     el.classList.toggle('favorited', on);
+    // 이미지 별(상세 헤더)은 CSS 가 .favorited 로 켜고 끈다
+    if (el.querySelector('.fav-ico-off')) return;
     const ico = el.querySelector('i.ms, i.ti');
     if (ico) {
       const sizeStyle = ico.getAttribute('style') || '';
@@ -140,12 +174,23 @@ renderFavoriteList();
 goToBannerSlide(0);
 
 // ===== 휴양소 특징 전체보기 =====
-// 상세에는 '숙소 유형'과 '편의시설'만 보이고(CSS), 나머지 분류는 이 팝업에서 본다.
-// 본문 목록을 그대로 복제하므로 나중에 데이터로 빼도 한 곳만 그리면 된다.
+// 상세에는 정보 3줄만 보이고, 분류별 편의시설은 이 팝업에서 본다.
+// 내용은 data/resorts.js 의 features 로 그린다 (FEATURE_META 에 없는 이름은 체크 아이콘)
+function featureSectionsHtml(features) {
+  return FEATURE_ORDER.filter(g => (features[g] || []).length).map(g => `
+    <div class="feature-section" data-group="${escapeHtml(g)}">
+      <div class="fs-title">${escapeHtml(g)}</div>
+      <div class="fs-chips">${features[g].map(n => {
+        const m = FEATURE_META[n] || ['check', 'sky'];
+        return `<div class="feat-chip"><div class="fc-icon tone-${m[1]}"><i class="ms" aria-hidden="true">${m[0]}</i></div><div class="fc-name">${escapeHtml(n)}</div></div>`;
+      }).join('')}</div>
+    </div>`).join('');
+}
+
 function openFeatureModal() {
-  const src = document.getElementById('feature-list');
+  const r = resolveResort(currentResortName);
   const out = document.getElementById('feature-modal-body');
-  if (src && out) out.innerHTML = src.innerHTML;
+  if (out) out.innerHTML = (r && r.features) ? featureSectionsHtml(r.features) : '<div class="tip-empty">등록된 정보가 없어요.</div>';
   const m = document.getElementById('feature-modal');
   if (m) m.classList.add('show');
 }

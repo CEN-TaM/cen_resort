@@ -44,7 +44,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 18px 12px;
+  padding: 0 18px 8px;
+}
+
+.tip-head h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
 }
 
 .tip-nav {
@@ -53,12 +59,13 @@
 }
 
 .tip-arrow {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: #fff;
   color: var(--text-2);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -66,13 +73,20 @@
   transition: border-color 0.15s, color 0.15s, transform 0.1s;
 }
 
-.tip-arrow:hover {
+.tip-arrow:hover:not(:disabled) {
   border-color: var(--border-strong);
   color: var(--text-1);
 }
 
-.tip-arrow:active {
+.tip-arrow:active:not(:disabled) {
   transform: scale(0.9);
+}
+
+/* 처음·끝에서는 더 갈 곳이 없다 (resort.js syncSwipeArrows) */
+.tip-arrow:disabled {
+  color: var(--border-strong);
+  box-shadow: none;
+  cursor: default;
 }
 
 .tip-arrow i {
@@ -129,19 +143,47 @@
   transform: scale(0.98);
 }
 
+/* 상세의 꿀팁 카드: 회색 카드에 따옴표로 감싼 본문 2줄만.
+   제목·태그·작성자·좋아요는 카드를 누르면 뜨는 상세 시트(openTipDetail)에 있다 */
 .tip-card {
-  margin: 0 18px 12px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 14px;
-  cursor: default;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  /* 오른쪽은 닫는 따옴표 자리만큼 비운다 */
+  padding: 14px 30px 14px 14px;
+  background: var(--tip-card);
+  border: 0;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+  color: #333B47;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
-.tip-card .tag-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
+/* 여는 따옴표는 본문 첫 글자 앞에, 닫는 따옴표는 카드 오른쪽 아래에 */
+.tip-card .tq-open {
+  display: inline-block;
+  width: 10px;
+  height: auto;
+  margin-right: 3px;
+  vertical-align: text-top;
+}
+
+.tip-card .tq-close {
+  position: absolute;
+  right: 14px;
+  bottom: 16px;
+  width: 10px;
+  height: auto;
+}
+
+.tip-card:hover {
+  background: #E6E9EE;
 }
 
 .tag {
@@ -157,30 +199,6 @@
 .tag.hot {
   background: var(--coral-bg);
   color: var(--coral-fg);
-}
-
-.tip-card .ttitle {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0F172A;
-  margin-bottom: 6px;
-}
-
-.tip-card .tcontent {
-  font-size: 12px;
-  color: #475569;
-  line-height: 1.6;
-}
-
-.tip-card .tfoot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed #E8EAEE;
-  font-size: 10px;
-  color: #475569;
 }
 
 /* 공유하기 시트 */
@@ -297,6 +315,14 @@
   color: var(--text-3);
 }
 
+/* 상세 꿀팁 줄이 비었을 때는 카드 자리를 채운다 (나의 페이지 빈 목록은 위 그대로) */
+.swipe-row .tip-empty {
+  flex: 1 1 auto;
+  padding: 22px 18px;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
 .mytip-list {
   display: flex;
   flex-direction: column;
@@ -367,18 +393,7 @@
 
 /* === 꿀팁 카드: 길이에 상관없이 같은 높이 === */
 
-.tip-card {
-  cursor: pointer;
-}
-
-/* 제목 1줄, 본문 2줄까지. 전체 글은 카드를 눌러 바텀시트에서 본다 */
-.tip-card .ttitle {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
+/* 본문 2줄까지, 넘치면 말줄임. 전체 글은 카드를 눌러 바텀시트에서 본다 */
 .tip-card .tcontent {
   display: -webkit-box;
   -webkit-line-clamp: 2;

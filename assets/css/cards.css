@@ -99,8 +99,8 @@
 /* 카드 가로 스와이프 */
 .swipe-row {
   display: flex;
-  gap: 12px;
-  padding: 0 18px 18px;
+  gap: 10px;
+  padding: 0 18px;
   overflow-x: auto;
   scrollbar-width: none;
   scroll-snap-type: x mandatory;
@@ -117,18 +117,22 @@
   scroll-snap-align: start;
 }
 
+/* 끝 여백용 1px. gap 만큼 당겨서 마지막 카드 뒤에 빈 칸이 더 생기지 않게 한다
+   (안 그러면 마지막 카드에 맞춰 멈춘 뒤에도 10px 더 스크롤돼 '다음' 화살표가 꺼지지 않는다) */
 .swipe-row::after {
   content: '';
   flex: 0 0 1px;
   height: 1px;
+  margin-left: -10px;
 }
 
 .swipe-row .review-card {
   width: 268px;
 }
 
+/* 꿀팁은 한 화면에 2장 (gap 10px 의 절반씩 뺀다) */
 .swipe-row .tip-card {
-  width: 260px;
+  flex: 0 0 calc(50% - 5px);
 }
 
 .place-card {
@@ -187,6 +191,17 @@
   font-weight: 700;
   background: #DCE9FB;
   color: #1F4FE0;
+}
+
+/* 후기 프로필 = 세니 이미지. 배경색은 사람마다 다르게 인라인으로 (review-server.js seniAvatarHtml) */
+.rt-avatar.seni {
+  overflow: hidden;
+}
+
+.rt-avatar.seni img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .rt-who {

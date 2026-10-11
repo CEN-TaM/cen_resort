@@ -509,6 +509,12 @@ textarea {
   border-bottom: none;
 }
 
+.map-topbar .back img {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
 .screen[data-screen="search"] .map-topbar .back {
   width: 22px;
   height: 22px;

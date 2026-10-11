@@ -60,6 +60,24 @@
   color: #F5A623;
 }
 
+/* 상세 헤더 별: 꺼짐 = 테두리 별 이미지, 켜짐 = 노란 채운 별 */
+.fav-btn .fav-ico-on {
+  display: none;
+}
+
+.fav-btn.favorited .fav-ico-on {
+  display: inline-block;
+}
+
+.fav-btn.favorited .fav-ico-off {
+  display: none;
+}
+
+/* 별점의 빈 별 (resort.js starsHtml 이 <span class="empty"> 로 감싼다) */
+.stars .empty {
+  color: #E8EAEE;
+}
+
 .place-card .thumb {
   height: 90px;
   display: flex;
@@ -244,7 +262,7 @@
 }
 
 .stars {
-  color: #F59E0B;
+  color: var(--rating);
   letter-spacing: 1px;
 }
 

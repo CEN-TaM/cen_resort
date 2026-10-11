@@ -188,7 +188,7 @@
 }
 
 .rate-stars .rstar.on {
-  color: #F59E0B;
+  color: var(--rating);
 }
 
 .rate-stars .rstar:hover {

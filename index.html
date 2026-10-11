@@ -106,7 +106,7 @@
       <!-- SIGNUP : 사번인증 및 비밀번호 설정 -->
       <div class="screen auth-flow" data-screen="signup">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goSignupBack()"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goSignupBack()">
           <div class="title">사번인증 및 비밀번호 설정</div>
           <div class="actions" style="width:22px"></div>
         </div>
@@ -213,7 +213,7 @@
       <!-- EDIT PROFILE : 회원정보 수정 -->
       <div class="screen auth-flow" data-screen="edit-profile">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goBack('device1','edit-profile','my')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','edit-profile','my')">
           <div class="title">회원정보 수정</div>
           <div class="actions" style="width:22px"></div>
         </div>
@@ -329,11 +329,11 @@
               </div>
               <div class="top-menu-wrap">
                 <button type="button" class="top-noti" onclick="openNotifications()" aria-label="알림">
-                  <i class="ti ti-bell"></i>
+                  <img class="top-noti-ico" src="assets/images/ico_notifications.png" alt="">
                   <span class="badge-dot" data-noti-badge style="display:none"></span>
                 </button>
                 <button type="button" class="top-menu" onclick="showScreen('device1','my')" aria-label="나의페이지">
-                  <img class="top-menu-ico" src="assets/images/ico_menu.svg" alt="메뉴">
+                  <img class="top-menu-ico" src="assets/images/ico_top-menu.png" alt="메뉴">
                 </button>
               </div>
             </div>
@@ -474,7 +474,7 @@
               <!-- 보령 휴양소 최근 후기 5건 (실제 데이터) -->
               <div class="review-card rt-review" onclick="openResort('보령 휴양소','reviews')">
                 <div class="rt-head">
-                  <div class="rt-avatar" style="background:#DCE9FB;color:#1F4FE0">김</div>
+                  <div class="rt-avatar seni" style="background:#DCE9FB"><img src="assets/images/seni-peek-2.png" alt=""></div>
                   <div class="rt-who">
                     <div class="rt-name-row"><span class="rt-name">김정훈 책임</span><span class="rt-date">· 2일 전</span></div>
                     <div class="rt-org">
@@ -498,7 +498,7 @@
 
               <div class="review-card rt-review" onclick="openResort('보령 휴양소','reviews')">
                 <div class="rt-head">
-                  <div class="rt-avatar" style="background:#D8F3E3;color:#0F9D58">정</div>
+                  <div class="rt-avatar seni" style="background:#D8F3E3"><img src="assets/images/seni-peek-1.png" alt=""></div>
                   <div class="rt-who">
                     <div class="rt-name-row"><span class="rt-name">정두영 책임</span><span class="rt-date">· 5일 전</span></div>
                     <div class="rt-org">
@@ -522,7 +522,7 @@
 
               <div class="review-card rt-review" onclick="openResort('보령 휴양소','reviews')">
                 <div class="rt-head">
-                  <div class="rt-avatar" style="background:#FDE7CE;color:#D97706">권</div>
+                  <div class="rt-avatar seni" style="background:#FDE7CE"><img src="assets/images/seni-peek-3.png" alt=""></div>
                   <div class="rt-who">
                     <div class="rt-name-row"><span class="rt-name">권혜진 책임</span><span class="rt-date">· 1주 전</span></div>
                     <div class="rt-org">
@@ -545,7 +545,7 @@
 
               <div class="review-card rt-review" onclick="openResort('보령 휴양소','reviews')">
                 <div class="rt-head">
-                  <div class="rt-avatar" style="background:#FCE0EC;color:#DB2777">이</div>
+                  <div class="rt-avatar seni" style="background:#FCE0EC"><img src="assets/images/seni-peek-2.png" alt=""></div>
                   <div class="rt-who">
                     <div class="rt-name-row"><span class="rt-name">이희동 수석</span><span class="rt-date">· 3주 전</span></div>
                     <div class="rt-org">
@@ -569,7 +569,7 @@
 
               <div class="review-card rt-review" onclick="openResort('보령 휴양소','reviews')">
                 <div class="rt-head">
-                  <div class="rt-avatar" style="background:#EBE4FB;color:#7C3AED">박</div>
+                  <div class="rt-avatar seni" style="background:#EBE4FB"><img src="assets/images/seni-peek-3.png" alt=""></div>
                   <div class="rt-who">
                     <div class="rt-name-row"><span class="rt-name">박성우 이사</span><span class="rt-date">· 1개월 전</span></div>
                     <div class="rt-org">
@@ -619,7 +619,7 @@
       <!-- POPULAR (인기 휴양소 전체) -->
       <div class="screen" data-screen="resorts">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
           <div class="title">휴양소</div>
           <div class="actions"></div>
         </div>
@@ -838,7 +838,7 @@
 
       <div class="screen" data-screen="popular">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')">
           <div class="title">인기 휴양소</div>
           <div class="actions" style="visibility:hidden"><i class="ti ti-dots-vertical"></i></div>
         </div>
@@ -851,7 +851,7 @@
               <div class="thumb" data-img="sokcho"></div>
               <div class="info">
                 <div class="name">속초(힐스)</div>
-                <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 후기 32</div>
+                <div class="meta"><span style="color:var(--rating)">★</span> 4.8 · 후기 32</div>
               </div>
             </div>
             <div class="place-card" onclick="openResortEl(this)">
@@ -860,7 +860,7 @@
               <div class="thumb" data-img="aewol"></div>
               <div class="info">
                 <div class="name">애월 1호점</div>
-                <div class="meta"><span style="color:#F59E0B">★</span> 4.7 · 후기 28</div>
+                <div class="meta"><span style="color:var(--rating)">★</span> 4.7 · 후기 28</div>
               </div>
             </div>
             <div class="place-card" onclick="openResortEl(this)">
@@ -869,7 +869,7 @@
               <div class="thumb" data-img="yeosu"></div>
               <div class="info">
                 <div class="name">여수</div>
-                <div class="meta"><span style="color:#F59E0B">★</span> 4.6 · 후기 19</div>
+                <div class="meta"><span style="color:var(--rating)">★</span> 4.6 · 후기 19</div>
               </div>
             </div>
             <div class="place-card" onclick="openResortEl(this)">
@@ -878,7 +878,7 @@
               <div class="thumb" data-img="jocheon"></div>
               <div class="info">
                 <div class="name">조천</div>
-                <div class="meta"><span style="color:#F59E0B">★</span> 4.8 · 후기 24</div>
+                <div class="meta"><span style="color:var(--rating)">★</span> 4.8 · 후기 24</div>
               </div>
             </div>
             <div class="place-card" onclick="openResortEl(this)">
@@ -887,7 +887,7 @@
               <div class="thumb" data-img="gwacheon"></div>
               <div class="info">
                 <div class="name">과천 1001호</div>
-                <div class="meta"><span style="color:#F59E0B">★</span> 4.5 · 후기 12</div>
+                <div class="meta"><span style="color:var(--rating)">★</span> 4.5 · 후기 12</div>
               </div>
             </div>
           </div>
@@ -897,26 +897,30 @@
       <!-- DETAIL -->
       <div class="screen" data-screen="detail">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goBack('device1','detail')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','detail')">
           <div class="title">휴양소</div>
-          <div class="actions"><i class="ti ti-share" onclick="openShareSheet()"></i><span
-              class="fav-btn inline header-style" data-fav="jocheon" onclick="toggleFavorite(event,'jocheon')"><i
-                class="ti ti-star"></i></span></div>
+          <!-- 즐겨찾기 data-fav 는 tips.js openResort() 가 그 휴양소로 채운다 -->
+          <div class="actions"><img class="hd-ico" src="assets/images/ico_share.png" alt="공유하기" onclick="openShareSheet()"><span
+              class="fav-btn inline header-style" id="detail-fav" data-fav="" onclick="toggleFavorite(event,this.dataset.fav)"
+              aria-label="즐겨찾기"><img class="hd-ico fav-ico-off" src="assets/images/ico_star.png" alt=""><i
+                class="ti ti-star-filled fav-ico-on"></i></span></div>
         </div>
         <div class="content">
-          <div class="hero" data-img="hero-jocheon">
-            <div class="hero-tag">정기 휴양소</div>
-            <div class="place-detail-head">
+          <!-- 사진만. 이름·유형은 사진 아래 -->
+          <div class="hero" data-img="hero-jocheon" role="img" aria-label="휴양소 사진"></div>
+          <div class="place-detail-head">
+            <div class="place-name-row">
               <h2 id="detail-resort-name">조천 휴양소</h2>
-              <div class="loc"><i class="ti ti-map-pin"></i> 제주 제주시 조천읍 · 4인실 · 정원 4명</div>
+              <span class="place-type" id="detail-resort-type">정기휴양소</span>
             </div>
           </div>
+          <!-- 클래스 훅(.score-main .big-num / .stars / .review-count, .score-breakdown .score-item)은 JS 가 채운다 -->
           <div class="score-board">
             <div class="score-main">
               <div class="big-num">4.8</div>
               <div class="main-meta">
-                <div class="stars">★★★★★</div>
-                <div class="review-count">후기 <b>32개</b></div>
+                <span class="stars" aria-hidden="true">★★★★★</span>
+                <span class="review-count">· 후기 32</span>
               </div>
             </div>
             <div class="score-breakdown">
@@ -937,103 +941,47 @@
               </div>
             </div>
           </div>
+          <!-- 탭 활성 판정은 data-dtab-target 으로 한다 (detail.js markDetailTab) -->
           <div class="tab-nav">
-            <div class="tnav active" onclick="showDetailTab(this,'tips')">휴양소 정보</div>
-            <div class="tnav" onclick="showDetailTab(this,'reviews')">후기 32</div>
+            <button type="button" class="tnav active" data-dtab-target="tips" onclick="showDetailTab(this,'tips')">휴양소 정보</button>
+            <button type="button" class="tnav" data-dtab-target="reviews" onclick="showDetailTab(this,'reviews')">후기 32</button>
           </div>
 
-          <!-- REVIEW 탭 -->
-          <div class="dtab-pane active" data-dtab="tips" style="padding: 14px 0;">
+          <div class="dtab-pane active" data-dtab="tips">
 
-            <div class="feature-list" id="feature-list">
-            <div class="feature-section" data-group="환경">
-              <div class="fs-title">환경</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-mint"><i class="ti ti-forest"></i></div>
-                  <div class="fc-name">바다</div>
-                </div>
-              </div>
-            </div>
+            <!-- 휴양소 정보 3줄. 내용은 tips.js renderResortInfo() 가 데이터로 채우고, 데이터가 없는 줄은 숨긴다 -->
+            <ul class="info-list">
+              <li class="info-row" id="detail-address-row"><img class="info-ico" src="assets/images/ico_fill_location.png" alt=""><span class="txt" id="detail-address"></span></li>
+              <li class="info-row" id="detail-room-row" hidden><img class="info-ico" src="assets/images/ico_fill_person.png" alt=""><span class="txt" id="detail-room"></span></li>
+              <li class="info-row" id="detail-amenities-row" hidden><img class="info-ico" src="assets/images/ico_fill_redeem.png" alt=""><span class="txt" id="detail-amenities"></span>
+                <button type="button" class="info-more" onclick="openFeatureModal()">전체보기<i class="ti ti-chevron-right"></i></button>
+              </li>
+            </ul>
 
-            <div class="feature-section" data-group="숙소 유형">
-              <div class="fs-title">숙소 유형</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-lilac"><i class="ti ti-villa"></i></div>
-                  <div class="fc-name">독채</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-section" data-group="편의시설">
-              <div class="fs-title">편의시설</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-sky"><i class="ti ti-wifi"></i></div>
-                  <div class="fc-name">와이파이</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-peach"><i class="ti ti-soup-kitchen"></i></div>
-                  <div class="fc-name">주방</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-coral"><i class="ti ti-outdoor-grill"></i></div>
-                  <div class="fc-name">바베큐</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-mint"><i class="ti ti-local-parking"></i></div>
-                  <div class="fc-name">주차</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-teal"><i class="ti ti-local-laundry-service"></i></div>
-                  <div class="fc-name">세탁기</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feature-section" data-group="주변 활동">
-              <div class="fs-title">주변 활동</div>
-              <div class="fs-chips">
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-sky"><i class="ti ti-pool"></i></div>
-                  <div class="fc-name">해수욕</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-peach"><i class="ti ti-hiking"></i></div>
-                  <div class="fc-name">트레킹</div>
-                </div>
-                <div class="feat-chip active">
-                  <div class="fc-icon tone-cream"><i class="ti ti-wb-sunny"></i></div>
-                  <div class="fc-name">일출</div>
-                </div>
-              </div>
-            </div>
-            </div>
-            <button type="button" class="feature-more" onclick="openFeatureModal()">
-              전체보기 <i class="ti ti-chevron-right"></i>
-            </button>
-
-            <div class="feature-divider"></div>
-
+            <!-- scrollSwipe() 는 .tip-head 바로 다음 형제 .swipe-row 를 찾는다. 순서 유지 -->
             <div class="tip-head">
-              <div style="font-size:11px;color:#475569">💡 다녀온 동료들의 꿀팁</div>
+              <h3>다녀온 동료들의 꿀팁</h3>
               <div class="tip-nav">
-                <button class="tip-arrow" onclick="scrollSwipe(this,-1)" aria-label="이전 꿀팁"><i
+                <button type="button" class="tip-arrow" onclick="scrollSwipe(this,-1)" aria-label="이전 꿀팁"><i
                     class="ti ti-chevron-left"></i></button>
-                <button class="tip-arrow" onclick="scrollSwipe(this,1)" aria-label="다음 꿀팁"><i
+                <button type="button" class="tip-arrow" onclick="scrollSwipe(this,1)" aria-label="다음 꿀팁"><i
                     class="ti ti-chevron-right"></i></button>
               </div>
             </div>
 
             <!-- 꿀팁 목록은 tips.js 가 휴양소별로 그린다 -->
             <div class="swipe-row" id="tip-row"></div>
-            <button class="tip-write-btn" style="margin:0 18px;width:calc(100% - 36px)" onclick="openTipModal()">+ 나도 꿀팁
-              공유하기</button>
+            <div class="tip-write">
+              <button type="button" class="tip-write-btn" onclick="openTipModal()">꿀팁 작성하기</button>
+              <img class="tip-mascot" src="assets/images/img_btnseni.png" alt="" aria-hidden="true"
+                onerror="this.style.display='none'">
+            </div>
           </div>
 
+          <div class="detail-gap" aria-hidden="true"></div>
+
           <!-- 후기 -->
-          <div class="dtab-pane" data-dtab="reviews" style="padding: 16px 18px;">
+          <div class="dtab-pane" data-dtab="reviews">
             <div class="rev-section-head">
               <div class="rev-title">
                 <span>후기</span><em class="rev-count">32</em>
@@ -1072,7 +1020,7 @@
             <div id="sample-reviews">
 
             <div class="review-head rt-head" id="rev-rv1">
-              <div class="rt-avatar" style="background:#DCE9FB;color:#1F4FE0">박</div>
+              <div class="rt-avatar seni" style="background:#DCE9FB"><img src="assets/images/seni-peek-1.png" alt=""></div>
               <div class="rt-who">
                 <div class="rt-name-row"><span class="rt-name">박OO 책임</span><span class="rt-date">· 2025.05.10</span></div>
                 <div class="rt-org">
@@ -1127,7 +1075,7 @@
             <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>
 
             <div class="review-head rt-head" id="rev-rv4">
-              <div class="rt-avatar" style="background:#D8F3E3;color:#0F9D58">김</div>
+              <div class="rt-avatar seni" style="background:#D8F3E3"><img src="assets/images/seni-peek-3.png" alt=""></div>
               <div class="rt-who">
                 <div class="rt-name-row"><span class="rt-name">김OO 선임</span><span class="rt-date">· 2025.04.22</span></div>
                 <div class="rt-org">
@@ -1164,7 +1112,7 @@
             <div style="height:1px;background:#E8EAEE;margin:20px 0"></div>
 
             <div class="review-head rt-head" id="rev-rv2">
-              <div class="rt-avatar" style="background:#FCE0EC;color:#DB2777">이</div>
+              <div class="rt-avatar seni" style="background:#FCE0EC"><img src="assets/images/seni-peek-2.png" alt=""></div>
               <div class="rt-who">
                 <div class="rt-name-row"><span class="rt-name">이OO 선임</span><span class="rt-date">· 2025.04.30</span></div>
                 <div class="rt-org">
@@ -1322,7 +1270,7 @@
       <!-- NOTICE -->
       <div class="screen" data-screen="tips">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
           <div class="title">공지사항</div>
           <div class="actions"></div>
         </div>
@@ -1469,7 +1417,7 @@
       <!-- NOTICE DETAIL -->
       <div class="screen" data-screen="notice-detail">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goBack('device1','notice-detail','tips')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','notice-detail','tips')">
           <div class="title">공지사항</div>
           <div class="actions">
             <i class="ti ti-share-2"></i>
@@ -1535,7 +1483,7 @@
       <!-- FAV -->
       <div class="screen" data-screen="fav">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
           <div class="title">⭐ 즐겨찾기</div>
           <div class="actions"><i class="ti ti-arrows-sort" onclick="openFavSortSheet()" title="정렬"></i></div>
         </div>
@@ -1549,7 +1497,7 @@
               <div class="fthumb" data-img="sokcho"></div>
               <div class="finfo">
                 <div class="fname">속초(힐스)</div>
-                <div class="fmeta"><span style="color:#F59E0B">★</span> 4.8 · 강원</div>
+                <div class="fmeta"><span style="color:var(--rating)">★</span> 4.8 · 강원</div>
               </div>
             </div>
             <div class="fav-card" data-fav-card="aewol" onclick="openResortEl(this)">
@@ -1558,7 +1506,7 @@
               <div class="fthumb" data-img="aewol"></div>
               <div class="finfo">
                 <div class="fname">애월 1호점</div>
-                <div class="fmeta"><span style="color:#F59E0B">★</span> 4.7 · 제주</div>
+                <div class="fmeta"><span style="color:var(--rating)">★</span> 4.7 · 제주</div>
               </div>
             </div>
             <div class="fav-card" data-fav-card="yeosu" onclick="openResortEl(this)">
@@ -1567,7 +1515,7 @@
               <div class="fthumb" data-img="yeosu"></div>
               <div class="finfo">
                 <div class="fname">여수 휴양소</div>
-                <div class="fmeta"><span style="color:#F59E0B">★</span> 4.6 · 전남</div>
+                <div class="fmeta"><span style="color:var(--rating)">★</span> 4.6 · 전남</div>
               </div>
             </div>
             <div class="fav-card" data-fav-card="jocheon" onclick="openResortEl(this)">
@@ -1576,7 +1524,7 @@
               <div class="fthumb" data-img="jocheon"></div>
               <div class="finfo">
                 <div class="fname">조천 휴양소</div>
-                <div class="fmeta"><span style="color:#F59E0B">★</span> 4.8 · 제주</div>
+                <div class="fmeta"><span style="color:var(--rating)">★</span> 4.8 · 제주</div>
               </div>
             </div>
             <div class="fav-card" data-fav-card="gwacheon" onclick="openResortEl(this)">
@@ -1585,7 +1533,7 @@
               <div class="fthumb" data-img="gwacheon"></div>
               <div class="finfo">
                 <div class="fname">과천 1001호</div>
-                <div class="fmeta"><span style="color:#F59E0B">★</span> 4.5 · 경기</div>
+                <div class="fmeta"><span style="color:var(--rating)">★</span> 4.5 · 경기</div>
               </div>
             </div>
           </div>
@@ -1708,7 +1656,7 @@
       <!-- BADGES -->
       <div class="screen" data-screen="badges">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goBack('device1','badges','my')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','badges','my')">
           <div class="title">내 배지</div>
           <div class="actions"><i class="ti ti-share"></i></div>
         </div>
@@ -1796,7 +1744,7 @@
       <!-- MY REVIEWS : 내가 쓴 후기 -->
       <div class="screen" data-screen="my-reviews">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goBack('device1','my-reviews','my')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','my-reviews','my')">
           <div class="title">내가 쓴 후기</div>
           <div class="actions"></div>
         </div>
@@ -1811,7 +1759,7 @@
       <!-- MY TIPS : 내가 쓴 꿀팁 -->
       <div class="screen" data-screen="my-tips">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goBack('device1','my-tips','my')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','my-tips','my')">
           <div class="title">내가 쓴 꿀팁</div>
           <div class="actions" style="width:22px"></div>
         </div>
@@ -1825,7 +1773,7 @@
       <!-- FONT SIZE : 글자 크기 설정 -->
       <div class="screen" data-screen="font-size">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="goBack('device1','font-size','my')"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','font-size','my')">
           <div class="title">글자 크기</div>
           <div class="actions" style="width:22px"></div>
         </div>
@@ -1853,7 +1801,7 @@
       <!-- MAP : 전국 휴양소 지도 (session-05 통합) -->
       <div class="screen map-screen" data-screen="map">
         <div class="app-header">
-          <i class="ti ti-arrow-left back" onclick="showScreen('device1','home')" style="visibility:hidden"></i>
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
           <div class="title">전국 휴양소 지도</div>
           <div class="actions"></div>
         </div>
@@ -1967,7 +1915,7 @@
       <div class="screen" data-screen="search">
         <div class="sticky-header">
           <div class="map-topbar">
-            <button class="back" onclick="goBack('device1','search')"><i class="ti ti-arrow-left"></i></button>
+            <button class="back" onclick="goBack('device1','search')"><img src="assets/images/ico_back.png" alt="뒤로가기"></button>
             <div class="search-group">
               <input id="global-search-input" type="search" inputmode="search" autocomplete="off" autocapitalize="none"
                 class="search-input" placeholder="휴양소를 검색해 보세요" oninput="performSearch(this.value)">
@@ -1987,7 +1935,7 @@
       <div class="screen" data-screen="notifications">
         <div class="sticky-header">
           <div class="map-topbar">
-            <button class="back" onclick="goBack('device1','notifications')"><i class="ti ti-arrow-left"></i></button>
+            <button class="back" onclick="goBack('device1','notifications')"><img src="assets/images/ico_back.png" alt="뒤로가기"></button>
             <div class="ttl">알림</div>
           </div>
         </div>

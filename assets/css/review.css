@@ -184,33 +184,105 @@
   margin: 14px 0;
 }
 
+/* 꿀팁 작성 버튼: 파란 채움 버튼 + 오른쪽에 세니가 걸터앉는다 */
+.tip-write {
+  position: relative;
+  margin: 18px 18px 0;
+}
+
 .tip-write-btn {
   width: 100%;
-  padding: 12px;
-  background: #FFFFFF;
-  border: 1px dashed #D7DAE0;
-  border-radius: 12px;
-  color: #475569;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  background: var(--brand);
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  margin-bottom: 12px;
+  transition: background 0.15s;
 }
 
 .tip-write-btn:hover {
-  background: #F1F3F6;
+  background: var(--brand-dark);
 }
 
-/* 상세에는 '편의시설'만 보인다. 나머지 분류는 전체보기 팝업에서 */
-#feature-list .feature-section {
+.tip-write-btn:active {
+  transform: scale(0.99);
+}
+
+/* img_btnseni.png (316×204) — 버튼(36px) 위로 올라오게 버튼보다 크게 */
+.tip-mascot {
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  width: 84px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 휴양소 정보 3줄 (주소 · 객실 · 편의시설). 분류별 칩(.feature-section)은 전체보기 팝업에서만 쓴다 */
+.info-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 12px 18px 0;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333B47;
+}
+
+.info-row[hidden] {
   display: none;
 }
 
-#feature-list .feature-section[data-group="편의시설"] {
-  display: flex;
+.info-row > .info-ico {
+  flex: none;
+  width: 20px;
+  height: 20px;
 }
 
-/* 팝업 안에서는 모든 분류를 보여준다 */
+.info-row .txt {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-more {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 0 2px 8px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.info-more i {
+  margin-right: -4px;
+  font-size: 18px;
+}
+
+/* 전체보기 팝업 안 분류별 칩 */
 .feature-modal-body .feature-section {
   display: flex;
   padding: 0 0 16px;
@@ -221,37 +293,4 @@
   padding: 24px 18px;
   max-height: 60vh;
   overflow-y: auto;
-}
-
-.feature-more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  margin: 2px 18px 16px;
-  width: calc(100% - 36px);
-  padding: 11px;
-  background: var(--brand-50);
-  border: 1px solid var(--brand-100);
-  border-radius: var(--pill);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--brand);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.feature-more:hover {
-  background: var(--brand-100);
-  border-color: var(--brand);
-}
-
-.feature-more:active {
-  transform: scale(0.99);
-}
-
-.feature-more i {
-  font-size: 15px;
 }
