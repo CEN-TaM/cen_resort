@@ -88,27 +88,6 @@ function timeAgo(iso) {
   return (typeof fmtDate === 'function') ? fmtDate(iso) : '';
 }
 
-// 서버에 사진이 없을 때 쓰는 기본 이미지 (보령 실제 추출 사진 6종)
-const FALLBACK_REVIEW_PHOTOS = [
-  'assets/images/reviews/rv4a.jpg',
-  'assets/images/reviews/rv1b.jpg',
-  'assets/images/reviews/rv3b.jpg',
-  'assets/images/reviews/rv5b.jpg',
-  'assets/images/reviews/rv4c.jpg',
-  'assets/images/reviews/rv5c.jpg'
-];
-// 카드마다 다른 사진이 나오도록 seed 기반으로 n장 선택
-function fallbackPhotos(seed, n) {
-  const s = String(seed || '');
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  const len = FALLBACK_REVIEW_PHOTOS.length;
-  const start = len ? h % len : 0;
-  const out = [];
-  for (let i = 0; i < n; i++) out.push(FALLBACK_REVIEW_PHOTOS[(start + i) % len]);
-  return out;
-}
-
 // 아바타 색상 팔레트 (이름 기반으로 카드마다 다르게)
 const AVATAR_COLORS = [
   { bg: '#DCE9FB', fg: '#1F4FE0' },
@@ -200,10 +179,9 @@ function rtOrgRow(rv) {
 function homeReviewCard(rv) {
   const name = escapeHtml(rv.authorName || '동료');
   const rc = resortColor(rv.resortName);
-  const real = rv.photos || [];
-  const photoSrcs = real.length
-    ? real.map(src => `${API_BASE}${escapeHtml(src)}`)
-    : fallbackPhotos(rv.id || rv.authorName || rv.resortName, REVIEW_PHOTO_PREVIEW);
+  // 사진이 없는 후기는 사진 줄 없이 보여준다 (다른 사진으로 채우지 않는다)
+  const photoSrcs = (rv.photos || []).map(src =>
+    rv._source === 'sample' ? escapeHtml(src) : `${API_BASE}${escapeHtml(src)}`);
   const photoRow = reviewPhotosHtml(photoSrcs, 'photo-row rt-photos');
   const company = escapeHtml(cleanCompany(rv.company));
   const dept = escapeHtml(rv.department || '');
@@ -233,6 +211,9 @@ function homeReviewCard(rv) {
     </div>
   </div>`;
 }
+// 홈 '휴양소 최근 후기' — 서버가 있으면 서버 후기(0건이면 안내 문구), 없으면 샘플 후기
+// 홈 '휴양소 최근 후기' 정렬 — 최신순 | 좋아요순 (평점은 카드에 보이지 않아 정렬에서 뺐다)
+let homeReviewSort = 'recent';
 async function loadHomeReviews() {
   const home = document.querySelector('.screen[data-screen="home"]');
   if (!home) return;
@@ -241,27 +222,20 @@ async function loadHomeReviews() {
   let head = null;
   heads.forEach(h => { if (h.textContent.includes('휴양소 최근 후기')) head = h; });
   if (!head) return;
-  const staticWrap = home.querySelector('#home-static-reviews');
-  const old = home.querySelector('#home-server-reviews');
-  if (old) old.remove();
+  let reviews = [];
   try {
-    const res = await fetch(API_BASE + '/api/reviews');
-    if (!res.ok) return;
-    const { reviews } = await res.json();
-    if (!reviews || !reviews.length) return;
-    // 최신순 정렬 후 가장 최근 5건만 (서버도 DESC로 주지만 안전장치)
-    const recent = reviews.slice().sort(
-      (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
-    ).slice(0, 5);
-    // 서버 후기가 있으면 예시(정적) 후기는 숨김
-    if (staticWrap) staticWrap.style.display = 'none';
-    const wrap = document.createElement('div');
-    wrap.id = 'home-server-reviews';
-    wrap.innerHTML = recent.map(homeReviewCard).join('');
-    head.parentNode.insertBefore(wrap, head.nextSibling);
+    reviews = await ReviewAPI.recent(5, homeReviewSort);
   } catch (e) {
     console.error('홈 후기 로드 실패:', e);
   }
+  const old = home.querySelector('#home-server-reviews');
+  if (old) old.remove();
+  const wrap = document.createElement('div');
+  wrap.id = 'home-server-reviews';
+  wrap.innerHTML = reviews.length
+    ? reviews.map(homeReviewCard).join('')
+    : '<div class="rv-empty">아직 등록된 후기가 없어요.<br>다녀오셨다면 첫 후기를 남겨 주세요!</div>';
+  head.parentNode.insertBefore(wrap, head.nextSibling);
 }
 // 최초 진입 시 홈 실시간 후기 로드
 loadHomeReviews();

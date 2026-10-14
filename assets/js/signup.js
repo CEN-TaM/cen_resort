@@ -1,5 +1,5 @@
-// 회원가입 · 회원정보 수정
-// ===== 회원가입: 사번인증 및 비밀번호 설정 =====
+// 사번인증 및 비밀번호 설정 · 회원정보 수정
+// ===== 사번인증 및 비밀번호 설정 (회원가입은 없다 — 직원 명단에 있는 사람만, 처음 한 번) =====
 let signupState = { code: '', verified: false };
 
 function openSignup() {
@@ -46,7 +46,7 @@ function signupGoStep(n) {
   if (sb) sb.scrollTop = 0;
 }
 
-function sendAuthCode() {
+async function sendAuthCode() {
   const empno = (document.getElementById('su-empno').value || '').trim();
   const email = (document.getElementById('su-email').value || '').trim();
   const errEl = document.getElementById('su-step1-error');
@@ -55,13 +55,19 @@ function sendAuthCode() {
     errEl.textContent = '회사 개인 이메일(@itcen.com)을 정확히 입력해주세요.';
     return;
   }
+  let res;
+  try {
+    res = await AuthAPI.verifyCode(empno, email);
+  } catch (e) {
+    errEl.textContent = e.message;
+    return;
+  }
   errEl.textContent = '';
-  // 데모: 6자리 인증코드 생성 (시연 편의를 위해 화면에 표시)
-  const code = String(((empno.length * 7919 + email.length * 104729) % 900000) + 100000);
-  signupState.code = code;
   signupState.verified = false;
   const sent = document.getElementById('su-code-sent');
-  sent.innerHTML = '인증코드가 <b>' + email + '</b> 으로 발송되었습니다.<br>(데모용 코드: <b>' + code + '</b>)';
+  // 메일 발송 서버가 붙기 전까지는 서버가 코드를 응답에 담아 준다 (server/auth.js AUTH_SHOW_CODE)
+  sent.innerHTML = '인증코드가 <b>' + escapeHtml(email) + '</b> 으로 발송되었습니다.' +
+    (res.devCode ? '<br>(개발용 코드: <b>' + res.devCode + '</b>)' : '');
   sent.classList.add('show');
   document.getElementById('su-code-row').style.display = 'flex';
   document.getElementById('su-verified').classList.remove('show');
@@ -70,26 +76,30 @@ function sendAuthCode() {
   showToast('인증코드를 발송했습니다');
 }
 
-function confirmAuthCode() {
+async function confirmAuthCode() {
+  const empno = (document.getElementById('su-empno').value || '').trim();
   const code = (document.getElementById('su-code').value || '').trim();
   const errEl = document.getElementById('su-step1-error');
-  if (!signupState.code) { errEl.textContent = '먼저 인증코드를 발급받아주세요.'; return; }
-  if (code !== signupState.code) { errEl.textContent = '인증코드가 일치하지 않습니다.'; return; }
+  let hr;
+  try {
+    hr = await AuthAPI.verifyCheck(empno, code);
+  } catch (e) {
+    errEl.textContent = e.message;
+    return;
+  }
   errEl.textContent = '';
   signupState.verified = true;
+  signupState.code = code;
 
-  // 사번 인증 완료 → 인사정보(이름·직급) 자동 조회 후 채움
-  const empno = (document.getElementById('su-empno').value || '').trim();
-  const hr = lookupHR(empno);
-  signupState.hr = hr;
+  // 인증 완료 → 직원 명단의 이름·직급을 자동으로 채운다 (읽기 전용)
   const nameEl = document.getElementById('su-name');
   const posEl = document.getElementById('su-position');
-  if (nameEl) nameEl.value = hr ? hr.name : '';
-  if (posEl) posEl.value = hr ? hr.position : '';
+  if (nameEl) nameEl.value = hr.name || '';
+  if (posEl) posEl.value = hr.position || '';
 
   const vtag = document.getElementById('su-verified');
   vtag.innerHTML = '<i class="ti ti-shield-check"></i>' +
-    (hr ? `${hr.name} ${hr.position}님, ` : '') + '인증이 완료되었습니다';
+    escapeHtml([hr.name, hr.position].filter(Boolean).join(' ')) + '님, 인증이 완료되었습니다';
   vtag.classList.add('show');
   document.getElementById('su-next1').disabled = false;
   showToast('이메일 인증이 완료되었습니다');
@@ -126,23 +136,22 @@ function currentSignupStep() {
   return active ? parseInt(active.getAttribute('data-step'), 10) : 1;
 }
 
-function completeSignup() {
+async function completeSignup() {
   const empno = (document.getElementById('su-empno').value || '').trim();
-  const email = (document.getElementById('su-email').value || '').trim();
   const pw = document.getElementById('su-pw1').value || '';
   const phone = (document.getElementById('su-phone').value || '').trim();
-  const name = (document.getElementById('su-name').value || '').trim();
-  const position = (document.getElementById('su-position').value || '').trim();
   const errEl = document.getElementById('su-step3-error');
-  if (!name) { errEl.textContent = '사번 인증을 먼저 완료해주세요. (인사정보 미조회)'; return; }
+  if (!signupState.verified) { errEl.textContent = '사번 인증을 먼저 완료해주세요.'; return; }
   if (!phone) { errEl.textContent = '핸드폰 번호를 입력해주세요.'; return; }
+  try {
+    await AuthAPI.activate({ empno, code: signupState.code, password: pw, phone });
+  } catch (e) {
+    errEl.textContent = e.message;
+    return;
+  }
   errEl.textContent = '';
 
-  const users = getUsers();
-  users[empno] = { pw, name, position, phone, email };
-  saveUsers(users);
-
-  showToast('가입이 완료되었습니다. 로그인해주세요.');
+  showToast('비밀번호 설정이 완료되었습니다. 로그인해주세요.');
   showScreen('device1', 'login');
   // 로그인 화면에 사번 미리 채우기
   const le = document.getElementById('login-empno');
@@ -153,15 +162,12 @@ function completeSignup() {
 
 // ===== 회원정보 수정 =====
 function openEditProfile() {
-  const auth = getAuth();
-  const empno = auth ? auth.empno : VALID_EMPNO;
-  const p = getProfile() || buildProfile(empno);
+  const p = getProfile() || {};
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
-  set('ep-empno', p.empno || empno);
-  // 이름·직급은 인사정보(HR)에서 조회한 값을 사용 (읽기 전용)
-  const hr = lookupHR(p.empno || empno) || {};
-  set('ep-name', hr.name || p.name);
-  set('ep-position', hr.position !== undefined ? hr.position : (p.position || ''));
+  set('ep-empno', p.empno);
+  // 이름·직급은 회원 정보 그대로 (읽기 전용 — 바꾸려면 관리자에게)
+  set('ep-name', p.name);
+  set('ep-position', p.position);
   set('ep-phone', p.phone);
   set('ep-email', p.email);
   set('ep-pw-cur', '');
@@ -171,11 +177,7 @@ function openEditProfile() {
   showScreen('device1', 'edit-profile');
 }
 
-function saveProfile() {
-  const auth = getAuth();
-  const empno = auth ? auth.empno : VALID_EMPNO;
-  const name = (document.getElementById('ep-name').value || '').trim();
-  const position = (document.getElementById('ep-position').value || '').trim();
+async function saveProfile() {
   const phone = (document.getElementById('ep-phone').value || '').trim();
   const email = (document.getElementById('ep-email').value || '').trim();
   const cur = document.getElementById('ep-pw-cur').value || '';
@@ -183,38 +185,35 @@ function saveProfile() {
   const npw2 = document.getElementById('ep-pw-new2').value || '';
   const errEl = document.getElementById('ep-error');
 
-  if (!name) { errEl.textContent = '이름을 입력해주세요.'; return; }
   if (!phone) { errEl.textContent = '핸드폰 번호를 입력해주세요.'; return; }
-
-  const users = getUsers();
-  const existing = users[empno] || { pw: getValidPw(empno) };
-  let newPw = existing.pw;
-
-  // 비밀번호 변경을 시도하는 경우에만 검증
+  // 비밀번호 변경을 시도하는 경우에만 검증 (현재 비밀번호 확인은 서버가 한다)
   if (cur || npw || npw2) {
-    if (cur !== getValidPw(empno)) { errEl.textContent = '현재 비밀번호가 올바르지 않습니다.'; return; }
+    if (!cur) { errEl.textContent = '현재 비밀번호를 입력해주세요.'; return; }
     if (npw.length < 4) { errEl.textContent = '새 비밀번호는 4자리 이상으로 설정해주세요.'; return; }
     if (npw !== npw2) { errEl.textContent = '새 비밀번호가 일치하지 않습니다.'; return; }
-    newPw = npw;
+  }
+  let user;
+  try {
+    user = await AuthAPI.updateMe({ phone, email, currentPassword: cur || undefined, newPassword: npw || undefined });
+  } catch (e) {
+    errEl.textContent = e.message;
+    return;
   }
   errEl.textContent = '';
-
-  users[empno] = { pw: newPw, name, position, phone, email };
-  saveUsers(users);
-  saveProfileData({ empno, name, position, phone, email });
+  saveProfileData(user);
   applyUserInfo();
   showToast('회원정보가 저장되었습니다');
   showScreen('device1', 'my');
 }
 
-// 첫 진입 시 인증 상태에 따라 시작 화면 결정
-(function initAuthGate() {
-  if (isLoggedIn()) {
-    const auth = getAuth();
-    if (!getProfile() && auth) buildProfile(auth.empno);
-    applyUserInfo();
-    showScreen('device1', 'home');
+// 첫 진입 시 로그인 상태에 따라 시작 화면 결정 — 서버 세션을 확인한다.
+// 다른 스크립트(data-source.js 의 서버 감지 등)가 모두 읽힌 뒤에 돌아야 해서 DOMContentLoaded 에서 시작한다
+window.addEventListener('DOMContentLoaded', async function initAuthGate() {
+  const user = await AuthAPI.me();
+  if (user) {
+    enterAsUser(user);
   } else {
+    saveProfileData(null);
     showScreen('device1', 'login');
   }
-})();
+});

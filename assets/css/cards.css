@@ -360,16 +360,17 @@
   letter-spacing: -0.02em;
 }
 
-/* 휴양소 상세의 후기 사진 */
+/* 휴양소 상세의 후기 사진 — 홈 카드(.photo-row)처럼 보이는 장수만큼 나눠 쓴다 (1장 = 한 줄 전체, 2장 = 반반, 3장 이상 = 3칸) */
 .rv-photo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 4px;
   margin: 10px 0 12px;
 }
 
 .rv-photo-grid .ph {
-  aspect-ratio: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 110px;
   border-radius: 8px;
   cursor: pointer;
 }

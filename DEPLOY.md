@@ -209,6 +209,15 @@ cd ~/cen_resort && ./deploy.sh
 cd ~/cen_resort/server
 pm2 start backup.js --name cen-resort-backup --cron "0 3 * * *" --no-autorestart
 pm2 save
+
+# ⑧ 로그인 계정 만들기  ← 새 DB 에는 계정이 하나도 없어 아무도 로그인할 수 없습니다
+cd ~/cen_resort
+node tools/users.js add 11223 관리자 --password --admin      # 관리자 (임시 비밀번호가 한 번 나옴)
+node tools/users.js import 명단.csv --commit                 # 직원 명단 (server/README.md '직원 명단 · 로그인')
+
+# ⑨ 휴양소 정보 · 사진 넣기 (DATA_IMPORT.md '휴양소 정보 올리기')
+#    사진 폴더를 ~/cen_resort/server/uploads/resorts/ 에 올린 뒤
+node tools/import_resorts.js ~/import/resorts-info.json --commit
 ```
 
 확인:

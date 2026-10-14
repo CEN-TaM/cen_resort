@@ -6,10 +6,6 @@ function selectRegion(el) {
 }
 
 // ===== 후기 필터 칩 토글 (다중 선택) =====
-function toggleRevChip(el) {
-  el.classList.toggle('active');
-}
-
 // ===== 공지사항 카테고리 + 검색 필터 =====
 let noticeCat = '전체';
 let noticeQuery = '';
@@ -28,8 +24,13 @@ function applyNoticeFilter() {
     card.style.display = show ? '' : 'none';
     if (show) shown++;
   });
+  // 공지가 아예 없을 때는 notice.js 의 '등록된 공지사항이 없어요' 만 보인다 — 이 문구는 공지가 있는데 걸러져 0건일 때만
   const empty = document.getElementById('notice-empty');
-  if (empty) empty.style.display = shown === 0 ? '' : 'none';
+  if (empty) {
+    const filteredOut = cards.length > 0 && shown === 0;
+    empty.style.display = filteredOut ? '' : 'none';
+    if (filteredOut) empty.textContent = q ? '🔍 검색 결과가 없습니다.' : `'${noticeCat}' 공지사항이 없어요.`;
+  }
 }
 
 function selectNoticeCat(el) {

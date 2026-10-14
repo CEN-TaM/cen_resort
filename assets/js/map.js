@@ -118,9 +118,12 @@ function seniFilterMap(type, btn) {
   });
 }
 
-// ===== 확대/이동(패닝) + 마커 탭 선택 =====
+// ===== 확대/이동(패닝) · 두 손가락 확대(핀치) + 마커 탭 선택 =====
+// 지도 영역은 CSS touch-action: none 이라 폰에서도 브라우저가 터치를 스크롤로 가져가지 않는다 (map.css).
+// 손가락(포인터)을 모두 기억해서 1개면 끌어 옮기기, 2개면 핀치로 확대·축소한다.
 let panX = 0, panY = 0;
-let downX = 0, downY = 0, startPanX = 0, startPanY = 0;
+const mapPointers = new Map();   // pointerId → { x, y }
+let gesture = null;              // { kind: 'pan' | 'pinch', ... } 시작 시점 값
 let moved = false, downMarker = null;
 
 function applyMapTransform() {
@@ -142,39 +145,89 @@ function seniZoomMap(delta) {
   clampPan();
   applyMapTransform();
 }
+
+// 확대 기준점(지도 영역 가운데)에서 본 좌표
+function vpCenterOffset(vp, x, y) {
+  const r = vp.getBoundingClientRect();
+  return { x: x - (r.left + r.width / 2), y: y - (r.top + r.height / 2) };
+}
+// 지금 손가락 상태로 제스처를 새로 시작한다 (손가락 수가 바뀔 때마다)
+function startGesture(vp) {
+  const pts = [...mapPointers.values()];
+  if (pts.length >= 2) {
+    const [a, b] = pts;
+    const mid = vpCenterOffset(vp, (a.x + b.x) / 2, (a.y + b.y) / 2);
+    gesture = {
+      kind: 'pinch', dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, zoom: seniMapZoom,
+      // 두 손가락 가운데 아래에 있던 지도 지점 — 확대해도 그 지점이 손가락 아래에 남게 한다
+      worldX: (mid.x - panX) / seniMapZoom, worldY: (mid.y - panY) / seniMapZoom,
+    };
+  } else if (pts.length === 1) {
+    gesture = { kind: 'pan', x: pts[0].x, y: pts[0].y, panX, panY };
+  } else {
+    gesture = null;
+  }
+}
+
 function setupMapPan() {
   const vp = document.querySelector('.map-screen .map-viewport');
   if (!vp || vp.dataset.panReady) return;
   vp.dataset.panReady = '1';
+
   vp.addEventListener('pointerdown', e => {
-    moved = false;
-    downX = e.clientX; downY = e.clientY;
-    startPanX = panX; startPanY = panY;
-    // 누른 대상이 마커면 기억(탭이면 선택). 캡처는 아직 걸지 않음 → click 가로채기 방지
-    downMarker = e.target.closest ? e.target.closest('.marker') : null;
+    mapPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (mapPointers.size === 1) {
+      moved = false;
+      // 누른 대상이 마커면 기억(탭이면 선택)
+      downMarker = e.target.closest ? e.target.closest('.marker') : null;
+    } else {
+      moved = true;          // 두 번째 손가락 = 핀치 → 마커 탭이 아니다
+      downMarker = null;
+    }
+    startGesture(vp);
   });
+
   vp.addEventListener('pointermove', e => {
-    if (downX === null) return;
-    const dx = e.clientX - downX, dy = e.clientY - downY;
-    if (!moved && Math.abs(dx) + Math.abs(dy) > 4) {
-      moved = true;                        // 실제 이동 시작 — 이때만 드래그 모드로 전환
-      if (seniMapZoom > 1) { try { vp.setPointerCapture(e.pointerId); } catch (_) { } vp.classList.add('grabbing'); }
-    }
-    if (moved && seniMapZoom > 1) {
-      panX = startPanX + dx; panY = startPanY + dy;
+    if (!mapPointers.has(e.pointerId) || !gesture) return;
+    mapPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (gesture.kind === 'pinch' && mapPointers.size >= 2) {
+      const [a, b] = [...mapPointers.values()];
+      const scale = Math.hypot(a.x - b.x, a.y - b.y) / gesture.dist;
+      seniMapZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, gesture.zoom * scale));
+      const mid = vpCenterOffset(vp, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      panX = mid.x - gesture.worldX * seniMapZoom;
+      panY = mid.y - gesture.worldY * seniMapZoom;
+      vp.classList.add('grabbing');
       clampPan(); applyMapTransform();
+      return;
+    }
+    if (gesture.kind === 'pan') {
+      const dx = e.clientX - gesture.x, dy = e.clientY - gesture.y;
+      if (!moved && Math.abs(dx) + Math.abs(dy) > 4) {
+        moved = true;        // 실제 이동 시작 — 이때만 드래그 모드로 전환
+        try { vp.setPointerCapture(e.pointerId); } catch (_) { }
+        if (seniMapZoom > 1) vp.classList.add('grabbing');
+      }
+      // 기본 크기에서는 지도가 화면에 딱 맞아 옮길 곳이 없다 (clampPan 이 0 으로 묶는다)
+      if (moved && seniMapZoom > 1) {
+        panX = gesture.panX + dx; panY = gesture.panY + dy;
+        clampPan(); applyMapTransform();
+      }
     }
   });
-  const finish = e => {
-    vp.classList.remove('grabbing');
-    if (!moved && downMarker) {            // 움직이지 않은 누름 = 탭 → 마커 선택
-      const m = SENI_MARKERS[+downMarker.dataset.idx];
+
+  const release = e => {
+    if (!mapPointers.has(e.pointerId)) return;
+    mapPointers.delete(e.pointerId);
+    if (e.type === 'pointerup' && mapPointers.size === 0 && !moved && downMarker) {
+      const m = SENI_MARKERS[+downMarker.dataset.idx];   // 움직이지 않은 누름 = 탭 → 마커 선택
       if (m) openMapPlace(m.label, m.places);
     }
-    downMarker = null; downX = null;
+    if (mapPointers.size === 0) { vp.classList.remove('grabbing'); downMarker = null; }
+    startGesture(vp);        // 핀치 중 한 손가락을 떼면 남은 손가락으로 이어서 옮긴다
   };
-  vp.addEventListener('pointerup', finish);
-  vp.addEventListener('pointercancel', () => { vp.classList.remove('grabbing'); downMarker = null; downX = null; });
+  vp.addEventListener('pointerup', release);
+  vp.addEventListener('pointercancel', release);
   vp.addEventListener('wheel', e => { e.preventDefault(); seniZoomMap(e.deltaY < 0 ? 0.3 : -0.3); }, { passive: false });
 }
 
@@ -187,20 +240,29 @@ function openMapPlace(label, places) {
   const list = document.getElementById('map-sheet-list');
   list.innerHTML = '';
   places.forEach(p => {
+    // 마커의 이름('경기(포천) 하계 휴양소')으로 휴양소 데이터를 찾아 종류 · 평점 · 후기 수 · 지역을 함께 보여준다
+    const r = resolveResort(p) || resolveResort(p.replace(/\s*(하계|동계)\s*휴양소$/, '').trim());
     const item = document.createElement('div');
     item.className = 'map-place-item';
     item.innerHTML =
       '<i class="ti ti-building-cottage" style="color:var(--brand);font-size:18px"></i>' +
-      '<span class="nm"></span>' +
+      '<div class="mp-text"><span class="nm"></span>' +
+      (r ? `<span class="mp-meta">${typeBadgeHtml(r)}<span>${r.rating == null ? '후기 없음' : `평점 ${ratingText(r)} · 후기 ${r.reviews}`}${r.loc ? ' · ' + escapeHtml(r.loc) : ''}</span></span>` : '') +
+      '</div>' +
       '<i class="ti ti-chevron-right" style="margin-left:auto;color:var(--text-3)"></i>';
-    item.querySelector('.nm').textContent = p;
+    item.querySelector('.nm').textContent = r ? r.name : p;
     item.addEventListener('click', () => goResortDetail(p));
     list.appendChild(item);
   });
   document.getElementById('map-sheet-backdrop').classList.add('show');
+  mapSheetOpenedAt = Date.now();
 }
 
+// 폰에서는 마커를 뗀 직후 브라우저가 같은 자리에 click 을 한 번 더 보낸다.
+// 그 click 이 방금 뜬 시트의 어두운 배경에 떨어져 바로 닫히지 않도록, 열린 직후 잠깐은 배경 클릭을 무시한다
+let mapSheetOpenedAt = 0;
 function closeMapSheet(e) {
+  if (e && Date.now() - mapSheetOpenedAt < 400) return;
   document.getElementById('map-sheet-backdrop').classList.remove('show');
 }
 

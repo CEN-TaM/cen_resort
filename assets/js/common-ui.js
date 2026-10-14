@@ -35,45 +35,7 @@ function shareVia(type) {
   closeShareSheet();
 }
 
-// ===== 즐겨찾기 정렬 =====
-const FAV_SORT_LABEL = { default: '기본순', name: '이름순', rating: '평점 높은순', region: '지역순' };
-let currentFavSort = 'default';
-
-// 최초 추가 순서 기억
-(function stampFavOrder() {
-  const grid = document.getElementById('fav-grid');
-  if (!grid) return;
-  Array.from(grid.querySelectorAll('.fav-card')).forEach((c, i) => { c.dataset.idx = i; });
-})();
-
-function openFavSortSheet() {
-  const m = document.getElementById('fav-sort-modal');
-  if (!m) return;
-  m.querySelectorAll('.sort-opt').forEach(b => b.classList.toggle('active', b.dataset.mode === currentFavSort));
-  m.classList.add('show');
-}
-function closeFavSort(event) {
-  if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
-  document.getElementById('fav-sort-modal').classList.remove('show');
-}
-function sortFav(mode) {
-  const grid = document.getElementById('fav-grid');
-  if (!grid) return;
-  const cards = Array.from(grid.querySelectorAll('.fav-card'));
-  const getName = c => { const e = c.querySelector('.fname'); return e ? e.textContent.trim() : ''; };
-  const getMeta = c => { const e = c.querySelector('.fmeta'); return e ? e.textContent : ''; };
-  const getRating = c => { const m = getMeta(c).match(/[\d.]+/); return m ? parseFloat(m[0]) : 0; };
-  const getRegion = c => { const p = getMeta(c).split('·'); return p.length > 1 ? p[p.length - 1].trim() : ''; };
-  const getIdx = c => parseInt(c.dataset.idx || '0', 10);
-  if (mode === 'name') cards.sort((a, b) => getName(a).localeCompare(getName(b), 'ko'));
-  else if (mode === 'rating') cards.sort((a, b) => getRating(b) - getRating(a));
-  else if (mode === 'region') cards.sort((a, b) => getRegion(a).localeCompare(getRegion(b), 'ko'));
-  else cards.sort((a, b) => getIdx(a) - getIdx(b));
-  cards.forEach(c => grid.appendChild(c));
-  currentFavSort = mode;
-  closeFavSort();
-  if (typeof showToast === 'function') showToast('정렬: ' + (FAV_SORT_LABEL[mode] || ''));
-}
+// 즐겨찾기 정렬은 assets/js/favorites.js (sortFav)
 
 // ===== 홈 상단 햄버거 메뉴 (지도 · 알림) =====
 function toggleHomeMenu(e) {
@@ -102,4 +64,15 @@ function switchResortTab(el, idx) {
   if (pane) pane.classList.add('active');
   const content = screen.querySelector('.content');
   if (content) content.scrollTop = 0;
+}
+
+// 홈 배너 → 휴양소 탭의 이벤트 휴양소 (summer | winter)
+function openEventResorts(group) {
+  showScreen('device1', 'resorts');
+  const screen = document.querySelector('.screen[data-screen="resorts"]');
+  if (!screen) return;
+  const tab = screen.querySelectorAll('.main-tab .mtab')[1];
+  if (tab) switchResortTab(tab, 2);
+  const seg = [...screen.querySelectorAll('.event-seg-btn')].find(b => (b.getAttribute('onclick') || '').includes(`'${group}'`));
+  if (seg) selectEventSeg(seg, group);
 }

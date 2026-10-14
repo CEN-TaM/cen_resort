@@ -15,6 +15,16 @@ document.querySelectorAll('[data-img]').forEach(el => {
 });
 
 
+// 휴양소 사진 — 그 휴양소 대표 사진(r.photo, 서버 /uploads/resorts/...)이 있으면 그것, 없으면 사진 키(r.img)의 기본 사진
+function resortPhotoUrl(r) {
+  return r && r.photo ? (typeof API_BASE !== 'undefined' ? API_BASE : '') + r.photo : '';
+}
+// data-photo(대표 사진 주소)가 있으면 그걸, 없으면 data-img 키로 칠한다
+function paintThumb(el) {
+  if (el.dataset.photo) setBg(el, el.dataset.photo);
+  else applyBg(el, el.getAttribute('data-img'));
+}
+
 function applyBg(el, key) {
   const cfg = IMG[key];
   if (!cfg || !el) return;

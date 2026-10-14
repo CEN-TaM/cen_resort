@@ -101,8 +101,17 @@
   font-size: 16px;
 }
 
+/* 지도 화면: 지도 카드가 하단 탭 바로 위까지 채운다 (바텀시트도 탭 바로 위에서 올라온다)
+   화면은 .scroll-body(헤더 + .content) 안에 있으므로 scroll-body 도 세로 flex 로 둔다 */
+.map-screen > .scroll-body {
+  display: flex;
+  flex-direction: column;
+}
+
 .map-screen .content {
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 검색 입력 (map-topbar 내) — 홈 .search-bar 와 동일한 디자인 */
@@ -168,23 +177,15 @@ textarea {
   border-radius: var(--r-xl);
   overflow: hidden;
   position: relative;
-}
-
-.map-head {
-  padding: 14px 14px 10px;
+  flex: 1;
+  min-height: 0;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+  flex-direction: column;
 }
 
-.map-head strong {
-  display: block;
-  font-size: 16px;
-  margin-bottom: 4px;
-}
-
-.map-head small {
+/* 화면 제목(전국 휴양소 지도) 아래 안내 한 줄 */
+.map-hint {
+  padding: 14px 14px 10px;
   color: var(--text-3);
   font-size: 12px;
   line-height: 1.4;
@@ -260,7 +261,9 @@ textarea {
 }
 
 .map-viewport {
-  height: 340px;
+  flex: 1;
+  min-height: 340px;
+  touch-action: none;   /* 폰에서 지도 위 드래그·핀치를 브라우저가 스크롤·확대로 가져가지 않게 (map.js 가 직접 처리) */
   background: linear-gradient(180deg, #eaf4ff, #f8fbff);
   position: relative;
   overflow: hidden;
@@ -268,9 +271,8 @@ textarea {
 }
 
 .map-canvas {
-  width: 100%;
-  height: 100%;
-  position: relative;
+  position: absolute;   /* 지도 영역(.map-viewport)을 꽉 채운다 — 안의 지도 높이(%)가 이 크기를 기준으로 잡힌다 */
+  inset: 0;
   transform-origin: center center;
   transition: transform .2s ease;
 }
@@ -279,7 +281,8 @@ textarea {
   position: absolute;
   left: 50%;
   top: 50%;
-  height: 300px;
+  height: calc(100% - 40px);   /* 지도 영역이 커지면 지도도 같이 커진다 */
+  max-height: 560px;
   width: auto;
   transform: translate(-50%, -50%);
   overflow: visible;
@@ -463,6 +466,31 @@ textarea {
   font-size: 14px;
 }
 
+/* 바텀시트 목록: 이름 + 종류 · 평점 · 후기 · 지역 */
+.map-place-item .mp-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.map-place-item .mp-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.map-place-item .mp-meta .type-badge {
+  position: static;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+}
+
 /* === 검색 화면: 인기 검색어 + 추천/결과 목록 === */
 .search-section {
   margin-bottom: 22px;
@@ -493,6 +521,61 @@ textarea {
 
 .search-kw:hover {
   background: #F1F3F6;
+}
+
+/* 최근 검색어: 제목 줄 오른쪽 '전체 삭제' */
+.search-sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.search-sec-head .search-sec-title {
+  margin-bottom: 0;
+}
+
+.search-clear {
+  border: 0;
+  background: none;
+  color: #94A3B8;
+  font-size: 12px;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+/* 최근 검색어 칩: 글자(검색) + ✕(지우기) 두 버튼 */
+.search-kw.recent {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px 0 0;
+}
+
+.search-kw.recent .kw,
+.search-kw.recent .del {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.search-kw.recent .kw {
+  padding: 7px 4px 7px 14px;
+}
+
+.search-kw.recent .del {
+  display: inline-flex;
+  padding: 4px;
+  color: #94A3B8;
+  font-size: 13px;
+}
+
+.search-empty-note {
+  font-size: 12px;
+  color: #94A3B8;
+  margin: 0 2px;
 }
 
 .search-reco {

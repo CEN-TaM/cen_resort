@@ -1,6 +1,6 @@
 // 후기 데이터 창구 — 화면 코드는 후기를 여기(ReviewAPI)로만 읽고 쓴다.
-// 서버가 있으면(개발서버·로컬 npm start) 서버 API, 없으면(GitHub Pages) 샘플(data/reviews-sample.js)을 쓴다.
-// 서버가 있어도 그 휴양소 후기가 0건이면 샘플을 보여준다 (예전 loadServerReviews 와 같은 동작).
+// 서버가 있으면(개발서버·로컬 npm start) 서버 API(DB 후기)만 쓴다. 0건이면 0건 그대로 — 샘플로 채우지 않는다.
+// 서버가 없을 때(GitHub Pages 시연)만 샘플(data/reviews-sample.js)을 쓴다.
 // 후기마다 _source('server' | 'sample') 를 붙여, 좋아요·댓글·삭제를 알맞은 곳으로 보낸다.
 // 쓰기 요청이 실패해도 샘플로 몰래 바꾸지 않는다 — 실패는 호출한 쪽이 토스트로 알린다.
 
@@ -42,6 +42,10 @@ const SampleDB = (() => {
   const view = r => Object.assign(copy(r), { liked: liked.has(r.id), _source: 'sample' });
   return {
     // own: 그 휴양소 전용 샘플이면 true, 공용(GENERIC)이면 false
+    // 최근 후기 n건 (홈 '휴양소 최근 후기'). 공용 샘플은 휴양소가 정해지지 않아 빼고 전용 샘플만
+    recent(n, mode) {
+      return sortHomeReviews(db.slice(), mode).slice(0, n).map(view);
+    },
     list(resortName) {
       let rows = db.filter(r => r.resortName === resortName);
       let own = true;
@@ -101,6 +105,11 @@ async function apiFetch(path, opts) {
   return body;
 }
 
+function sortHomeReviews(list, mode) {
+  const t = r => Date.parse(r.createdAt || 0) || 0;
+  return list.sort((a, b) => (mode === 'likes' ? (b.likes || 0) - (a.likes || 0) : 0) || (t(b) - t(a)));
+}
+
 // ===== 화면이 부르는 창구 =====
 // rv: 화면에 떠 있는 후기 객체 (_source 로 서버/샘플을 가른다)
 const ReviewAPI = {
@@ -108,12 +117,18 @@ const ReviewAPI = {
   async list(resortName) {
     if (await hasReviewServer()) {
       const { reviews } = await apiFetch('/api/reviews?resort=' + encodeURIComponent(resortName));
-      if (reviews && reviews.length) {
-        return { reviews: reviews.map(r => Object.assign(r, { _source: 'server' })), real: true };
-      }
+      return { reviews: (reviews || []).map(r => Object.assign(r, { _source: 'server' })), real: true };
     }
     const { reviews, own } = SampleDB.list(resortName);
     return { reviews, real: own };
+  },
+  // 홈 후기 n건 (모든 휴양소). mode: 'recent' 최신순 | 'likes' 좋아요 많은 순 (같으면 최신)
+  async recent(n, mode) {
+    if (await hasReviewServer()) {
+      const { reviews } = await apiFetch('/api/reviews');
+      return sortHomeReviews(reviews || [], mode).slice(0, n).map(r => Object.assign(r, { _source: 'server' }));
+    }
+    return SampleDB.recent(n, mode);
   },
   // POST /api/reviews/:id/like { liked } → { likes }  (서버는 숫자만 더하고 뺀다)
   async like(rv, on) {

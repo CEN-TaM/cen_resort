@@ -3,7 +3,7 @@
 // 알림 종류
 //   comment  내가 쓴 후기에 댓글이 달림      (서버 /api/notifications)
 //   reply    내가 쓴 댓글에 답글이 달림      (서버 /api/notifications)
-//   notice   새 공지사항                     (클라이언트 NOTICES 로 생성)
+//   notice   새 공지사항                     (공지 목록 NoticeAPI 로 만든다 — notice.js)
 //
 // 읽음 상태는 서버에 저장한다(기기가 바뀌어도 유지). key 는 'n:{id}' / 'notice:{공지id}'.
 
@@ -52,22 +52,17 @@ function notiTimeAgo(iso) {
   return iso.slice(0, 10).replace(/-/g, '.');
 }
 
-// 공지 날짜(2026.05.19)를 ISO 로. 시각 정보가 없어 자정 기준으로 둔다.
-function noticeDateToIso(d) {
-  const m = String(d || '').match(/(\d{4})\.(\d{2})\.(\d{2})/);
-  return m ? `${m[1]}-${m[2]}-${m[3]}T00:00:00.000Z` : new Date(0).toISOString();
-}
-
-// 공지 알림은 서버가 모르므로 클라이언트에서 만든다.
-function buildNoticeNotifications() {
-  if (typeof NOTICES !== 'object' || !NOTICES) return [];
-  return Object.entries(NOTICES).map(([id, n]) => ({
-    key: `notice:${id}`,
+// 공지 알림 — 공지 목록(서버 DB, 시연이면 예시)으로 만든다
+async function buildNoticeNotifications() {
+  let list = [];
+  try { list = typeof NoticeAPI !== 'undefined' ? await NoticeAPI.list() : []; } catch (e) { list = []; }
+  return list.map(n => ({
+    key: `notice:${n.id}`,
     type: 'notice',
     title: n.title,
     category: n.category,
-    createdAt: noticeDateToIso(n.date),
-    noticeId: id,
+    createdAt: n.createdAt,
+    noticeId: n.id,
   }));
 }
 
@@ -91,7 +86,7 @@ async function loadNotifications() {
       }
     } catch (e) { /* 서버가 없어도 공지 알림은 보여준다 */ }
   }
-  notiItems = [...server, ...buildNoticeNotifications()]
+  notiItems = [...server, ...(await buildNoticeNotifications())]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   return notiItems;
 }

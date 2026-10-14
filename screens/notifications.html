@@ -1,0 +1,16 @@
+<!-- NOTIFICATIONS : 알림 목록 -->
+<div class="screen" data-screen="notifications">
+  <div class="sticky-header">
+    <div class="map-topbar">
+      <button class="back" onclick="goBack('device1','notifications')"><img src="assets/images/ico_back.png" alt="뒤로가기"></button>
+      <div class="ttl">알림</div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="noti-head">
+      <div class="ttl">알림</div>
+      <button id="noti-read-all" onclick="markAllNotiRead()">모두 읽음</button>
+    </div>
+    <div id="notifications-list" class="noti-list"></div>
+  </div>
+</div>

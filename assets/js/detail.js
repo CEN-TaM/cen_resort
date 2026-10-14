@@ -108,67 +108,7 @@ if (document.readyState === 'loading') {
   bindDetailScroll();
 }
 
-// ===== 즐겨찾기 (찜) 기능 =====
-const favoriteState = {
-  sokcho: true,
-  aewol: true,
-  yeosu: true,
-  jocheon: true,
-  gwacheon: false
-};
-
-function toggleFavorite(event, id) {
-  if (event) event.stopPropagation();
-  if (!id) return;   // 상세 별 버튼은 openResort() 가 data-fav 를 채우기 전엔 비어 있다
-  favoriteState[id] = !favoriteState[id];
-  syncFavoriteUI(id);
-  renderFavoriteList();
-  if (typeof showToast === 'function') {
-    showToast(favoriteState[id] ? '즐겨찾기에 추가되었습니다' : '즐겨찾기에서 해제되었습니다');
-  }
-}
-
-function syncFavoriteUI(id) {
-  const on = !!favoriteState[id];
-  document.querySelectorAll(`[data-fav="${id}"]`).forEach(el => {
-    el.classList.toggle('favorited', on);
-    // 이미지 별(상세 헤더)은 CSS 가 .favorited 로 켜고 끈다
-    if (el.querySelector('.fav-ico-off')) return;
-    const ico = el.querySelector('i.ms, i.ti');
-    if (ico) {
-      const sizeStyle = ico.getAttribute('style') || '';
-      ico.className = on ? 'ms' : 'ms outline';
-      ico.textContent = 'star';
-      if (sizeStyle) ico.setAttribute('style', sizeStyle);
-    }
-  });
-}
-
-function renderFavoriteList() {
-  const grid = document.getElementById('fav-grid');
-  const empty = document.getElementById('fav-empty');
-  const countEl = document.getElementById('fav-count');
-  if (!grid) return;
-  let visible = 0;
-  grid.querySelectorAll('[data-fav-card]').forEach(card => {
-    const id = card.getAttribute('data-fav-card');
-    if (favoriteState[id]) {
-      card.style.display = '';
-      visible++;
-    } else {
-      card.style.display = 'none';
-    }
-  });
-  if (countEl) countEl.textContent = visible;
-  if (empty) {
-    empty.style.display = visible === 0 ? 'block' : 'none';
-    grid.style.display = visible === 0 ? 'none' : '';
-  }
-}
-
-// 초기 상태 반영
-Object.keys(favoriteState).forEach(syncFavoriteUI);
-renderFavoriteList();
+// 즐겨찾기는 assets/js/favorites.js 로 옮겼다 (사람별 · 휴양소 id 별, 서버 저장)
 
 // 배너 슬라이드 초기화
 goToBannerSlide(0);
@@ -187,12 +127,80 @@ function featureSectionsHtml(features) {
     </div>`).join('');
 }
 
+// 휴양소 정보 전체보기 — 소개 · 기본 정보 표 · 편의시설 칩 · 주변 관광지 · 이용 수칙 (있는 것만)
+function resortInfoHtml(r) {
+  const parts = [];
+  if (r.facilityName || r.summary) {
+    parts.push(`<div class="ri-intro">${r.facilityName ? `<div class="ri-name">${escapeHtml(r.facilityName)}</div>` : ''}${r.summary ? `<div class="ri-sum">${escapeHtml(r.summary)}</div>` : ''}</div>`);
+  }
+  const rows = [];
+  if (r.address) rows.push(['주소', escapeHtml(r.address)]);
+  if (r.roomType) rows.push(['객실', escapeHtml(r.roomType)]);
+  if (typeof capacityText === 'function' && capacityText(r)) rows.push(['인원', escapeHtml(capacityText(r))]);
+  (r.details || []).forEach(d => rows.push([escapeHtml(d.label), escapeHtml(d.value)]));
+  if (r.phone) rows.push(['문의처', `<a href="tel:${escapeHtml(r.phone.replace(/[^0-9+]/g, ''))}">${escapeHtml(r.phone)}</a>`]);
+  if (r.website) rows.push(['홈페이지', `<a href="${escapeHtml(r.website)}" target="_blank" rel="noopener">${escapeHtml(r.website.replace(/^https?:\/\//, ''))}</a>`]);
+  if (rows.length) {
+    parts.push(`<div class="ri-sec"><div class="ri-title">기본 정보</div><dl class="ri-table">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl></div>`);
+  }
+  if (r.features && Object.keys(r.features).length) {
+    parts.push(`<div class="ri-sec"><div class="ri-title">편의시설</div>${featureSectionsHtml(r.features)}</div>`);
+  }
+  if (r.nearby && r.nearby.length) {
+    parts.push(`<div class="ri-sec"><div class="ri-title">주변 관광지</div><div class="ri-chips">${r.nearby.map(n => `<span>${escapeHtml(n)}</span>`).join('')}</div></div>`);
+  }
+  if (r.notices && r.notices.length) {
+    parts.push(`<div class="ri-sec"><div class="ri-title">이용 수칙</div><ul class="ri-notices">${r.notices.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul></div>`);
+  }
+  return parts.join('') || '<div class="tip-empty">등록된 정보가 없어요.</div>';
+}
+
 function openFeatureModal() {
   const r = resolveResort(currentResortName);
   const out = document.getElementById('feature-modal-body');
-  if (out) out.innerHTML = (r && r.features) ? featureSectionsHtml(r.features) : '<div class="tip-empty">등록된 정보가 없어요.</div>';
+  if (out) out.innerHTML = r ? resortInfoHtml(r) : '<div class="tip-empty">등록된 정보가 없어요.</div>';
   const m = document.getElementById('feature-modal');
   if (m) m.classList.add('show');
+}
+
+// ===== 길찾기 =====
+// 휴양소 주소를 카카오맵 · 네이버 지도 검색으로 연다. 폰에 앱이 있으면 앱으로, 없으면 웹 지도로 열린다.
+const NAV_URL = {
+  kakao: q => 'https://map.kakao.com/link/search/' + encodeURIComponent(q),
+  naver: q => 'https://map.naver.com/p/search/' + encodeURIComponent(q),
+};
+function navAddress() {
+  const r = resolveResort(currentResortName);
+  return r && r.address ? r.address : '';
+}
+function openNavSheet() {
+  const addr = navAddress();
+  if (!addr) return;
+  const el = document.getElementById('nav-addr');
+  if (el) el.textContent = addr;
+  const m = document.getElementById('nav-modal');
+  if (m) m.classList.add('show');
+}
+function closeNavSheet(event) {
+  if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
+  const m = document.getElementById('nav-modal');
+  if (m) m.classList.remove('show');
+}
+function openNavApp(kind) {
+  const addr = navAddress();
+  if (!addr || !NAV_URL[kind]) return;
+  window.open(NAV_URL[kind](addr), '_blank', 'noopener');
+  closeNavSheet();
+}
+async function copyNavAddress() {
+  const addr = navAddress();
+  if (!addr) return;
+  try {
+    await navigator.clipboard.writeText(addr);
+    if (typeof showToast === 'function') showToast('주소를 복사했어요');
+  } catch (e) {
+    if (typeof showToast === 'function') showToast('복사하지 못했어요. 주소를 길게 눌러 복사해 주세요');
+  }
 }
 
 function closeFeatureModal(event) {

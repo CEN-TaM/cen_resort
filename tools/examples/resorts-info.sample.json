@@ -1,0 +1,43 @@
+[
+  {
+    "id": "summer-example",
+    "name": "예시(하계)",
+    "type": "summer",
+    "loc": "강원 OO군",
+    "season": "2026 하계",
+    "facilityName": "OO 펜션 · 오션뷰 201호",
+    "summary": "수도권에서 약 2시간 · 해수욕장 도보 5분",
+    "address": "강원도 OO군 OO면 OO로 00",
+    "roomType": "베드룸2, 거실&주방, 화장실1",
+    "capacityBase": 4,
+    "capacity": 6,
+    "details": [
+      { "label": "가전", "value": "TV, 냉장고, 전자레인지, 밥솥" },
+      { "label": "가구", "value": "침대2, 쇼파" },
+      { "label": "부대시설", "value": "바비큐, 수영장" },
+      { "label": "냉난방", "value": "에어컨" },
+      { "label": "추가 인원", "value": "기준 초과 시 인당 2만원" }
+    ],
+    "features": { "환경": ["바다"], "숙소 유형": ["펜션"], "편의시설": ["바베큐", "수영장", "주방", "TV", "에어컨"], "주변 활동": ["해수욕"] },
+    "phone": "000-000-0000",
+    "website": "https://example.com",
+    "nearby": ["OO해수욕장", "OO전망대"],
+    "photo": "/uploads/resorts/summer-example-1a2b3c4d.jpg",
+    "map": { "label": "OO", "x": 120, "y": 60 },
+    "sort": 290
+  },
+  {
+    "id": "gwacheon-1001",
+    "facilityName": "OO타워 103동 1001호",
+    "address": "경기도 OO시 OO로 00",
+    "roomType": "거실, 주방, 방3, 화장실2",
+    "details": [
+      { "label": "입·퇴실", "value": "입실 오후 3시 이후 · 퇴실 오전 11시까지" },
+      { "label": "주차", "value": "지하 2·3층" }
+    ],
+    "notices": [
+      "본인 포함 직계가족만 이용할 수 있어요.",
+      "휴양소 안에서는 절대 금연이에요."
+    ]
+  }
+]

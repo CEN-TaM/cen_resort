@@ -1,0 +1,49 @@
+<!-- EDIT PROFILE : 회원정보 수정 -->
+<div class="screen auth-flow" data-screen="edit-profile">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','edit-profile','my')">
+    <div class="title">회원정보 수정</div>
+    <div class="actions" style="width:22px"></div>
+  </div>
+  <div class="content">
+    <div class="form-section-label">기본 정보</div>
+    <div class="login-field read-field">
+      <label for="ep-empno">사번 (인증 완료)</label>
+      <input id="ep-empno" type="text" readonly />
+    </div>
+    <div class="login-field read-field">
+      <label for="ep-name">이름 (인사정보)</label>
+      <input id="ep-name" type="text" readonly />
+    </div>
+    <div class="login-field read-field">
+      <label for="ep-position">직급 (인사정보)</label>
+      <input id="ep-position" type="text" readonly />
+    </div>
+    <div class="login-field">
+      <label for="ep-phone">핸드폰 번호</label>
+      <input id="ep-phone" type="tel" inputmode="numeric" autocomplete="off" placeholder="010-0000-0000" />
+    </div>
+    <div class="login-field">
+      <label for="ep-email">회사 개인 이메일</label>
+      <input id="ep-email" type="email" autocomplete="off" placeholder="000@itcen.com" />
+    </div>
+
+    <div class="form-section-label">비밀번호 변경</div>
+    <div class="login-field">
+      <label for="ep-pw-cur">현재 비밀번호</label>
+      <input id="ep-pw-cur" type="password" autocomplete="off" placeholder="현재 비밀번호" />
+    </div>
+    <div class="login-field">
+      <label for="ep-pw-new">새 비밀번호</label>
+      <input id="ep-pw-new" type="password" autocomplete="new-password" placeholder="새 비밀번호 (변경 시에만 입력)" />
+    </div>
+    <div class="login-field">
+      <label for="ep-pw-new2">새 비밀번호 확인</label>
+      <input id="ep-pw-new2" type="password" autocomplete="new-password" placeholder="새 비밀번호 다시 입력" />
+    </div>
+    <div class="login-error" id="ep-error"></div>
+
+    <button type="button" class="login-submit" onclick="saveProfile()">저장</button>
+    <div style="height:8px"></div>
+  </div>
+</div>

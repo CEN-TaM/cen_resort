@@ -1,0 +1,164 @@
+<!-- 후기 삭제 확인 모달 -->
+<div class="modal-backdrop" id="delete-review-modal" onclick="closeDeleteReviewModal(event)">
+  <div class="confirm-modal" onclick="event.stopPropagation()">
+    <div class="cm-icon"><i class="ti ti-trash"></i></div>
+    <div class="cm-title">후기를 삭제할까요?</div>
+    <div class="cm-desc">삭제하면 사진·댓글까지 함께 지워지고<br>되돌릴 수 없어요.</div>
+    <div class="cm-actions">
+      <button class="cm-btn cancel" onclick="closeDeleteReviewModal()">취소</button>
+      <button class="cm-btn danger" onclick="confirmDeleteReview()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- 댓글 모달 -->
+<div class="comment-modal" id="comment-modal" onclick="closeCommentModal(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">💬 댓글 <span id="comment-count-label" style="color:#1F4FE0">0</span></div>
+      <i class="ti ti-x" onclick="closeCommentModal()"></i>
+    </div>
+    <div class="comment-list-area" id="comment-list"></div>
+    <div class="comment-input-area">
+      <input id="comment-input" placeholder="댓글을 입력하세요..." onkeypress="if(event.key==='Enter')addComment()">
+      <button onclick="addComment()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 휴양소 특징 전체보기 바텀시트 -->
+<!-- 휴양소 포인트 적립내역 (나의 페이지 '적립내역') -->
+<div class="comment-modal" id="point-modal" onclick="closePointHistory(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">휴양소 포인트 적립내역</div>
+      <i class="ti ti-x" onclick="closePointHistory()"></i>
+    </div>
+    <div class="point-history" id="point-history"></div>
+  </div>
+</div>
+
+<!-- 길찾기: 휴양소 주소로 지도 앱 열기 (상세 '휴양소 정보' 주소 줄의 '길찾기') -->
+<div class="comment-modal" id="nav-modal" onclick="closeNavSheet(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">길찾기</div>
+      <i class="ti ti-x" onclick="closeNavSheet()"></i>
+    </div>
+    <div class="nav-sheet">
+      <div class="nav-addr" id="nav-addr"></div>
+      <button type="button" class="nav-opt" onclick="openNavApp('kakao')"><span class="nav-dot kakao"></span>카카오맵으로 보기<i class="ti ti-external-link"></i></button>
+      <button type="button" class="nav-opt" onclick="openNavApp('naver')"><span class="nav-dot naver"></span>네이버 지도로 보기<i class="ti ti-external-link"></i></button>
+      <button type="button" class="nav-opt" onclick="copyNavAddress()"><i class="ti ti-copy nav-copy"></i>주소 복사<span></span></button>
+    </div>
+  </div>
+</div>
+
+<div class="comment-modal" id="feature-modal" onclick="closeFeatureModal(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">휴양소 정보</div>
+      <i class="ti ti-x" onclick="closeFeatureModal()"></i>
+    </div>
+    <div class="feature-modal-body" id="feature-modal-body"></div>
+  </div>
+</div>
+
+<!-- 꿀팁 상세 바텀시트 -->
+<div class="comment-modal" id="tip-detail-modal" onclick="closeTipDetail(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">꿀팁</div>
+      <i class="ti ti-x" onclick="closeTipDetail()"></i>
+    </div>
+    <div class="tip-detail-body" id="tip-detail-body"></div>
+  </div>
+</div>
+
+<!-- 꿀팁 작성 바텀시트 -->
+<div class="comment-modal" id="tip-modal" onclick="closeTipModal(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct" id="tip-modal-title">💡 꿀팁 공유하기</div>
+      <i class="ti ti-x" onclick="closeTipModal()"></i>
+    </div>
+    <div class="tip-form">
+      <input id="tip-tag-input" class="tip-field" maxlength="6" placeholder="태그 (예: 주차, 맛집, 준비물)">
+      <input id="tip-title-input" class="tip-field" placeholder="제목을 입력하세요">
+      <textarea id="tip-content-input" class="tip-field tip-textarea"
+        placeholder="다녀온 경험에서 얻은 꿀팁을 자유롭게 공유해주세요!"></textarea>
+      <button class="tip-submit" id="tip-submit-btn" onclick="submitTip()">공유하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 즐겨찾기 정렬 바텀시트 -->
+<div class="comment-modal" id="fav-sort-modal" onclick="closeFavSort(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">정렬</div>
+      <i class="ti ti-x" onclick="closeFavSort()"></i>
+    </div>
+    <div class="sort-options">
+      <button class="sort-opt" data-mode="default" onclick="sortFav('default')"><i
+          class="ti ti-check"></i><span>기본(추가)순</span></button>
+      <button class="sort-opt" data-mode="name" onclick="sortFav('name')"><i
+          class="ti ti-check"></i><span>이름순</span></button>
+      <button class="sort-opt" data-mode="rating" onclick="sortFav('rating')"><i class="ti ti-check"></i><span>평점
+          높은순</span></button>
+      <button class="sort-opt" data-mode="region" onclick="sortFav('region')"><i
+          class="ti ti-check"></i><span>지역순</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 공유하기 바텀시트 -->
+<div class="comment-modal" id="share-modal" onclick="closeShareSheet(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">공유하기</div>
+      <i class="ti ti-x" onclick="closeShareSheet()"></i>
+    </div>
+    <div class="share-grid">
+      <button class="share-opt" onclick="shareVia('kakao')">
+        <span class="share-ic kakao"><i class="ti ti-message-circle"></i></span>
+        <span class="share-label">카카오</span>
+      </button>
+      <button class="share-opt" onclick="shareVia('sms')">
+        <span class="share-ic sms"><i class="ti ti-message"></i></span>
+        <span class="share-label">SMS</span>
+      </button>
+      <button class="share-opt" onclick="shareVia('insta')">
+        <span class="share-ic insta"><i class="ti ti-brand-instagram"></i></span>
+        <span class="share-label">인스타그램</span>
+      </button>
+      <button class="share-opt" onclick="shareVia('link')">
+        <span class="share-ic link"><i class="ti ti-link"></i></span>
+        <span class="share-label">링크복사</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 로그아웃 확인 모달 -->
+<div class="modal-backdrop" id="logout-modal" onclick="closeLogoutConfirm(event)">
+  <div class="point-modal confirm-modal" onclick="event.stopPropagation()">
+    <h3>로그아웃 하시겠습니까?</h3>
+    <div class="pmsub">로그아웃하면 다시 사번 인증 후<br>이용할 수 있습니다.</div>
+    <div class="cm-actions">
+      <button class="cm-cancel" onclick="closeLogoutConfirm()">취소</button>
+      <button class="cm-confirm" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<!-- 전역 토스트 (모든 화면 공통) -->
+<div class="toast" id="app-toast"><i class="ti ti-circle-check"></i><span id="app-toast-msg"></span></div>

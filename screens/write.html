@@ -1,0 +1,122 @@
+<!-- WRITE -->
+<div class="screen" data-screen="write">
+  <div class="app-header">
+    <i class="ti ti-x back" onclick="goBack('device1','write')"></i>
+    <div class="title">후기 작성</div>
+    <div class="actions" style="visibility:hidden"><i class="ti ti-x"></i></div>
+  </div>
+  <div class="content">
+    <div class="write-encourage">
+      <img class="seni-mini" src="assets/images/seni-laptop.png" alt="세니 작업 중" onerror="this.style.display='none'">
+      <div>
+        <div class="tx-title">세니가 응원해요</div>
+        <div class="tx-sub">후기를 작성하면<br><b>5P</b>가 적립돼요</div>
+      </div>
+    </div>
+
+    <div class="verify-row">
+      <i class="ti ti-shield-check"></i>
+      <div>
+        <div class="vmain">사번 인증 완료</div>
+        <div class="vsub" id="write-verify-sub">로그인한 사번으로 등록돼요</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">어느 휴양소였나요? <span class="req">*</span></div>
+      <!-- 휴양소 상세 '후기 작성하기'로 들어오면 그 휴양소로 고정 — 아래 선택칸 대신 이 한 줄만 보인다 (review-write.js applyWriteResortLock) -->
+      <div class="rv-fixed-resort" id="rv-fixed-resort" hidden>
+        <span class="place-type" id="rv-fixed-type"></span>
+        <span class="rv-fixed-name" id="rv-fixed-name"></span>
+      </div>
+      <div id="rv-resort-pick">
+      <!-- 1단계: 휴양소 구분 -->
+      <div class="resort-type-seg">
+        <button type="button" class="rts-btn active" onclick="selectReviewType(this,'regular')">정기 휴양소</button>
+        <button type="button" class="rts-btn" onclick="selectReviewType(this,'summer')">하계 휴양소</button>
+        <button type="button" class="rts-btn" onclick="selectReviewType(this,'winter')">동계 휴양소</button>
+      </div>
+      <!-- 2단계: 휴양소 선택 -->
+      <div class="select-box" style="margin-top:8px;position:relative">
+        <select id="rv-resort-select" class="resort-select"></select>
+        <i class="ti ti-chevron-down"
+          style="color:#475569;pointer-events:none;position:absolute;right:14px;top:50%;transform:translateY(-50%)"></i>
+      </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">항목별 평점 <span class="req">*</span></div>
+      <div class="rate-row">
+        <span class="rname">위치 (접근성)</span>
+        <span class="rate-stars" data-score="5">
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+        </span>
+      </div>
+      <div class="rate-row">
+        <span class="rname">시설 (편의)</span>
+        <span class="rate-stars" data-score="5">
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+        </span>
+      </div>
+      <div class="rate-row">
+        <span class="rname">청결도</span>
+        <span class="rate-stars" data-score="4">
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar on" onclick="setRate(this)">★</span>
+          <span class="rstar" onclick="setRate(this)">★</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">사진 첨부 <span class="req">*</span><span class="hint">최소 1장</span></div>
+      <div class="photo-grid" id="photo-grid">
+        <label class="pcell add" id="photo-add">
+          <i class="ti ti-camera"></i>
+          <span class="cnt" id="photo-count">0/10</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onchange="addPhotos(this)">
+        </label>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">누구와 함께? <span class="hint hint-pill">선택</span></div>
+      <div class="chip-row">
+        <div class="chip companion-chip" onclick="toggleChip(this)">가족</div>
+        <div class="chip companion-chip" onclick="toggleChip(this)">친구</div>
+        <div class="chip companion-chip" onclick="toggleChip(this)">혼자</div>
+        <div class="chip companion-chip" onclick="toggleChip(this)">동료</div>
+        <div class="chip companion-chip" onclick="toggleChip(this)">연인</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-label">상세 후기</div>
+      <textarea class="textarea" placeholder="이런 점이 좋았어요 / 아쉬웠어요…&#10;💡 위치·시설·청결 외에 분위기, 가성비 후기도 좋아요"></textarea>
+    </div>
+
+    <button class="write-submit" onclick="submitReview('device1')">후기 등록하기 (+5P)</button>
+  </div>
+
+  <!-- 포인트 적립 모달 -->
+  <div class="modal-backdrop" id="modal-device1">
+    <div class="point-modal">
+      <img class="seni-jump" src="assets/images/seni-desk.png" alt="세니 체크" onerror="this.style.display='none'">
+      <h3>후기 등록 완료!</h3>
+      <div class="pmsub"><span id="point-modal-name">관리자</span>님의 소중한 후기는<br>다른 동료들의 휴가를 더 빛나게 해요</div>
+      <div class="gain" id="point-gain">+5P</div>
+      <button onclick="closeModal('device1')">확인</button>
+    </div>
+  </div>
+</div>

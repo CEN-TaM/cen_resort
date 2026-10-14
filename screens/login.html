@@ -1,0 +1,59 @@
+<!-- LOGIN : 사번 인증 화면 (첫 진입) -->
+<div class="screen active login-screen" data-screen="login">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 0 312.43 312.43">
+        <defs>
+          <style>
+            .lcls-1 {
+              fill: url(#login-rg);
+            }
+
+            .lcls-4 {
+              fill: #fff;
+            }
+          </style>
+          <radialGradient id="login-rg" cx="633.2" cy="384.82" r="382.37"
+            gradientTransform="translate(-206.41 -2.51) scale(0.82)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#569dff"></stop>
+            <stop offset="0.44" stop-color="#1264ee"></stop>
+            <stop offset="0.6" stop-color="#0055e9"></stop>
+            <stop offset="1" stop-color="#0032a0"></stop>
+          </radialGradient>
+        </defs>
+        <g>
+          <path class="lcls-1" d="M156.08,312.42H312.43l0-156.35A166.62,166.62,0,0,0,156.08,312.42Z"></path>
+          <path class="lcls-1" d="M0,312.43H151L89.88,93.15A311.43,311.43,0,0,0,0,312.43Z"></path>
+          <path class="lcls-1" d="M93.15,89.88,312.43,151V0A311.45,311.45,0,0,0,93.15,89.88Z"></path>
+          <path class="lcls-4"
+            d="M89.88,93.15,151,312.43h5.13A166.61,166.61,0,0,1,312.43,156.08V151L93.15,89.88C92.06,91,91,92.05,89.88,93.15Z">
+          </path>
+        </g>
+      </svg>
+    </div>
+    <div class="login-title">ITCEN 휴양소</div>
+    <div class="login-sub">임직원 전용 서비스입니다.<br>사번 인증 후 이용해주세요.</div>
+
+    <form id="login-form" onsubmit="return doLogin(event)" novalidate>
+      <div class="login-field">
+        <label for="login-empno">사번</label>
+        <input id="login-empno" type="text" inputmode="numeric" autocomplete="off" placeholder="사번을 입력하세요" />
+      </div>
+      <div class="login-field">
+        <label for="login-pw">비밀번호</label>
+        <input id="login-pw" type="password" autocomplete="off" placeholder="비밀번호를 입력하세요" />
+      </div>
+      <div class="login-error" id="login-error"></div>
+      <label class="login-keep">
+        <input type="checkbox" id="login-keep" />
+        <span>로그인 상태 유지</span>
+      </label>
+      <button type="submit" class="login-submit">로그인</button>
+    </form>
+
+    <div class="login-alt">처음 이용하시나요? <a onclick="openSignup()">사번인증 및 비밀번호 설정</a></div>
+
+    <div class="login-help">문의: 인사복지팀 / 총무팀</div>
+  </div>
+</div>

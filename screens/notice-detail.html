@@ -1,0 +1,65 @@
+<!-- NOTICE DETAIL -->
+<div class="screen" data-screen="notice-detail">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','notice-detail','tips')">
+    <div class="title">공지사항</div>
+    <div class="actions">
+      <i class="ti ti-share-2"></i>
+      <i class="ti ti-bookmark"></i>
+    </div>
+  </div>
+  <div class="content">
+    <div class="notice-detail-hero">
+      <div class="nd-meta" id="nd-meta"></div>
+      <div class="nd-title" id="nd-title"></div>
+      <div class="nd-author">
+        <div class="nd-author-left">
+          <span class="nd-avatar" id="nd-avatar"></span>
+          <span id="nd-author-name"></span>
+        </div>
+        <div class="nd-stats">
+          <span><i class="ti ti-clock"></i><span id="nd-date"></span></span>
+          <span><i class="ti ti-eye"></i><span id="nd-views"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="notice-rich" id="nd-body"></div>
+
+    <div class="notice-attachments" id="nd-attachments">
+      <div class="att-head">
+        <div class="att-head-left">
+          <i class="ti ti-paperclip"></i> 첨부파일
+          <span class="att-count" id="nd-att-count">0개</span>
+        </div>
+        <button class="att-all" onclick="downloadAllFiles()">전체 받기 <i class="ti ti-cloud-download"></i></button>
+      </div>
+      <div id="nd-att-list"></div>
+    </div>
+
+    <div class="nd-action-bar">
+      <button onclick="printNotice()"><i class="ti ti-printer"></i> 인쇄</button>
+      <button class="primary" onclick="downloadAllFiles()"><i class="ti ti-download"></i> 전체 다운로드</button>
+    </div>
+  </div>
+
+  <div class="toast" id="nd-toast"><i class="ti ti-circle-check"></i><span id="nd-toast-msg"></span></div>
+
+  <div class="tabbar">
+    <div class="tab-item" onclick="showScreen('device1','home')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home1_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home1_2.svg" alt=""><span>홈</span>
+    </div>
+    <div class="tab-item active" onclick="showScreen('device1','tips')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home2_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home2_2.svg" alt=""><span>공지</span>
+    </div>
+    <div class="tab-item center" onclick="showScreen('device1','write')">
+      <div class="tab-fab"><i class="ti ti-plus"></i></div>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','resorts')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home3_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home3_2.svg" alt=""><span>휴양소</span>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','map')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home4_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home4_2.svg" alt=""><span>지도</span>
+    </div>
+  </div>
+</div>

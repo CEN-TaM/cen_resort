@@ -1,0 +1,31 @@
+<!-- BADGES -->
+<div class="screen" data-screen="badges">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','badges','my')">
+    <div class="title">내 배지</div>
+    <div class="actions"><i class="ti ti-share"></i></div>
+  </div>
+  <div class="content">
+    <div class="badge-stat">
+      <div class="bcell">
+        <div class="bn" id="badge-got">0</div>
+        <div class="bl">획득 배지</div>
+      </div>
+      <div class="bcell">
+        <div class="bn" id="badge-reviews">0</div>
+        <div class="bl">작성 후기</div>
+      </div>
+      <div class="bcell">
+        <div class="bn" id="badge-likes">0</div>
+        <div class="bl">받은 좋아요</div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="title">배지</div>
+    </div>
+    <!-- 배지는 badges.js renderBadges() 가 실제 활동으로 그린다 (기준은 badges.js BADGES) -->
+    <div class="badge-grid" id="badge-grid"></div>
+    <div style="height:30px"></div>
+  </div>
+</div>
