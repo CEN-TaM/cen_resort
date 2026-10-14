@@ -1,0 +1,91 @@
+<!-- MY -->
+<div class="screen" data-screen="my">
+  <div class="content">
+    <div class="my-header">
+      <div class="my-topbar">
+        <i class="ti ti-arrow-left back" onclick="goBack('device1','my')" role="button" tabindex="0"
+          aria-label="뒤로 가기"></i>
+      </div>
+      <div class="name" id="my-name">관리자</div>
+      <div class="role" id="my-role"></div>
+    </div>
+
+    <div class="point-card">
+      <div class="row1">
+        <div>
+          <div class="plabel">내 휴양소 포인트</div>
+          <div class="pnum"><b id="my-points">-</b> <span>P</span></div>
+        </div>
+        <button class="use-btn" onclick="openPointHistory()">적립내역 →</button>
+      </div>
+      <div class="ranking">후기 1건 작성할 때마다 <b>5P</b>가 적립돼요</div>
+    </div>
+
+    <div class="section-head" style="padding-top:0">
+      <div class="title">내 활동</div>
+    </div>
+    <div class="menu-list" style="margin-bottom:16px">
+      <div class="menu-row" onclick="showScreen('device1','badges')">
+        <div class="micon tone-cream"><i class="ti ti-award"></i></div>
+        <div class="mlabel">내 배지 컬렉션</div>
+        <div class="mext" id="my-badges-count">-</div>
+        <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+      </div>
+      <div class="menu-row" onclick="showScreen('device1','my-reviews')">
+        <div class="micon tone-mint"><i class="ti ti-pencil"></i></div>
+        <div class="mlabel">내가 쓴 후기</div>
+        <div class="mext" id="my-reviews-count">0건</div>
+        <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+      </div>
+      <div class="menu-row" onclick="showScreen('device1','my-tips')">
+        <div class="micon tone-sky"><i class="ti ti-bulb"></i></div>
+        <div class="mlabel">내가 쓴 꿀팁</div>
+        <div class="mext" id="my-tips-count">0건</div>
+        <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="title">설정</div>
+    </div>
+    <div class="menu-list" style="margin-bottom:30px">
+      <div class="menu-row" onclick="openEditProfile()">
+        <div class="micon tone-sky"><i class="ti ti-user-edit"></i></div>
+        <div class="mlabel">회원정보 수정</div>
+        <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+      </div>
+      <div class="menu-row" onclick="showScreen('device1','font-size')">
+        <div class="micon"><i class="ti ti-text-size"></i></div>
+        <div class="mlabel">글자 크기</div>
+        <div class="mext" id="font-size-current">보통</div>
+        <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+      </div>
+      <div class="menu-row">
+        <div class="micon"><i class="ti ti-help"></i></div>
+        <div class="mlabel">고객센터 / FAQ</div>
+        <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
+      </div>
+    </div>
+
+    <button class="logout-btn" onclick="openLogoutConfirm()">
+      <i class="ti ti-logout"></i>로그아웃
+    </button>
+  </div>
+  <div class="tabbar">
+    <div class="tab-item" onclick="showScreen('device1','home')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home1_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home1_2.svg" alt=""><span>홈</span>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','tips')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home2_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home2_2.svg" alt=""><span>공지</span>
+    </div>
+    <div class="tab-item center" onclick="showScreen('device1','write')">
+      <div class="tab-fab"><i class="ti ti-plus"></i></div>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','resorts')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home3_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home3_2.svg" alt=""><span>휴양소</span>
+    </div>
+    <div class="tab-item active" onclick="showScreen('device1','map')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home4_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home4_2.svg" alt=""><span>지도</span>
+    </div>
+  </div>
+</div>

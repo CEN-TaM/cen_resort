@@ -6,7 +6,9 @@
 // 데이터폴더에 있어야 할 파일: meta.json, contents.txt, photomap.json
 // 자세한 설명은 DATA_IMPORT.md
 //
-// 새 데이터를 넣을 때는 아래 RESORT_MAP 과 COMPANIONS 를 그 데이터에 맞게 고친다.
+// 휴양소는 DB resorts 테이블(정식명 · 옛 표기)에서 찾는다. 띄어쓰기는 무시한다 ('경주 휴양소' = '경주휴양소').
+// 못 찾으면 멈추고 알려준다 → 아래 RESORT_MAP 에 '엑셀 표기': 'DB 정식명' 을 적거나, DB 에 옛 표기를 추가한다.
+// 동행은 meta.json 의 companions 배열로 준다 (본문에 드러난 것만 — DATA_IMPORT.md '동행' 참고).
 const { DatabaseSync } = require('node:sqlite');
 const fs = require('fs');
 const path = require('path');
@@ -15,23 +17,17 @@ const { cleanCompanyName } = require('./clean_company');
 const [, , DB_PATH, SP, ...flags] = process.argv;
 const COMMIT = flags.includes('--commit');
 
-// ── 휴양소명: 엑셀 표기 → 앱의 REVIEW_RESORTS 표기
+// ── 휴양소명: 이름이 많이 달라 자동으로 못 찾는 것만 여기 적는다 (엑셀 표기 → DB 정식명)
 const RESORT_MAP = {
-  '속초 힐스 휴양소': '속초(힐스) 휴양소',
-  '속초 서희스타힐스 더베이': '속초(서희) 휴양소',
+  '속초 힐스 휴양소': '속초(힐스)',
+  '속초 서희스타힐스 더베이': '속초(서희)',
+  '제주 애월 1호점': '애월 1호점',
+  '제주 애월 2호점': '애월 2호점',
 };
 
-// ── 동행: 본문에 실제로 드러난 경우만 채운다.
+// ── 동행: 본문에 실제로 드러난 경우만 채운다 (meta.json 의 companions).
 //    엑셀의 recommended_for 는 "누구에게 추천하는 여행인가"(추천 대상)라서
 //    작성자가 누구와 갔는지와는 다른 축이다. 그대로 쓰면 가족+연인처럼 모순된 값이 된다.
-const COMPANIONS = {
-  'RV-GW-SC-000509': ['가족'],   // "가족들과 함께 속초 여행"
-  'RV-GW-SC-000556': ['가족'],   // "저희 가족은 황태해장국이랑..."
-  'RV-GW-SC-000557': ['가족'],   // "이번 이용은 아이들에게 좋은 경험"
-  'RV-GW-SC-000567': ['가족'],   // "회사 휴양소로 가족이 행복하게 쉬었다"
-  'RV-GW-SC-000579': ['가족'],   // "중딩뿐아니라 대딩도 잘 보았네요"
-  'RV-GW-SC-000586': ['가족'],   // "부모님이 좋아하셔서", "아빠랑 둘이서"
-};
 
 // ── AI 추천점수(0~100) → 위치/시설/청결 각 1~5점
 function toRatings(score) {
@@ -69,6 +65,20 @@ const photos = JSON.parse(fs.readFileSync(path.join(SP, 'photomap.json'), 'utf8'
 const contents = loadContents(path.join(SP, 'contents.txt'));
 
 const db = new DatabaseSync(DB_PATH);
+
+// ── DB 휴양소: 정식명 · 옛 표기 → { name, type }  (띄어쓰기를 지운 이름으로도 찾는다)
+const hasResorts = db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'resorts'").get();
+if (!hasResorts) throw new Error('DB 에 resorts 테이블이 없습니다. 새 코드로 서버를 한 번 켠 뒤 다시 실행하세요.');
+const resortByName = {};
+const norm = s => String(s || '').replace(/\s+/g, '');
+const putResort = (key, r) => { resortByName[key] = r; resortByName[norm(key)] = resortByName[norm(key)] || r; };
+db.prepare('SELECT id, name, type FROM resorts').all().forEach(r => putResort(r.name, r));
+db.prepare('SELECT a.alias, r.id, r.name, r.type FROM resort_aliases a JOIN resorts r ON r.id = a.resort_id').all()
+  .forEach(a => putResort(a.alias, { id: a.id, name: a.name, type: a.type }));
+function findResort(excelName) {
+  const key = RESORT_MAP[excelName] || excelName;
+  return resortByName[key] || resortByName[norm(key)] || null;
+}
 const existing = db.prepare('SELECT COUNT(*) c FROM reviews').get().c;
 const dup = db.prepare('SELECT id FROM reviews WHERE author_name = ? AND created_at = ?');
 const insReview = db.prepare(`INSERT INTO reviews
@@ -83,16 +93,24 @@ const report = [];
 for (const rec of meta) {
   const c = contents[rec.review_id];
   if (!c) { console.log('본문 없음, 건너뜀:', rec.review_id); skipped++; continue; }
+  // xlsx_to_meta.js 가 만든 틀을 채우지 않은 채 넣지 않게 막는다
+  if (/^\(본문 —/.test(c.content) || /YYYY/.test(c.when)) {
+    throw new Error(`${rec.review_id}: contents.txt 의 본문 · 작성일시를 아직 채우지 않았습니다 (원본 PDF 에서 옮기세요)`);
+  }
 
-  const resort = RESORT_MAP[rec.resort_name];
-  if (!resort) throw new Error('휴양소명 매핑 없음: ' + rec.resort_name);
+  const resortRow = findResort(rec.resort_name);
+  if (!resortRow) {
+    throw new Error(`휴양소를 찾을 수 없음: '${rec.resort_name}' — RESORT_MAP 에 추가하세요. DB 휴양소: ` +
+      [...new Set(Object.values(resortByName).map(r => r.name))].join(', '));
+  }
+  const resort = resortRow.name;
 
   const createdAt = toUtc(c.when);
   if (dup.get(rec.author_name, createdAt)) { console.log('이미 있음, 건너뜀:', rec.review_id); skipped++; continue; }
 
-  const comp = COMPANIONS[rec.review_id] || [];
+  const comp = Array.isArray(rec.companions) ? rec.companions : [];
   const r = toRatings(rec.ai_recommend_score);
-  const info = insReview.run(null, rec.author_name, resort, 'regular', JSON.stringify(comp),
+  const info = insReview.run(null, rec.author_name, resort, resortRow.type, JSON.stringify(comp),
     c.content, r.location, r.facility, r.clean, r.avg, c.likes, createdAt,
     rec.department || null, cleanCompanyName(rec.company) || null);   // 법인 표기는 떼고 넣는다
 

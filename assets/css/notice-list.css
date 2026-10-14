@@ -92,7 +92,8 @@
   margin-bottom: 8px;
 }
 
-.notice-card .pin {
+.notice-card .pin,
+.notice-detail-hero .nd-meta .pin {
   font-size: 11px;
   font-weight: 800;
   color: var(--brand-dark);
@@ -105,7 +106,8 @@
   letter-spacing: -0.01em;
 }
 
-.notice-card .pin i {
+.notice-card .pin i,
+.notice-detail-hero .nd-meta .pin i {
   font-size: 13px;
 }
 
@@ -143,4 +145,13 @@
 
 .notice-card .notice-foot .views i {
   font-size: 13px;
+}
+
+/* 공지 분류 칩: 스크롤해도 헤더 바로 아래에 붙어 있게 (휴양소 탭과 같은 방식 — top 은 헤더 높이 48px, base.css)
+   배경은 화면 바탕색으로 채워 아래 카드가 비치지 않게 */
+.screen[data-screen="tips"] .notice-cats {
+  position: sticky;
+  top: 48px;
+  z-index: 5;
+  background: var(--surface-2);
 }

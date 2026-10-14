@@ -510,3 +510,29 @@
   margin-top: 12px;
   font-size: 12px;
 }
+
+/* 꿀팁 상세: 내 꿀팁(또는 관리자)만 보이는 수정 · 삭제 */
+.tip-detail-body .td-top {
+  display: flex;
+  align-items: center;
+}
+
+.tip-detail-body .td-manage {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.tip-detail-body .td-manage button {
+  border: 0;
+  background: none;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.tip-detail-body .td-manage button.del:hover {
+  color: #E94A4A;
+}

@@ -72,8 +72,13 @@ async function submitReview(deviceId) {
 
     // 방금 등록한 휴양소를 기억 → 상세 진입 시 최신 목록 반영
     lastSubmittedResort = data.resortName;
-    // 등록 완료 모달 표시 (+300P)
+    // 등록 완료 모달 — 적립된 포인트는 서버가 알려준 값으로
+    const gain = document.getElementById('point-gain');
+    if (gain && typeof json.pointsAwarded === 'number') gain.textContent = '+' + json.pointsAwarded + 'P';
+    const who = document.getElementById('point-modal-name');
+    if (who && typeof composeDisplayName === 'function') who.textContent = composeDisplayName(getProfile());
     document.getElementById('modal-' + deviceId).classList.add('show');
+    if (typeof refreshMyPoints === 'function') refreshMyPoints();
     // 폼 초기화
     resetReviewForm();
     // 홈 '실시간 후기' 즉시 갱신
@@ -97,18 +102,24 @@ function resetReviewForm() {
   const grid = form.querySelector('#photo-grid');
   if (grid) grid.querySelectorAll('.photo-thumb').forEach(el => el.remove());
   if (typeof updatePhotoCount === 'function') updatePhotoCount();
+  // 동행은 고른 사람만 (미리 골라 두지 않는다 — 실제로 누구와 갔는지만 남게)
+  form.querySelectorAll('.companion-chip.active').forEach(c => c.classList.remove('active'));
 }
 function closeModal(deviceId) {
   document.getElementById('modal-' + deviceId).classList.remove('show');
-  showScreen(deviceId, 'home');
+  const r = writeFixedResort;
+  if (!r) { showScreen(deviceId, 'home'); return; }
+  // 휴양소 상세에서 왔으면 그 상세로 되돌아가(뒤로가기 기록에 작성 화면이 남지 않게) 후기 탭을 보여 준다
+  applyWriteResortLock(null);
+  if (navIdx > 0) { openReviewsTabNext = true; history.back(); }
+  else openResort(r.name, 'reviews');
 }
+// closeModal → history.back() 으로 상세가 다시 열릴 때 후기 탭으로 (tips.js openResort 가 읽고 끈다)
+let openReviewsTabNext = false;
 
 // 후기 작성: 휴양소 구분 → 휴양소 선택 (2단계)
-const REVIEW_RESORTS = {
-  regular: ['부산휴양소(해운대)', '부산휴양소(기장)', '속초(힐스)', '속초(서희)', '경주휴양소', '조천 휴양소', '애월 1호점', '애월 2호점', '보령 휴양소', '여수휴양소', '과천휴양소(1001호)', '과천휴양소(504호)'],
-  summer: ['제주(서귀포)', '부산(송도)', '여수(금오도)', '인천(영흥도)', '인천(강화)', '경기(포천)', '경기(가평)', '충남(태안)'],
-  winter: ['무주', '고성', '평창', '가평', '홍천', '충남']
-};
+// 선택지는 휴양소 데이터에서 채운다 (resort-data.js fillReviewResortOptions)
+const REVIEW_RESORTS = { regular: [], summer: [], winter: [] };
 function selectReviewType(btn, type) {
   const seg = btn.parentElement;
   seg.querySelectorAll('.rts-btn').forEach(b => b.classList.remove('active'));
@@ -123,6 +134,34 @@ function selectReviewType(btn, type) {
   if (sel) sel.innerHTML = REVIEW_RESORTS.regular.map(n => `<option value="${n}">${n}</option>`).join('');
 })();
 
+// 휴양소 상세 후기 탭의 '후기 작성하기' — 보던 휴양소를 골라 둔 채 작성 화면을 연다
+// 이렇게 들어오면 휴양소를 바꿀 수 없게 고정하고, 등록 뒤 그 휴양소 후기 탭으로 돌아간다.
+// 하단 + 버튼으로 들어오면 고정을 푼다 (core.js showScreen 이 applyWriteResortLock(opts.fixedResort) 를 부른다)
+let writeFixedResort = null;
+function writeReviewForDetail() {
+  const r = RESORT[window._detailResort];
+  showScreen('device1', 'write', { fixedResort: r || null });
+}
+function applyWriteResortLock(r) {
+  writeFixedResort = r || null;
+  const fixed = document.getElementById('rv-fixed-resort');
+  const pick = document.getElementById('rv-resort-pick');
+  if (fixed) fixed.hidden = !r;
+  if (pick) pick.hidden = !!r;
+  if (!r) return;
+  // 등록 값은 그대로 구분 버튼 · 선택칸에서 읽으므로(collectReviewForm) 둘 다 맞춰 둔다
+  const btn = document.querySelector(`.resort-type-seg .rts-btn[onclick*="'${r.type}'"]`);
+  if (btn) selectReviewType(btn, r.type);
+  const sel = document.getElementById('rv-resort-select');
+  if (sel) sel.value = r.name;
+  const t = document.getElementById('rv-fixed-type');
+  // 상세 제목 옆 뱃지와 같은 글자 (예: 정기휴양소 · 2026 하계 이벤트 휴양소)
+  const dt = document.getElementById('detail-resort-type');
+  if (t) t.textContent = (dt && dt.textContent.trim()) || ((TYPE_LABEL[r.type] || '') + ' 휴양소');
+  const n = document.getElementById('rv-fixed-name');
+  if (n) n.textContent = r.name;
+}
+
 // 동행 선택 칩 토글 (복수 선택)
 function toggleChip(el) {
   el.classList.toggle('active');
@@ -130,13 +169,21 @@ function toggleChip(el) {
 
 // ===== 사진 첨부 =====
 const PHOTO_MAX = 10;
+// 서버(server/index.js decodePhoto)와 같은 규칙 — 다른 형식은 서버가 후기 전체를 거절하므로 고를 때 미리 걸러 준다
+const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const PHOTO_MAX_BYTES = 10 * 1024 * 1024;
 function addPhotos(input) {
   const grid = document.getElementById('photo-grid');
   const addCell = document.getElementById('photo-add');
   if (!grid || !addCell) return;
   const used = grid.querySelectorAll('.photo-thumb').length;
   let remaining = PHOTO_MAX - used;
-  const files = Array.from(input.files || []).filter(f => f.type.startsWith('image/'));
+  const picked = Array.from(input.files || []);
+  const files = picked.filter(f => PHOTO_TYPES.includes(f.type) && f.size <= PHOTO_MAX_BYTES);
+  if (files.length < picked.length && typeof showToast === 'function') {
+    const wrongType = picked.some(f => !PHOTO_TYPES.includes(f.type));
+    showToast(wrongType ? '사진은 JPG · PNG · WEBP 만 올릴 수 있어요' : '사진은 한 장에 10MB 까지 올릴 수 있어요');
+  }
   if (files.length > remaining && typeof showToast === 'function') {
     showToast(`사진은 최대 ${PHOTO_MAX}장까지 첨부할 수 있어요`);
   }

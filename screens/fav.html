@@ -1,0 +1,34 @@
+<!-- FAV -->
+<div class="screen" data-screen="fav">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
+    <div class="title">⭐ 즐겨찾기</div>
+    <div class="actions"><i class="ti ti-arrows-sort" onclick="openFavSortSheet()" title="정렬"></i></div>
+  </div>
+  <div class="content">
+    <div style="padding:14px 18px 4px;font-size:11px;color:#475569">총 <span id="fav-count">0</span>곳을 즐겨찾기했어요
+    </div>
+    <div class="fav-grid" id="fav-grid"></div>
+    <div id="fav-empty" style="display:none;text-align:center;padding:40px 20px;color:#475569;font-size:13px">
+      ⭐ 즐겨찾기한 휴양소가 없어요.<br><br>
+      <span style="font-size:11px">홈에서 별표 ⭐ 를 눌러 즐겨찾기에 추가해보세요!</span>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab-item" onclick="showScreen('device1','home')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home1_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home1_2.svg" alt=""><span>홈</span>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','tips')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home2_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home2_2.svg" alt=""><span>공지</span>
+    </div>
+    <div class="tab-item center" onclick="showScreen('device1','write')">
+      <div class="tab-fab"><i class="ti ti-plus"></i></div>
+    </div>
+    <div class="tab-item active" onclick="showScreen('device1','resorts')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home3_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home3_2.svg" alt=""><span>휴양소</span>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','map')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home4_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home4_2.svg" alt=""><span>지도</span>
+    </div>
+  </div>
+</div>

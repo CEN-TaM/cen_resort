@@ -191,7 +191,7 @@
 .badge-grid {
   margin: 0 18px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr))  /* 설명이 길어도 칸 폭을 넘지 않게 */;
   gap: 12px;
 }
 
@@ -357,4 +357,73 @@
   font-size: 12px;
   line-height: 1.6;
   color: var(--text-3);
+}
+
+/* 휴양소 포인트 적립내역 (바텀시트) */
+.point-history {
+  padding: 4px 18px 22px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.point-history .ph-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 0 12px;
+  border-bottom: 1px solid #E8EAEE;
+  font-size: 13px;
+  color: #475569;
+}
+
+.point-history .ph-total b {
+  font-size: 18px;
+  color: #0F172A;
+}
+
+.point-history .ph-total span {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.point-history .ph-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #F1F3F6;
+}
+
+.point-history .ph-title {
+  font-size: 13px;
+  color: #0F172A;
+}
+
+.point-history .ph-date {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.point-history .ph-amt {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.point-history .ph-amt.plus { color: #1F4FE0; }
+.point-history .ph-amt.minus { color: #94A3B8; }
+
+.point-history .ph-empty {
+  padding: 28px 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #94A3B8;
+}
+
+/* 배지 설명 (badges.js — 못 받은 배지는 "기준 · 지금/목표") */
+.badge-item .bdesc {
+  max-width: 100%;
+  word-break: keep-all;
+  line-height: 1.35;
 }

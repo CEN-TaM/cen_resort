@@ -18,6 +18,7 @@ async function toggleLike(event, id) {
   try {
     const res = await ReviewAPI.like(rv, next);
     if (res && typeof res.likes === 'number') rv.likes = res.likes;
+    if (res && typeof res.liked === 'boolean') rv.liked = res.liked;   // 서버가 기록한 내 좋아요 상태
   } catch (e) {
     rv.liked = !next;
     rv.likes = Math.max(0, rv.likes + (next ? -1 : 1));

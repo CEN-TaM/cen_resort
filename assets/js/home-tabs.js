@@ -44,18 +44,10 @@ function toggleReviewSort(event) {
   if (menu) menu.classList.toggle('open');
 }
 function sortReviews(mode) {
-  const cards = Array.from(document.querySelectorAll('.screen[data-screen="home"] .review-card'));
-  if (cards.length) {
-    const parent = cards[0].parentNode;
-    const getDays = c => { const e = c.querySelector('.meta'); const m = e ? e.textContent.match(/(\d+)\s*일/) : null; return m ? parseInt(m[1], 10) : 999; };
-    const getLikes = c => { const b = c.querySelector('.like-count'); return b ? (parseInt(b.textContent, 10) || 0) : 0; };
-    const getRating = c => { const b = c.querySelector('.rating-num'); return b ? (parseFloat(b.textContent) || 0) : 0; };
-    if (mode === 'recent') cards.sort((a, b) => getDays(a) - getDays(b));
-    else if (mode === 'likes') cards.sort((a, b) => getLikes(b) - getLikes(a));
-    else if (mode === 'rating') cards.sort((a, b) => getRating(b) - getRating(a));
-    cards.forEach(c => parent.appendChild(c));
-  }
-  const labels = { recent: '최신순', likes: '좋아요순', rating: '평점순' };
+  // 홈 후기를 그 기준으로 다시 골라 그린다 (review-server.js loadHomeReviews)
+  homeReviewSort = mode === 'likes' ? 'likes' : 'recent';
+  if (typeof loadHomeReviews === 'function') loadHomeReviews();
+  const labels = { recent: '최신순', likes: '좋아요순' };
   const lbl = document.getElementById('review-sort-label');
   if (lbl) lbl.textContent = (labels[mode] || '최신순') + ' ▾';
   document.querySelectorAll('#review-sort-menu .sort-menu-item').forEach(it => {

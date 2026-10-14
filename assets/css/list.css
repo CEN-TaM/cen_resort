@@ -255,3 +255,11 @@
   font-size: 12px;
   margin-top: 4px;
 }
+
+/* 공지 없음 (notice.js renderNotices) */
+.notice-none {
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: #94A3B8;
+}

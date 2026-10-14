@@ -155,16 +155,34 @@ body {
   flex: none;
 }
 
+/* 제목은 양쪽 버튼 수와 상관없이 헤더 정가운데 — 버튼 칸(왼쪽 뒤로가기 · 오른쪽 아이콘)과 떨어뜨려 띄운다.
+   (흐름 안에 두면 왼쪽 24px · 오른쪽 0~60px 처럼 버튼 폭이 달라 제목이 그만큼 치우친다)
+   좌우 84px 은 오른쪽 아이콘 2개(24+12+24) + 여백 자리. 긴 제목은 … 으로 줄인다 */
+.app-header {
+  min-height: 48px;
+}
+
 .app-header .title {
+  position: absolute;
+  top: 14px;
+  bottom: 10px;
+  left: 84px;
+  right: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
   font-weight: 700;
-  flex: 1;
-  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
 }
 
 .app-header .actions {
   display: flex;
   gap: 12px;
+  margin-left: auto;   /* 뒤로가기가 없는 헤더에서도 오른쪽 끝에 */
   color: #475569;
 }
 

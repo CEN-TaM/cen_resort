@@ -1,0 +1,56 @@
+<!-- RESORTS : 휴양소 목록 (정기 · 이벤트 탭) -->
+<div class="screen" data-screen="resorts">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
+    <div class="title">휴양소</div>
+    <div class="actions"></div>
+  </div>
+  <div class="content">
+    <div class="sticky-header">
+      <div class="main-tab">
+        <div class="mtab active" onclick="switchResortTab(this,1)">정기 휴양소</div>
+        <div class="mtab" onclick="switchResortTab(this,2)">이벤트 휴양소</div>
+      </div>
+    </div>
+    <!-- 탭 패널: 정기 휴양소 -->
+    <div class="mtab-pane active" data-mtab-pane="1">
+      <div class="resort-list-head">정기 휴양소 <b data-resort-count="regular">-</b> · 연중 상시 운영</div>
+      <div class="resort-list" id="resort-list-regular"></div>
+    </div><!-- /탭 패널: 정기 휴양소 -->
+
+    <!-- 탭 패널: 이벤트 휴양소 -->
+    <div class="mtab-pane" data-mtab-pane="2">
+      <div class="resort-list-head">이벤트 휴양소 <b data-resort-count="event">-</b> · 시즌 한정 운영</div>
+
+      <div class="event-seg">
+        <button class="event-seg-btn active" onclick="selectEventSeg(this,'summer')">하계 휴양소 <em data-resort-count="summer">-</em></button>
+        <button class="event-seg-btn" onclick="selectEventSeg(this,'winter')">동계 휴양소 <em data-resort-count="winter">-</em></button>
+      </div>
+
+      <div class="event-group active" data-group="summer">
+        <div class="resort-list" id="resort-list-summer"></div>
+      </div><!-- /event-group summer -->
+
+      <div class="event-group" data-group="winter">
+        <div class="resort-list" id="resort-list-winter"></div>
+      </div><!-- /event-group winter -->
+    </div><!-- /탭 패널: 이벤트 휴양소 -->
+  </div>
+  <div class="tabbar">
+    <div class="tab-item" onclick="showScreen('device1','home')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home1_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home1_2.svg" alt=""><span>홈</span>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','tips')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home2_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home2_2.svg" alt=""><span>공지</span>
+    </div>
+    <div class="tab-item center" onclick="showScreen('device1','write')">
+      <div class="tab-fab"><i class="ti ti-plus"></i></div>
+    </div>
+    <div class="tab-item active" onclick="showScreen('device1','resorts')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home3_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home3_2.svg" alt=""><span>휴양소</span>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','map')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home4_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home4_2.svg" alt=""><span>지도</span>
+    </div>
+  </div>
+</div>

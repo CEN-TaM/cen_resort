@@ -1,0 +1,20 @@
+<!-- SEARCH : 전체 검색 화면 -->
+<div class="screen" data-screen="search">
+  <div class="sticky-header">
+    <div class="map-topbar">
+      <button class="back" onclick="goBack('device1','search')"><img src="assets/images/ico_back.png" alt="뒤로가기"></button>
+      <div class="search-group">
+        <input id="global-search-input" type="search" inputmode="search" autocomplete="off" autocapitalize="none"
+          class="search-input" placeholder="휴양소를 검색해 보세요" oninput="performSearch(this.value)"
+          onkeydown="if (event.key === 'Enter') commitSearch(this.value)">
+        <button class="search-btn"
+          onclick="commitSearch(document.getElementById('global-search-input').value)" aria-label="검색">
+          <img class="search-ico" src="assets/images/ico_search.svg" alt="검색">
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="content" style="padding:14px;">
+    <div id="search-results" style="display:flex;flex-direction:column;gap:12px;"></div>
+  </div>
+</div>

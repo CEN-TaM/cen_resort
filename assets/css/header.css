@@ -330,3 +330,38 @@
   padding: 1px 6px;
   line-height: 1.4;
 }
+
+/* 휴양소 화면: 스크롤해도 '정기 휴양소 / 이벤트 휴양소' 탭이 헤더 바로 아래에 붙어 있게 (휴양소 상세 '후기' 탭과 같은 방식)
+   top 은 헤더 높이(.app-header min-height 48px — base.css) */
+.screen[data-screen="resorts"] .sticky-header {
+  position: sticky;
+  top: 48px;
+}
+
+/* 탭 모양은 휴양소 상세 '휴양소 정보 / 후기' 탭(detail.css .tab-nav)과 같게:
+   흰 배경 · 모서리 없음 · 좌우 18px 안쪽 회색 바닥선 · 16px · 선택 = 검정 글씨 + 검정 밑줄 */
+.screen[data-screen="resorts"] .sticky-header,
+.screen[data-screen="resorts"] .sticky-header.scrolled {
+  background: var(--surface);
+  border-radius: 0;
+}
+
+.screen[data-screen="resorts"] .sticky-header .main-tab {
+  padding: 0 18px;
+  background: linear-gradient(var(--border), var(--border)) 18px 100% / calc(100% - 36px) 1px no-repeat var(--surface);
+  border-radius: 0;
+}
+
+.screen[data-screen="resorts"] .sticky-header .mtab {
+  padding: 13px 0 11px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #64748B;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.screen[data-screen="resorts"] .sticky-header .mtab.active {
+  color: var(--text-1);
+  font-weight: 700;
+  border-bottom-color: var(--text-1);
+}

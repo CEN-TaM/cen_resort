@@ -1,0 +1,49 @@
+<!-- NOTICE -->
+<div class="screen" data-screen="tips">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
+    <div class="title">공지사항</div>
+    <div class="actions"></div>
+  </div>
+  <div class="content">
+    <div class="notice-search" id="notice-search">
+      <i class="ti ti-search"></i>
+      <input id="notice-search-input" type="search" autocomplete="off" placeholder="제목·내용 검색"
+        oninput="searchNotices(this.value)">
+      <i class="ti ti-x" onclick="clearNoticeSearch()"></i>
+    </div>
+    <div class="notice-cats">
+      <span class="notice-cat active" onclick="selectNoticeCat(this)">전체</span>
+      <span class="notice-cat" onclick="selectNoticeCat(this)">이용수칙</span>
+      <span class="notice-cat" onclick="selectNoticeCat(this)">예약</span>
+      <span class="notice-cat" onclick="selectNoticeCat(this)">복지포인트</span>
+      <span class="notice-cat" onclick="selectNoticeCat(this)">이벤트</span>
+      <span class="notice-cat" onclick="selectNoticeCat(this)">시설</span>
+    </div>
+
+    <!-- 공지 카드는 notice.js renderNotices() 가 그린다 (서버 DB 공지, 서버가 없으면 예시 공지) -->
+    <div id="notice-list"></div>
+
+    <div id="notice-empty" style="display:none;text-align:center;padding:40px 20px;color:#94A3B8;font-size:13px">
+      🔍 검색 결과가 없습니다.
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab-item" onclick="showScreen('device1','home')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home1_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home1_2.svg" alt=""><span>홈</span>
+    </div>
+    <div class="tab-item active" onclick="showScreen('device1','tips')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home2_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home2_2.svg" alt=""><span>공지</span>
+    </div>
+    <div class="tab-item center" onclick="showScreen('device1','write')">
+      <div class="tab-fab"><i class="ti ti-plus"></i></div>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','resorts')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home3_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home3_2.svg" alt=""><span>휴양소</span>
+    </div>
+    <div class="tab-item" onclick="showScreen('device1','map')">
+      <img class="tab-ico ico-off" src="assets/images/ico_home4_1.svg" alt=""><img class="tab-ico ico-on" src="assets/images/ico_home4_2.svg" alt=""><span>지도</span>
+    </div>
+  </div>
+</div>

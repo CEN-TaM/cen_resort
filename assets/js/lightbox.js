@@ -141,6 +141,11 @@ function syncDetailStats(reviews) {
 // 서버 후기나 그 휴양소 전용 샘플이면 총계(평점·후기 수)를 그 값으로 맞추고,
 // 공용 샘플(자기 샘플이 없는 휴양소)이면 openResort() 가 넣은 총계를 그대로 둔다 (예전 동작).
 async function loadServerReviews(resortName) {
+  // 다른 휴양소로 바뀌면 필터를 비운다 (삭제 후 같은 휴양소를 다시 읽을 때는 그대로)
+  if (window._detailResort !== resortName) {
+    revCompanionFilter = new Set();
+    const po = document.getElementById('rev-photo-only'); if (po) po.checked = false;
+  }
   window._detailResort = resortName; // 삭제 후 상세 새로고침용
   let real = false;
   try {
@@ -154,14 +159,48 @@ async function loadServerReviews(resortName) {
   }
   if (window._detailResort !== resortName) return;   // 그사이 다른 휴양소를 열었다
   if (real) syncDetailStats(detailReviews);
+  renderReviewFilters();
   renderReviewList();
 }
 
-// 후기 목록을 다시 그린다 (필터는 6단계에서 붙인다)
+// 후기 필터 — 동행(여러 개 고르면 하나라도 맞는 후기) · 사진 있는 후기만
+const REV_COMPANIONS = ['가족', '친구', '연인', '동료', '혼자'];   // 후기 작성 화면(write.html)의 동행 칩과 같은 이름
+let revCompanionFilter = new Set();
+
+// 동행 칩 — 지금 휴양소 후기에서 실제로 센 숫자. 0건인 동행은 칩을 만들지 않는다
+function renderReviewFilters() {
+  const row = document.getElementById('rev-companion-row');
+  const box = document.getElementById('rev-companion-chips');
+  if (!row || !box) return;
+  // 사진 후기 수 — 0건이면 토글을 숨긴다 (눌러도 빈 목록뿐이라)
+  const photoN = detailReviews.filter(r => (r.photos || []).length).length;
+  const po = document.getElementById('rev-photo-only');
+  const pc = document.getElementById('rev-photo-count');
+  if (pc) pc.textContent = photoN;
+  if (po) { po.closest('label').hidden = !photoN; if (!photoN) po.checked = false; }
+  const count = {};
+  detailReviews.forEach(r => (r.companions || []).forEach(c => { count[c] = (count[c] || 0) + 1; }));
+  const names = [...REV_COMPANIONS, ...Object.keys(count).filter(c => !REV_COMPANIONS.includes(c))].filter(c => count[c]);
+  revCompanionFilter = new Set([...revCompanionFilter].filter(c => count[c]));
+  row.hidden = !names.length;
+  box.innerHTML = names.map(c => `<button class="rev-chip${revCompanionFilter.has(c) ? ' active' : ''}" onclick="toggleRevCompanion('${escapeHtml(c)}')">${escapeHtml(c)}<em>${count[c]}</em></button>`).join('');
+}
+function toggleRevCompanion(c) {
+  revCompanionFilter.has(c) ? revCompanionFilter.delete(c) : revCompanionFilter.add(c);
+  renderReviewFilters();
+  renderReviewList();
+}
+
 function renderReviewList() {
   const box = document.getElementById('server-reviews');
   if (!box) return;
-  box.innerHTML = detailReviews.length
-    ? detailReviews.map(serverReviewCard).join('')
-    : '<div class="rv-empty">아직 등록된 후기가 없어요.<br>다녀오셨다면 첫 후기를 남겨 주세요!</div>';
+  const photoOnly = !!(document.getElementById('rev-photo-only') || {}).checked;
+  const list = detailReviews.filter(r =>
+    (!photoOnly || (r.photos || []).length) &&
+    (!revCompanionFilter.size || (r.companions || []).some(c => revCompanionFilter.has(c))));
+  box.innerHTML = list.length
+    ? list.map(serverReviewCard).join('')
+    : detailReviews.length
+      ? '<div class="rv-empty">조건에 맞는 후기가 없어요.</div>'
+      : '<div class="rv-empty">아직 등록된 후기가 없어요.<br>다녀오셨다면 첫 후기를 남겨 주세요!</div>';
 }

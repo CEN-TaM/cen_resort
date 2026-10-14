@@ -53,8 +53,39 @@ npm start            # http://localhost:8999 에서 실행
 ```
 
 - 브라우저에서 **http://localhost:8999** 접속 → 후기 작성/조회 테스트.
-- ⚠️ 로컬은 **각자 빈 DB**입니다. 애월 실제 후기 16건은 **서버에만** 있어요.
-- 데이터(DB)·사진은 git에 없습니다(`server/data/`, `server/uploads/`는 `.gitignore`).
+- ⚠️ 데이터는 **각자 PC 의 DB 파일**(`server/data/reviews.db`)에 따로 있습니다. git 에 없습니다(`server/data/`, `server/uploads/`는 `.gitignore`).
+  - 처음 켜면 휴양소 기본 26곳은 자동으로 들어가고, **후기 · 회원은 비어 있습니다.**
+  - 로그인하려면 내 PC DB 에 계정을 만듭니다: `node tools/users.js add <사번> <이름> --password` (자세한 건 `server/README.md` '직원 명단 · 로그인')
+  - 실제 후기 · 휴양소 정보 · 사진을 넣는 방법은 `DATA_IMPORT.md`.
+
+---
+
+## 1.2 화면 파일 구조 (⚠️ index.html 은 직접 고치지 않아요)
+
+화면은 **`screens/` 폴더에 화면마다 파일 하나**로 나뉘어 있습니다. `index.html` 은 이 파일들을 합쳐서 **자동으로 만들어지는 결과물**입니다.
+
+| 파일 | 내용 |
+|---|---|
+| `screens/_layout.html` | 뼈대 (head, 스타일·스크립트 연결, 화면이 들어갈 자리) |
+| `screens/home.html`, `detail.html`, `map.html` … | 화면 하나씩 (19개) |
+| `screens/_popups.html` | 여러 화면이 같이 쓰는 팝업 · 바텀시트 · 토스트 |
+
+- 화면을 고칠 때는 **`screens/<화면>.html` 만** 고칩니다.
+- `npm start` 로 서버를 켜 두면 저장할 때마다 `index.html` 이 **자동으로 다시 만들어집니다.** 서버 없이 작업했다면 `cd server && npm run build`.
+- 커밋할 때 `screens/` 와 함께 **바뀐 `index.html` 도 같이** 올립니다 (파일 더블클릭 · GitHub Pages 가 index.html 을 그대로 씁니다).
+- 합칠 때 `index.html` 이 충돌하면 고치지 말고 `npm run build` 로 다시 만들면 됩니다.
+
+### 화면 주소
+
+화면마다 주소가 있습니다. 새로고침해도 그 화면이 유지되고, 링크를 공유할 수 있고, 폰 뒤로가기가 앱 안에서 동작합니다.
+
+| 주소 | 화면 |
+|---|---|
+| `#/home` `#/resorts` `#/map` `#/my` … | 화면 이름 그대로 |
+| `#/resort/<휴양소 id>` | 휴양소 상세 (예: `#/resort/gyeongju`) |
+| `#/notice/<공지 id>` | 공지 상세 |
+
+로그인 전에 링크를 열면 로그인한 뒤 그 화면으로 갑니다. 화면 전환은 계속 `showScreen()` 을 쓰면 주소가 알아서 붙습니다 (`assets/js/core.js`).
 
 ---
 
@@ -125,7 +156,7 @@ ssh-copy-id -i ~/.ssh/cen_resort_deploy.pub -p 7722 devadm01@192.168.64.57
 공용 계정 `devadm01`에는 아래가 **이미 준비돼 있습니다.** 팀원은 다시 설치할 필요 없어요:
 
 - ✅ Node 22 (`~/opt/node`), npm, **pm2**
-- ✅ 앱 코드 + 애월 후기 DB/사진 (`~/cen_resort`)
+- ✅ 앱 코드 + 후기 DB/사진 (`~/cen_resort`, DB 는 `server/data/reviews.db`)
 - ✅ 방화벽 8999 개방, **재부팅 시 자동 실행**(pm2 startup)
 - ✅ 서비스 주소: **http://192.168.64.57:8999** (VPN 접속 후)
 

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CEN-TaM - 사내 휴양소 후기</title>
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/header.css">
+  <link rel="stylesheet" href="assets/css/tabs-chips.css">
+  <link rel="stylesheet" href="assets/css/banner.css">
+  <link rel="stylesheet" href="assets/css/cards.css">
+  <link rel="stylesheet" href="assets/css/favorite.css">
+  <link rel="stylesheet" href="assets/css/comment.css">
+  <link rel="stylesheet" href="assets/css/detail.css">
+  <link rel="stylesheet" href="assets/css/notice-list.css">
+  <link rel="stylesheet" href="assets/css/notice-detail.css">
+  <link rel="stylesheet" href="assets/css/review.css">
+  <link rel="stylesheet" href="assets/css/write.css">
+  <link rel="stylesheet" href="assets/css/mypage.css">
+  <link rel="stylesheet" href="assets/css/tips.css">
+  <link rel="stylesheet" href="assets/css/list.css">
+  <link rel="stylesheet" href="assets/css/modal.css">
+  <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="stylesheet" href="assets/css/user-status.css">
+  <link rel="stylesheet" href="assets/css/signup.css">
+  <link rel="stylesheet" href="assets/css/device.css">
+  <link rel="stylesheet" href="assets/css/map.css">
+  <link rel="stylesheet" href="assets/css/notification.css">
+  <link rel="stylesheet" href="assets/css/tooltip.css">
+</head>
+
+<body>
+
+  <div class="device-stage">
+
+    <!-- ====== DEVICE (인터랙티브 프로토타입) ====== -->
+    <div class="device" id="device1">
+
+      <!-- @include login.html -->
+
+      <!-- @include signup.html -->
+
+      <!-- @include edit-profile.html -->
+
+      <!-- @include home.html -->
+
+      <!-- @include resorts.html -->
+
+      <!-- @include popular.html -->
+
+      <!-- @include detail.html -->
+
+      <!-- @include write.html -->
+
+      <!-- @include tips.html -->
+
+      <!-- @include notice-detail.html -->
+
+      <!-- @include fav.html -->
+
+      <!-- @include my.html -->
+
+      <!-- @include badges.html -->
+
+      <!-- @include my-reviews.html -->
+
+      <!-- @include my-tips.html -->
+
+      <!-- @include font-size.html -->
+
+      <!-- @include map.html -->
+
+      <!-- @include search.html -->
+
+      <!-- @include notifications.html -->
+
+      <!-- @include _popups.html -->
+
+    </div>
+  </div>
+
+  <!-- 데이터 -->
+  <script src="assets/js/data/icon-map.js"></script>
+  <script src="assets/js/data/notices.js"></script>
+  <script src="assets/js/data/images.js"></script>
+  <script src="assets/js/data/resorts.js"></script>
+  <script src="assets/js/data/map-markers.js"></script>
+  <script src="assets/js/data/tips-data.js"></script>
+  <script src="assets/js/data/reviews-sample.js"></script>
+
+  <!-- 스크립트 -->
+  <script src="assets/js/core.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/signup.js"></script>
+  <script src="assets/js/search-notify.js"></script>
+  <script src="assets/js/review-write.js"></script>
+  <script src="assets/js/data-source.js"></script>
+  <script src="assets/js/social.js"></script>
+  <script src="assets/js/home-tabs.js"></script>
+  <script src="assets/js/banner.js"></script>
+  <script src="assets/js/filters.js"></script>
+  <script src="assets/js/notice.js"></script>
+  <script src="assets/js/notification.js"></script>
+  <script src="assets/js/detail.js"></script>
+  <script src="assets/js/favorites.js"></script>
+  <script src="assets/js/resort.js"></script>
+  <script src="assets/js/common-ui.js"></script>
+  <script src="assets/js/tips.js"></script>
+  <script src="assets/js/review-comments.js"></script>
+  <script src="assets/js/lightbox.js"></script>
+  <script src="assets/js/review-server.js"></script>
+  <script src="assets/js/points.js"></script>
+  <script src="assets/js/badges.js"></script>
+  <script src="assets/js/hscroll.js"></script>
+  <script src="assets/js/scroll-pattern.js"></script>
+  <script src="assets/js/map.js"></script>
+  <script src="assets/js/scroll-tooltip.js"></script>
+  <script src="assets/js/font-size.js"></script>
+  <!-- 휴양소 데이터로 목록·지도·선택지를 그린다. 다른 스크립트의 함수를 쓰므로 맨 마지막에 둔다 -->
+  <script src="assets/js/resort-data.js"></script>
+
+  <!-- 스크롤 안내 툴팁 -->
+  <div id="scroll-tooltip" onclick="hideScrollTooltip()">
+    <div class="stt-icon">
+      <svg width="36" height="36" viewBox="0 0 56 56" fill="none">
+        <path d="M22 16V31" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+        <path d="M16 24L22 31L28 24" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+          opacity="0.55" />
+        <path
+          d="M22 31C22 31 22 36 22 40C22 43.3137 24.6863 46 28 46H34C37.3137 46 40 43.3137 40 40V28C40 25.7909 38.2091 24 36 24C33.7909 24 32 25.7909 32 28V34"
+          stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M32 28C32 25.7909 30.2091 24 28 24C25.7909 24 24 25.7909 24 28V34" stroke="#fff" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M24 28C24 25.7909 22.2091 24 20 24C17.7909 24 16 25.7909 16 28V34" stroke="#fff" stroke-width="3"
+          stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
+      </svg>
+    </div>
+    <div class="stt-texts">
+      <span class="stt-main">스크롤 해보세요</span>
+      <span class="stt-sub">탭하면 닫혀요</span>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -1,4 +1,6 @@
-// 공지사항 데이터 · 첨부파일 아이콘 매핑
+// 예시 공지 — 서버 없이 열었을 때(시연)만 보인다. 내용은 지어낸 것이다 (실제 규정 · 일정이 아님).
+// 실제 공지는 서버 DB notices 테이블에 관리자 도구 tools/notices.js 로 넣는다.
+// FILE_ICON(첨부 아이콘)은 서버 공지에도 쓴다.
 const NOTICES = {
   n1: {
     pinned: true, category: '예약', categoryTone: 'sky',

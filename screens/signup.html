@@ -1,0 +1,106 @@
+<!-- SIGNUP : 사번인증 및 비밀번호 설정 -->
+<div class="screen auth-flow" data-screen="signup">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goSignupBack()">
+    <div class="title">사번인증 및 비밀번호 설정</div>
+    <div class="actions" style="width:22px"></div>
+  </div>
+  <div class="content">
+    <div class="step-indicator">
+      <div class="step active" id="si-1">
+        <div class="dot">1</div>
+        <div class="lbl">사번인증</div>
+      </div>
+      <div class="bar" id="si-bar1"></div>
+      <div class="step" id="si-2">
+        <div class="dot">2</div>
+        <div class="lbl">비밀번호 설정</div>
+      </div>
+      <div class="bar" id="si-bar2"></div>
+      <div class="step" id="si-3">
+        <div class="dot">3</div>
+        <div class="lbl">정보 입력</div>
+      </div>
+    </div>
+
+    <!-- STEP 1: 사번 인증 -->
+    <div class="signup-step active" data-step="1">
+      <h4>사번 인증</h4>
+      <div class="step-desc">회사 개인 이메일로 인증코드를 받아<br>본인 인증을 완료해주세요.</div>
+
+      <div class="login-field">
+        <label for="su-empno">사번</label>
+        <input id="su-empno" type="text" inputmode="numeric" autocomplete="off" placeholder="사번을 입력하세요" />
+      </div>
+      <div class="field-row">
+        <div class="login-field">
+          <label for="su-email">회사 개인 이메일</label>
+          <input id="su-email" type="email" autocomplete="off" placeholder="000@itcen.com" />
+        </div>
+        <button type="button" class="btn-line" id="su-send-btn" onclick="sendAuthCode()">인증코드 발급</button>
+      </div>
+
+      <div class="code-sent" id="su-code-sent"></div>
+
+      <div class="field-row" id="su-code-row" style="display:none">
+        <div class="login-field">
+          <label for="su-code">인증코드</label>
+          <input id="su-code" type="text" inputmode="numeric" maxlength="6" autocomplete="off"
+            placeholder="6자리 코드" />
+        </div>
+        <button type="button" class="btn-line" onclick="confirmAuthCode()">인증 확인</button>
+      </div>
+
+      <div class="verified-tag" id="su-verified"><i class="ti ti-shield-check"></i>이메일 인증이 완료되었습니다</div>
+      <div class="login-error" id="su-step1-error"></div>
+
+      <button type="button" class="login-submit" id="su-next1" onclick="signupGoStep(2)" disabled>다음</button>
+    </div>
+
+    <!-- STEP 2: 비밀번호 설정 -->
+    <div class="signup-step" data-step="2">
+      <h4>비밀번호 설정</h4>
+      <div class="step-desc">로그인에 사용할 비밀번호를 설정해주세요.<br>1차·2차 입력값이 동일해야 합니다.</div>
+
+      <div class="login-field">
+        <label for="su-pw1">비밀번호 (1차)</label>
+        <input id="su-pw1" type="password" autocomplete="new-password" placeholder="비밀번호를 입력하세요" />
+      </div>
+      <div class="login-field">
+        <label for="su-pw2">비밀번호 확인 (2차)</label>
+        <input id="su-pw2" type="password" autocomplete="new-password" placeholder="비밀번호를 다시 입력하세요" />
+      </div>
+      <div class="login-error" id="su-step2-error"></div>
+
+      <div class="signup-actions">
+        <button type="button" class="login-submit ghost" onclick="signupGoStep(1)">이전</button>
+        <button type="button" class="login-submit" onclick="signupGoStep(3)">다음</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: 정보 입력 -->
+    <div class="signup-step" data-step="3">
+      <h4>정보 입력</h4>
+      <div class="step-desc">직원 정보에서 불러온 이름·직급을 확인하고<br>연락처를 입력해주세요.</div>
+
+      <div class="login-field read-field">
+        <label for="su-name">이름 (직원 정보 자동 입력)</label>
+        <input id="su-name" type="text" readonly placeholder="사번 인증 후 자동으로 입력됩니다" />
+      </div>
+      <div class="login-field read-field">
+        <label for="su-position">직급 (직원 정보 자동 입력)</label>
+        <input id="su-position" type="text" readonly placeholder="사번 인증 후 자동으로 입력됩니다" />
+      </div>
+      <div class="login-field">
+        <label for="su-phone">핸드폰 번호</label>
+        <input id="su-phone" type="tel" inputmode="numeric" autocomplete="off" placeholder="010-0000-0000" />
+      </div>
+      <div class="login-error" id="su-step3-error"></div>
+
+      <div class="signup-actions">
+        <button type="button" class="login-submit ghost" onclick="signupGoStep(2)">이전</button>
+        <button type="button" class="login-submit" onclick="completeSignup()">설정 완료</button>
+      </div>
+    </div>
+  </div>
+</div>
