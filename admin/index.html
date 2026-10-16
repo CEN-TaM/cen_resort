@@ -6,6 +6,7 @@
   <meta name="robots" content="noindex">
   <title>휴양소 후기 관리자</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0">
   <link rel="stylesheet" href="/assets/css/tokens.css">
   <link rel="stylesheet" href="admin.css">
 </head>
@@ -32,7 +33,7 @@
         <a class="on" data-menu="notices">공지사항</a>
         <a data-menu="users">직원 명단 · 권한</a>
         <a data-menu="content">후기 · 꿀팁</a>
-        <a class="soon" title="다음 단계">배지 · 포인트</a>
+        <a data-menu="badges">배지</a>
         <a class="soon" title="다음 단계">휴양소 정보</a>
       </nav>
       <div class="side-foot">
@@ -61,6 +62,7 @@
             <option value="pinned">상단 고정</option>
           </select>
           <span class="count" id="notice-count"></span>
+          <select class="page-size" data-size-for="notices" aria-label="한 쪽에 보는 개수"><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option><option value="50">50개씩 보기</option></select>
         </div>
         <table class="grid">
           <thead>
@@ -69,6 +71,7 @@
           </thead>
           <tbody id="notice-rows"></tbody>
         </table>
+        <nav class="pager" id="notice-pager" aria-label="쪽 넘기기"></nav>
       </section>
 
       <!-- 공지 쓰기 · 고치기 -->
@@ -139,6 +142,7 @@
             <option value="admin">관리자</option>
           </select>
           <span class="count" id="user-count"></span>
+          <select class="page-size" data-size-for="users" aria-label="한 쪽에 보는 개수"><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option><option value="50">50개씩 보기</option></select>
         </div>
         <table class="grid">
           <thead>
@@ -147,6 +151,7 @@
           </thead>
           <tbody id="user-rows"></tbody>
         </table>
+        <nav class="pager" id="user-pager" aria-label="쪽 넘기기"></nav>
       </section>
       <!-- 후기 · 꿀팁 (admin-content.js) -->
       <section id="content-view" data-view="content" hidden>
@@ -172,11 +177,36 @@
             <option value="imported">옮겨 온 글 (엑셀 · PDF)</option>
           </select>
           <span class="count" id="content-count"></span>
+          <select class="page-size" data-size-for="content" aria-label="한 쪽에 보는 개수"><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option><option value="50">50개씩 보기</option></select>
         </div>
         <table class="grid">
           <thead id="content-head"></thead>
           <tbody id="content-rows"></tbody>
         </table>
+        <nav class="pager" id="content-pager" aria-label="쪽 넘기기"></nav>
+      </section>
+      <!-- 배지 (admin-badges.js) -->
+      <section id="badge-view" data-view="badges" hidden>
+        <header class="page-head">
+          <div>
+            <h1>배지</h1>
+            <p class="sub">앱 '내 배지' 에 나오는 배지입니다. 기준을 넘으면 받고, 한 번 받은 배지는 기준을 바꾸거나 후기를 지워도 남습니다.
+              앱에서 직접 쓴 글만 세고, 숨긴 글은 빼요.</p>
+          </div>
+          <button type="button" class="btn primary" id="badge-new-btn">+ 배지 추가</button>
+        </header>
+        <div class="toolbar">
+          <span class="count" id="badge-count"></span>
+          <select class="page-size" data-size-for="badges" aria-label="한 쪽에 보는 개수"><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option><option value="50">50개씩 보기</option></select>
+        </div>
+        <table class="grid">
+          <thead>
+            <tr><th style="width:64px">아이콘</th><th style="width:140px">이름</th><th>받는 기준</th>
+              <th style="width:110px" class="num">받은 사람</th><th style="width:76px">상태</th><th style="width:150px"></th></tr>
+          </thead>
+          <tbody id="badge-rows"></tbody>
+        </table>
+        <nav class="pager" id="badge-pager" aria-label="쪽 넘기기"></nav>
       </section>
     </main>
   </div>
@@ -249,10 +279,42 @@
     </div>
   </div>
 
+  <!-- 배지 추가 · 고치기 -->
+  <div class="modal" id="badge-modal" hidden>
+    <form class="modal-box" id="badge-form" onsubmit="return false">
+      <h2 id="badge-modal-title">배지 추가</h2>
+      <div class="badge-preview" id="bg-preview"></div>
+      <div class="row2">
+        <label>이름<input id="bg-name" maxlength="20" placeholder="예: 후기 작가"></label>
+        <label><span>설명 <span class="hint">앱의 배지 아래 줄</span></span><input id="bg-desc" maxlength="40" placeholder="예: 후기 3편"></label>
+      </div>
+      <label>무엇을 셀지<select id="bg-metric"></select></label>
+      <label id="bg-param-wrap" hidden><span id="bg-param-label">조건</span><input id="bg-param" maxlength="60"></label>
+      <div class="row2">
+        <label><span>기준 숫자 <span class="hint" id="bg-goal-hint">이 숫자 이상이면 받아요</span></span><input id="bg-goal" type="number" min="1" max="1000"></label>
+      </div>
+      <div>
+        <div class="field-label">아이콘</div>
+        <div class="icon-pick" id="bg-icons"></div>
+      </div>
+      <div>
+        <div class="field-label">색</div>
+        <div class="tone-pick" id="bg-tones"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="bg-active" checked> 앱에 보이기 (끄면 앱 '내 배지' 에서 빠져요. 받은 기록은 남아요)</label>
+      <p class="form-err" id="badge-err"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-close>취소</button>
+        <button type="submit" class="btn primary" id="badge-save">저장</button>
+      </div>
+    </form>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script src="admin.js"></script>
   <script src="admin-users.js"></script>
   <script src="admin-content.js"></script>
+  <script src="admin-badges.js"></script>
 </body>
 </html>

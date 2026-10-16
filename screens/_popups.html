@@ -68,6 +68,18 @@
   </div>
 </div>
 
+<!-- 배지 자세히 보기 바텀시트 (badges.js openBadgeDetail) -->
+<div class="comment-modal" id="badge-modal" onclick="closeBadgeDetail(event)">
+  <div class="comment-sheet" onclick="event.stopPropagation()">
+    <div class="comment-sheet-handle"></div>
+    <div class="comment-sheet-header">
+      <div class="ct">배지</div>
+      <i class="ti ti-x" onclick="closeBadgeDetail()"></i>
+    </div>
+    <div class="bd-body" id="badge-detail-body"></div>
+  </div>
+</div>
+
 <!-- 꿀팁 상세 바텀시트 -->
 <div class="comment-modal" id="tip-detail-modal" onclick="closeTipDetail(event)">
   <div class="comment-sheet" onclick="event.stopPropagation()">

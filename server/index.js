@@ -51,6 +51,9 @@ auth.register(app, db);
 // 관리자 API (/api/admin/...) — 관리자만. 화면은 admin/ (아래 정적 파일)
 require('./admin').register(app, db, auth, { loadReview });
 
+// 배지 (기준은 DB badges — 관리자 페이지에서 고친다, 받은 기록 badge_awards). /api/me/badges · /api/admin/badges
+require('./badges').register(app, db, auth);
+
 // 업로드된 사진 정적 제공
 app.use('/uploads', express.static(UPLOADS_DIR, {
   // 브라우저가 파일 내용을 보고 형식을 추측하지 않게 한다 (확장자대로만 이미지로 보여준다)
@@ -556,32 +559,6 @@ app.post('/api/tips/:id/like', requireUser, (req, res) => {
   } catch (err) {
     console.error('POST /api/tips/:id/like 실패:', err);
     res.status(500).json({ error: '좋아요 처리 실패' });
-  }
-});
-
-// ───────────────────────── 내 활동 (배지) ─────────────────────────
-// 배지 화면이 쓰는 숫자. 배지 기준은 화면(assets/js/badges.js)에 있다
-app.get('/api/me/stats', requireUser, (req, res) => {
-  try {
-    const e = req.user.empno;
-    const one = (sql, ...a) => db.prepare(sql).get(...a).c;
-    const byResort = db.prepare(`
-      SELECT r.id, r.map_label AS region, COUNT(*) AS c FROM reviews v
-      JOIN resorts r ON r.name = v.resort_name OR r.id IN (SELECT resort_id FROM resort_aliases WHERE alias = v.resort_name)
-      WHERE v.empno = ? AND v.hidden = 0 GROUP BY r.id`).all(e);
-    res.json({
-      reviews: one('SELECT COUNT(*) AS c FROM reviews WHERE empno = ? AND hidden = 0', e),
-      photos: one('SELECT COUNT(*) AS c FROM review_photos p JOIN reviews v ON v.id = p.review_id WHERE v.empno = ? AND v.hidden = 0', e),
-      likesReceived: one('SELECT COUNT(*) AS c FROM review_likes l JOIN reviews v ON v.id = l.review_id WHERE v.empno = ? AND v.hidden = 0', e)
-        + one('SELECT COUNT(*) AS c FROM tip_likes l JOIN tips t ON t.id = l.tip_id WHERE t.empno = ? AND t.hidden = 0', e),
-      tips: one('SELECT COUNT(*) AS c FROM tips WHERE empno = ? AND hidden = 0', e),
-      comments: one('SELECT COUNT(*) AS c FROM review_comments WHERE empno = ?', e),
-      resorts: byResort.length,
-      regions: byResort.reduce((m, r) => { m[r.region] = (m[r.region] || 0) + r.c; return m; }, {}),
-    });
-  } catch (err) {
-    console.error('GET /api/me/stats 실패:', err);
-    res.status(500).json({ error: '활동 조회 실패' });
   }
 });
 

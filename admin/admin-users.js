@@ -20,7 +20,8 @@ function renderUsers() {
     (!f || (f === 'admin' ? u.role === 'admin' : u.status === f)));
   const n = s => users.filter(u => u.status === s).length;
   $('user-count').textContent = `${list.length}명 / 전체 ${users.length}명 · 사번인증 전 ${n('pending')} · 인증 완료 ${n('ready')} · 막힘 ${n('blocked')}`;
-  $('user-rows').innerHTML = list.length ? list.map(u => {
+  if (!list.length) paged('users', list, 'user-pager', renderUsers);   // 비면 쪽 번호도 지운다
+  $('user-rows').innerHTML = list.length ? paged('users', list, 'user-pager', renderUsers).map(u => {
     const me = ME && u.empno === ME.empno;
     return `
     <tr class="${u.active ? '' : 'off'}">
@@ -40,8 +41,8 @@ function renderUsers() {
     </tr>`;
   }).join('') : `<tr><td colspan="9" class="empty">${users.length ? '조건에 맞는 직원이 없습니다.' : '명단이 비어 있습니다.'}</td></tr>`;
 }
-$('user-q').addEventListener('input', renderUsers);
-$('user-filter').addEventListener('change', renderUsers);
+$('user-q').addEventListener('input', () => { resetPage('users'); renderUsers(); });
+$('user-filter').addEventListener('change', () => { resetPage('users'); renderUsers(); });
 
 $('user-rows').addEventListener('click', async e => {
   const b = e.target.closest('[data-uedit],[data-ureset],[data-uactive]');
