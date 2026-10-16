@@ -27,7 +27,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | 테이블 | 내용 | 넣는 방법 |
 |---|---|---|
 | `resorts` · `resort_aliases` | 휴양소 정보 · 옛 이름 | 처음엔 자동, 이후 `tools/import_resorts.js` |
-| `reviews` · `review_photos` | 후기 · 후기 사진 | 앱에서 작성, 또는 `tools/import_reviews.js` (`DATA_IMPORT.md`) |
+| `reviews` · `review_photos` | 후기 · 후기 사진 (`hidden` = 관리자가 숨김) | 앱에서 작성, 또는 `tools/import_reviews.js` (`DATA_IMPORT.md`) |
 | `review_comments` · `review_likes` | 댓글 · 좋아요(1인 1회) | 앱 |
 | `notifications` · `notification_reads` | 알림 · 읽음 | 앱 |
 | `favorites` | 즐겨찾기 (사번 × 휴양소) | 앱 |
@@ -82,7 +82,8 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 |---|---|
 | 공지사항 | 목록(숨긴 공지 · 조회수 포함) · 쓰기 · 고치기 · 숨기기/보이기 · 맨 위 고정 · 삭제 · 첨부 |
 | 직원 명단 · 권한 | 목록(상태 · 마지막 로그인) · 한 명 추가 · 엑셀로 여러 명 추가(양식 받기 → CSV 로 저장해 올리기 → 결과 확인 → 넣기, 엑셀 EUC-KR 도 읽음) · 고치기 · 관리자 지정 · 비밀번호 초기화 · 로그인 막기/풀기 |
-| 후기 · 꿀팁 · 배지 · 휴양소 | 다음 단계 (지금은 `tools/` 도구) |
+| 후기 · 꿀팁 | 전체 목록(숨긴 글 · 옮겨 온 글 표시) · 휴양소 · 상태 필터 · 본문 검색 · 자세히 보기(본문 · 사진 · 댓글) · 숨기기/보이기 · 삭제 |
+| 배지 · 휴양소 | 다음 단계 (지금은 `tools/` 도구) |
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
@@ -94,6 +95,12 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | PUT | `/api/admin/users/:empno` | 고치기 · 역할 · 로그인 막기 `{ active }` (막으면 지금 로그인도 끊음) |
 | POST | `/api/admin/users/:empno/reset` | 비밀번호 초기화 (로그인도 끊음 → 사번인증부터 다시) |
 | POST | `/api/admin/users/import` | CSV `{ csv, commit }` — commit 이 아니면 결과만 |
+| GET | `/api/admin/reviews` · `/api/admin/reviews/:id` | 후기 전체 (숨김 포함) · 한 개 (사진 · 댓글) |
+| GET | `/api/admin/tips` | 꿀팁 전체 (숨김 포함) |
+| PUT | `/api/admin/reviews/:id` · `/api/admin/tips/:id` | `{ hidden }` 숨기기 / 보이기 |
+
+- **숨긴 후기 · 꿀팁**(`hidden = 1`)은 앱 어디에도 안 보이고, 휴양소 평점 · 후기 수 · 배지 계산 · 좋아요 · 댓글에서도 빠집니다. 데이터는 남습니다.
+- 지우기는 앱과 같은 `DELETE /api/reviews/:id` · `/api/tips/:id` (관리자는 남의 글도). 후기를 지우면 받은 포인트 차감 · 사진 파일 · 알림도 정리됩니다.
 
 - 자기 자신의 관리자 권한 빼기 · 로그인 막기 · 비밀번호 초기화는 안 됩니다 (아무도 못 들어가는 일 방지).
 - 회사명은 법인 표기(주식회사 · (주))를 떼고 저장합니다 (후기와 같은 규칙, `tools/clean_company.js`).

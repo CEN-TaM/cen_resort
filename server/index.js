@@ -49,7 +49,7 @@ app.use(express.json({ limit: '30mb' }));
 auth.register(app, db);
 
 // 관리자 API (/api/admin/...) — 관리자만. 화면은 admin/ (아래 정적 파일)
-require('./admin').register(app, db, auth);
+require('./admin').register(app, db, auth, { loadReview });
 
 // 업로드된 사진 정적 제공
 app.use('/uploads', express.static(UPLOADS_DIR, {
@@ -241,7 +241,7 @@ app.get('/api/resorts', (_req, res) => {
     const stats = {};
     db.prepare(`
       SELECT resort_name, COUNT(*) AS n, SUM(rating_avg) AS sum, COUNT(rating_avg) AS rated
-      FROM reviews GROUP BY resort_name`
+      FROM reviews WHERE hidden = 0 GROUP BY resort_name`
     ).all().forEach(s => {
       const id = idOf[s.resort_name];
       if (!id) return;
@@ -284,10 +284,10 @@ app.get('/api/reviews', (req, res) => {
     if (resort) {
       const names = resortNames(resort);
       rows = db.prepare(
-        `SELECT * FROM reviews WHERE resort_name IN (${names.map(() => '?').join(',')}) ORDER BY datetime(created_at) DESC, id DESC`
+        `SELECT * FROM reviews WHERE hidden = 0 AND resort_name IN (${names.map(() => '?').join(',')}) ORDER BY datetime(created_at) DESC, id DESC`
       ).all(...names);
     } else {
-      rows = db.prepare('SELECT * FROM reviews ORDER BY datetime(created_at) DESC, id DESC').all();
+      rows = db.prepare('SELECT * FROM reviews WHERE hidden = 0 ORDER BY datetime(created_at) DESC, id DESC').all();
     }
     res.json({ reviews: rows.map(r => loadReview(r, req.user && req.user.empno)) });
   } catch (err) {
@@ -300,7 +300,7 @@ app.get('/api/reviews', (req, res) => {
 app.get('/api/reviews/mine', requireUser, (req, res) => {
   try {
     const empno = req.user.empno;
-    const rows = db.prepare('SELECT * FROM reviews WHERE empno = ? ORDER BY datetime(created_at) DESC, id DESC').all(empno);
+    const rows = db.prepare('SELECT * FROM reviews WHERE empno = ? AND hidden = 0 ORDER BY datetime(created_at) DESC, id DESC').all(empno);
     res.json({ reviews: rows.map(r => loadReview(r, req.user && req.user.empno)) });
   } catch (err) {
     console.error('GET /api/reviews/mine 실패:', err);
@@ -346,7 +346,7 @@ app.post('/api/reviews/:id/like', requireUser, (req, res) => {
   try {
     const id = Number(req.params.id);
     const liked = !!(req.body && req.body.liked);
-    const row = db.prepare('SELECT likes FROM reviews WHERE id = ?').get(id);
+    const row = db.prepare('SELECT likes FROM reviews WHERE id = ? AND hidden = 0').get(id);
     if (!row) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
     const empno = req.user.empno;
     const changed = liked
@@ -371,7 +371,7 @@ app.post('/api/reviews/:id/comments', requireUser, (req, res) => {
     const text = (req.body?.text || '').trim();
     if (!text) return res.status(400).json({ error: '댓글 내용을 입력해주세요.' });
 
-    const review = db.prepare('SELECT id, empno, resort_name FROM reviews WHERE id = ?').get(id);
+    const review = db.prepare('SELECT id, empno, resort_name FROM reviews WHERE id = ? AND hidden = 0').get(id);
     if (!review) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
 
     // 답글이면 부모 댓글이 같은 후기에 있어야 한다. 답글의 답글은 만들지 않는다(1단계까지).
@@ -473,7 +473,7 @@ app.get('/api/tips', requireUser, (req, res) => {
   try {
     const id = resortIdOf(String(req.query.resort || '').trim());
     if (!id) return res.json({ tips: [] });
-    const rows = db.prepare('SELECT * FROM tips WHERE resort_id = ? ORDER BY datetime(created_at) DESC, id DESC').all(id);
+    const rows = db.prepare('SELECT * FROM tips WHERE resort_id = ? AND hidden = 0 ORDER BY datetime(created_at) DESC, id DESC').all(id);
     res.json({ tips: rows.map(t => tipRow(t, req.user.empno)) });
   } catch (err) {
     console.error('GET /api/tips 실패:', err);
@@ -482,7 +482,7 @@ app.get('/api/tips', requireUser, (req, res) => {
 });
 app.get('/api/tips/mine', requireUser, (req, res) => {
   try {
-    const rows = db.prepare('SELECT * FROM tips WHERE empno = ? ORDER BY datetime(created_at) DESC, id DESC').all(req.user.empno);
+    const rows = db.prepare('SELECT * FROM tips WHERE empno = ? AND hidden = 0 ORDER BY datetime(created_at) DESC, id DESC').all(req.user.empno);
     res.json({ tips: rows.map(t => tipRow(t, req.user.empno)) });
   } catch (err) {
     console.error('GET /api/tips/mine 실패:', err);
@@ -564,13 +564,13 @@ app.get('/api/me/stats', requireUser, (req, res) => {
     const byResort = db.prepare(`
       SELECT r.id, r.map_label AS region, COUNT(*) AS c FROM reviews v
       JOIN resorts r ON r.name = v.resort_name OR r.id IN (SELECT resort_id FROM resort_aliases WHERE alias = v.resort_name)
-      WHERE v.empno = ? GROUP BY r.id`).all(e);
+      WHERE v.empno = ? AND v.hidden = 0 GROUP BY r.id`).all(e);
     res.json({
-      reviews: one('SELECT COUNT(*) AS c FROM reviews WHERE empno = ?', e),
-      photos: one('SELECT COUNT(*) AS c FROM review_photos p JOIN reviews v ON v.id = p.review_id WHERE v.empno = ?', e),
-      likesReceived: one('SELECT COUNT(*) AS c FROM review_likes l JOIN reviews v ON v.id = l.review_id WHERE v.empno = ?', e)
-        + one('SELECT COUNT(*) AS c FROM tip_likes l JOIN tips t ON t.id = l.tip_id WHERE t.empno = ?', e),
-      tips: one('SELECT COUNT(*) AS c FROM tips WHERE empno = ?', e),
+      reviews: one('SELECT COUNT(*) AS c FROM reviews WHERE empno = ? AND hidden = 0', e),
+      photos: one('SELECT COUNT(*) AS c FROM review_photos p JOIN reviews v ON v.id = p.review_id WHERE v.empno = ? AND v.hidden = 0', e),
+      likesReceived: one('SELECT COUNT(*) AS c FROM review_likes l JOIN reviews v ON v.id = l.review_id WHERE v.empno = ? AND v.hidden = 0', e)
+        + one('SELECT COUNT(*) AS c FROM tip_likes l JOIN tips t ON t.id = l.tip_id WHERE t.empno = ? AND t.hidden = 0', e),
+      tips: one('SELECT COUNT(*) AS c FROM tips WHERE empno = ? AND hidden = 0', e),
       comments: one('SELECT COUNT(*) AS c FROM review_comments WHERE empno = ?', e),
       resorts: byResort.length,
       regions: byResort.reduce((m, r) => { m[r.region] = (m[r.region] || 0) + r.c; return m; }, {}),

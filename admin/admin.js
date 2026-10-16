@@ -32,7 +32,7 @@ async function start() {
 // 메뉴마다 첫 화면(목록)을 여는 함수. 직원 명단은 admin-users.js 가 MENUS.users 를 채운다
 let ME = null;
 const MENUS = { notices: () => loadNotices() };
-const FIRST_VIEW = { notices: 'notice-list-view', users: 'user-list-view' };
+const FIRST_VIEW = { notices: 'notice-list-view', users: 'user-list-view', content: 'content-view' };
 function showMenu(name) {
   if (!$('notice-edit-view').hidden && dirty && !confirm('저장하지 않은 공지가 있습니다. 나갈까요?')) return;
   dirty = false;

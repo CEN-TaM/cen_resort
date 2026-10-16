@@ -15,6 +15,15 @@
 //   POST   /api/admin/users/:empno/reset   비밀번호 초기화 → 그 직원은 사번인증부터 다시 (로그인도 끊는다)
 //   POST   /api/admin/users/import         CSV 명단 { csv, commit } — commit 이 아니면 결과만 보여주고 넣지 않는다
 //   자기 자신의 관리자 권한 빼기 · 로그인 막기는 안 된다 (아무도 관리자 페이지에 못 들어가는 일을 막는다)
+//
+//   후기 · 꿀팁 (숨기면 앱 어디에도 안 보이고 평점 · 후기 수 · 배지에서도 빠진다. 지우지는 않는다)
+//   GET    /api/admin/reviews          전체 (숨긴 후기 포함) — 본문 전체 (목록은 앞부분만 보이고 검색은 전체에서)
+//   GET    /api/admin/reviews/:id      한 개 (본문 · 사진 · 댓글 전부)
+//   PUT    /api/admin/reviews/:id      { hidden }
+//   GET    /api/admin/tips             전체 (숨긴 꿀팁 포함)
+//   PUT    /api/admin/tips/:id         { hidden }
+//   지우기는 앱과 같은 DELETE /api/reviews/:id · /api/tips/:id 를 쓴다 (관리자는 남의 글도 지울 수 있다.
+//   후기를 지우면 그 후기로 받은 포인트 차감 · 사진 파일 · 알림까지 같이 정리된다 — server/index.js)
 
 // 화면 분류 칩과 같아야 한다 (screens/tips.html · tools/notices.js 도 이 목록을 쓴다)
 const NOTICE_CATEGORIES = ['이용수칙', '예약', '복지포인트', '이벤트', '시설'];
@@ -46,7 +55,7 @@ function parseUserCsv(text) {
   return rows;
 }
 
-function register(app, db, auth) {
+function register(app, db, auth, { loadReview } = {}) {
   const { requireAdmin } = auth;
   const now = () => new Date().toISOString();
   const bad = (res, msg) => res.status(400).json({ error: msg });
@@ -247,6 +256,72 @@ function register(app, db, auth) {
       console.log(`[admin] 직원 CSV ${add.length}명 추가 by ${req.user.empno}`);
     }
     res.json({ committed: !!req.body.commit, added: add.length, skipped: result.length - add.length, rows: result });
+  });
+
+  // ───────── 후기 · 꿀팁 ─────────
+  // 작성자 사번이 명단에 없으면 '옮겨 온 글' (엑셀 · PDF 로 넣은 후기 · 꿀팁 — 사번이 비었거나 AW_IMPORT · TIP_IMPORT 같은 표시)
+  const isMember = db.prepare('SELECT 1 FROM users WHERE empno = ?');
+  const imported = empno => !empno || !isMember.get(String(empno));
+  const snippet = s => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 140);
+  const resortIdByName = (() => {
+    const map = {};
+    db.prepare('SELECT id, name FROM resorts').all().forEach(r => { map[r.name] = r.id; });
+    db.prepare('SELECT alias, resort_id FROM resort_aliases').all().forEach(a => { map[a.alias] = a.resort_id; });
+    return name => map[name] || '';
+  });
+
+  app.get('/api/admin/reviews', requireAdmin, (_req, res) => {
+    const idOf = resortIdByName();
+    const rows = db.prepare(`
+      SELECT r.*, (SELECT COUNT(*) FROM review_photos p WHERE p.review_id = r.id) AS photo_n,
+                  (SELECT COUNT(*) FROM review_comments c WHERE c.review_id = r.id) AS comment_n
+      FROM reviews r ORDER BY datetime(r.created_at) DESC, r.id DESC`).all();
+    res.json({
+      reviews: rows.map(r => ({
+        id: String(r.id), resortName: r.resort_name, resortId: idOf(r.resort_name), authorName: r.author_name,
+        empno: r.empno || '', imported: imported(r.empno), department: r.department || '', company: r.company || '',
+        rating: r.rating_avg, likes: r.likes, photos: r.photo_n, comments: r.comment_n,
+        // 본문은 통째로 보낸다 — 목록에는 앞부분만 보이지만 검색은 본문 전체에서 찾는다
+        snippet: snippet(r.content), content: r.content || '', createdAt: r.created_at, hidden: !!r.hidden,
+      })),
+    });
+  });
+
+  app.get('/api/admin/reviews/:id', requireAdmin, (req, res) => {
+    const r = db.prepare('SELECT * FROM reviews WHERE id = ?').get(Number(req.params.id));
+    if (!r) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
+    res.json({ review: { ...loadReview(r, null), id: String(r.id), hidden: !!r.hidden, imported: imported(r.empno) } });
+  });
+
+  app.put('/api/admin/reviews/:id', requireAdmin, (req, res) => {
+    const id = Number(req.params.id);
+    if ((req.body || {}).hidden === undefined) return bad(res, '바꿀 내용이 없습니다.');
+    const n = db.prepare('UPDATE reviews SET hidden = ? WHERE id = ?').run(req.body.hidden ? 1 : 0, id).changes;
+    if (!n) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
+    console.log(`[admin] 후기 #${id} ${req.body.hidden ? '숨김' : '보이기'} by ${req.user.empno}`);
+    res.json({ ok: true, hidden: !!req.body.hidden });
+  });
+
+  app.get('/api/admin/tips', requireAdmin, (_req, res) => {
+    const rows = db.prepare(`
+      SELECT t.*, r.name AS resort_name FROM tips t LEFT JOIN resorts r ON r.id = t.resort_id
+      ORDER BY datetime(t.created_at) DESC, t.id DESC`).all();
+    res.json({
+      tips: rows.map(t => ({
+        id: String(t.id), resortId: t.resort_id, resortName: t.resort_name || t.resort_id, author: t.author,
+        empno: t.empno || '', imported: imported(t.empno), department: t.department || '', company: t.company || '',
+        title: t.title, content: t.content, createdAt: t.created_at, hidden: !!t.hidden,
+      })),
+    });
+  });
+
+  app.put('/api/admin/tips/:id', requireAdmin, (req, res) => {
+    const id = Number(req.params.id);
+    if ((req.body || {}).hidden === undefined) return bad(res, '바꿀 내용이 없습니다.');
+    const n = db.prepare('UPDATE tips SET hidden = ? WHERE id = ?').run(req.body.hidden ? 1 : 0, id).changes;
+    if (!n) return res.status(404).json({ error: '꿀팁을 찾을 수 없습니다.' });
+    console.log(`[admin] 꿀팁 #${id} ${req.body.hidden ? '숨김' : '보이기'} by ${req.user.empno}`);
+    res.json({ ok: true, hidden: !!req.body.hidden });
   });
 }
 
