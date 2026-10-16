@@ -93,14 +93,12 @@ npm start            # http://localhost:8999 에서 실행
 
 **저장소는 GitHub `CEN-TaM/cen_resort`에 연결되어 있고, 각자 개인 브랜치가 있습니다.**
 
-| 브랜치 | 담당자 | 회사 이메일 |
-|---|---|---|
-| `gypark` | 박가연 | gypark@itcen.com |
-| `gywjdkim` | 김효정 | hjkim4@itcen.com |
-| `jkkim` | 김자경 | jk_kim@itcen.com |
-| `smlim` | 임소미 | smlim@itcen.com |
-| `solyi` | 김솔이 | kimsolyi@itcen.com |
-| `main` | **통합 브랜치 (직접 push 금지)** | — |
+| 브랜치 | 쓰임 |
+|---|---|
+| `gypark` · `gywjdkim` · `jkkim` · `smlim` · `solyi` | 팀원 개인 브랜치 (한 사람에 하나 — 누가 어느 브랜치인지는 팀 안에서 공유) |
+| `main` | **통합 브랜치 (직접 push 금지)** |
+
+> 저장소가 공개라서 이 문서에는 팀원 이름 · 메일을 적지 않습니다.
 
 ### 올리는 순서 — 반드시 이렇게
 1. **본인 개인 브랜치**에서 작업하고 **먼저 개인 브랜치에 push**
@@ -201,9 +199,10 @@ git log --oneline -1        # 서버에 지금 올라가 있는 커밋 확인
 | 주기 | 매일 새벽 3시 (pm2 cron — `crontab` 이 금지돼 있어 pm2 로 처리) |
 | 위치 | `~/backups/YYYY-MM-DD/` |
 | 보관 | 14일 |
+| 다른 서버에 한 부 | 테스트서버 `192.168.64.58:~/backups_from_dev/YYYY-MM-DD/` (30일) — 개발서버가 통째로 고장 나도 남게. 설정은 `DEPLOY.md` 2번 |
 
 ```bash
-pm2 logs cen-resort-backup --lines 20     # 백업 이력
+pm2 logs cen-resort-backup --lines 20     # 백업 이력 ('다른 서버 복사 완료' 줄도 여기)
 node ~/cen_resort/server/backup.js        # 수동 백업 (배포 직전 등)
 ls ~/backups/                             # 보관 목록
 ```
@@ -248,6 +247,10 @@ ssh -i ~/.ssh/cen_resort_deploy -p 7722 devadm01@192.168.64.57
 - ⛔ **서버에서 코드 직접 수정 금지** → `git reset --hard` 로 날아갑니다. 수정은 **로컬 → PR → main → 배포**.
 - ⛔ **`server/data/`, `server/uploads/` 삭제 금지** → 후기 DB·사진. git에 없어 백업에서만 복구됩니다.
 - ✅ **동시 배포는 `deploy.sh` 가 막아줍니다** (flock). 겹치면 "잠시 후 시도" 안내가 뜹니다.
+- ⚠️ **`devadm01` 비밀번호는 90일마다 만료됩니다** (두 서버 따로). 만료되면 SSH 키로 접속해도 `Password change required` 로 막혀
+  **배포 · 백업 복사가 멈춥니다.** 접속할 때 `Your password will expire in N days` 경고가 보이면 미리 바꾸세요.
+  바꾸는 법: `ssh -p 7722 devadm01@<서버>` → 지금 비번 → 지금 비번 한 번 더 → 새 비번 두 번 (영문 입력 상태 확인). 바꾼 비번은 팀에 공유.
+  2026-10-16 기준 만료일: 개발서버 2026-12-23, 테스트서버 2027-01-14.
 
 ---
 
@@ -280,7 +283,7 @@ ssh -i ~/.ssh/cen_resort_deploy -p 7722 devadm01@192.168.64.57
 |---|---|---|
 | 로컬 개발 | http://localhost:8999 | 로컬에서 `npm start` |
 | 개발서버(팀 공유) | http://192.168.64.57:8999 | **VPN 연결** |
-| 관리자 페이지 | http://192.168.64.57:8999/admin (로컬은 localhost:8999/admin) | 관리자 계정 |
-| 테스트서버 | http://192.168.64.58:8999 | (아직 미배포) |
+| 관리자 페이지 | http://192.168.64.57:8999/admin (로컬은 localhost:8999/admin) · 앱 로그인 화면의 '관리자 바로가기' | 관리자 계정 |
+| 테스트서버 | http://192.168.64.58:8999 | 앱은 아직 미배포 — 지금은 개발서버 백업 보관용 (`~/backups_from_dev/`) |
 
 문제가 생기면 가장 먼저 **① VPN 연결 ② `pm2 status`** 를 확인하세요.

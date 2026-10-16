@@ -167,11 +167,12 @@ ssh -i /c/dev_TaM/.ssh/cen_resort_deploy -o UserKnownHostsFile=/c/dev_TaM/.ssh/k
 |---|---|
 | `Connection timed out` | **VPN 끊김.** Axgate 재연결 |
 | `Permission denied (publickey)` | SSH 키 미등록 → 위 5번 |
+| `password expired` · `Password change required but no TTY available` | **서버 비밀번호 만료** (90일마다). `ssh -p 7722 devadm01@<서버>` 로 들어가 바꾼 뒤 다시 (위 2번 '두 서버 모두 …') |
 | `command not found` | 붙여넣기가 깨진 것. 다시 붙여넣기 |
 | `^[[200~` 같은 문자 | 붙여넣기 깨짐. `Ctrl`+`C` 후 재시도 |
 | `다른 사람이 지금 배포 중입니다` | 잠시 후 재시도. 계속되면 `rm -f /tmp/cen_resort_deploy.lock` |
 | 화면은 뜨는데 후기가 안 보임 | `pm2 status` 에서 `cen-resort` 가 `online` 인지 확인 |
-| 데이터가 사라짐 | `ls ~/backups/` 에서 복구 (`server/backup.js` 주석 참고) |
+| 데이터가 사라짐 | `ls ~/backups/` 에서 복구 (`server/backup.js` 주석 참고). 개발서버째 고장이면 테스트서버 `~/backups_from_dev/` 에서 |
 
 ---
 
@@ -216,6 +217,8 @@ cd ~/cen_resort && ./deploy.sh
 cd ~/cen_resort/server
 pm2 start backup.js --name cen-resort-backup --cron "0 3 * * *" --no-autorestart
 pm2 save
+#    다른 서버에도 한 부 두려면: 전용 키를 만들어(ssh-keygen -N '' -f ~/.ssh/cen_resort_backup) 받는 서버 authorized_keys 에 넣고
+#    ~/.cen_resort_backup.json 을 만든다 (모양은 server/backup.js 맨 위 주석)
 
 # ⑧ 로그인 계정 만들기  ← 새 DB 에는 계정이 하나도 없어 아무도 로그인할 수 없습니다
 cd ~/cen_resort

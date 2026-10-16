@@ -26,16 +26,16 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 
 | 테이블 | 내용 | 넣는 방법 |
 |---|---|---|
-| `resorts` · `resort_aliases` | 휴양소 정보 · 옛 이름 | 처음엔 자동, 이후 `tools/import_resorts.js` |
+| `resorts` · `resort_aliases` | 휴양소 정보 · 옛 이름 | 처음엔 자동, 이후 관리자 페이지 → 휴양소 정보 (여러 곳 한꺼번에는 `tools/import_resorts.js`) |
 | `reviews` · `review_photos` | 후기 · 후기 사진 (`hidden` = 관리자가 숨김) | 앱에서 작성, 또는 `tools/import_reviews.js` (`DATA_IMPORT.md`) |
 | `review_comments` · `review_likes` | 댓글 · 좋아요(1인 1회) | 앱 |
 | `notifications` · `notification_reads` | 알림 · 읽음 | 앱 |
 | `favorites` | 즐겨찾기 (사번 × 휴양소) | 앱 |
-| `notices` · `notice_views` | 공지사항 · 본 사람(조회수) | `tools/notices.js` (`DATA_IMPORT.md` '공지사항 올리기') |
+| `notices` · `notice_views` | 공지사항 · 본 사람(조회수) | 관리자 페이지 → 공지사항 (여러 개 한꺼번에는 `tools/notices.js`) |
 | `tips` · `tip_likes` | 꿀팁 · 꿀팁 좋아요(1인 1회) | 앱, 또는 `tools/import_tips.js` (`DATA_IMPORT.md` '꿀팁 올리기') |
 | `point_history` | 휴양소 포인트 내역 (후기 1건 +10P · 관리자 조정은 reason=adjust + note 이유 · by_empno) | 앱 · 관리자 페이지 → 직원 명단 |
 | `badges` · `badge_awards` | 배지 기준 · 받은 기록 (한 번 받으면 유지) | 처음엔 자동(기본 13개), 이후 관리자 페이지 → 배지 |
-| `users` · `sessions` · `verify_codes` | 직원 명단 · 로그인 · 사번인증 코드 | `tools/users.js` |
+| `users` · `sessions` · `verify_codes` | 직원 명단 · 로그인 · 사번인증 코드 | 관리자 페이지 → 직원 명단 · 권한 (서버에서는 `tools/users.js`) |
 
 ## 휴양소 데이터
 
@@ -45,7 +45,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 - 서버가 처음 켜질 때 테이블이 비어 있으면 `assets/js/data/resorts.js` 의 `RESORT_SEED` 로 채웁니다.
 - 그 뒤로는 **DB 가 원본**입니다. `resorts.js` 를 고쳐도 이미 채워진 DB 에는 반영되지 않습니다.
 - 서버 없이 열면(GitHub Pages 등) 화면은 `RESORT_SEED` 를 대신 씁니다.
-- 숨기려면 `active = 0`. 후기가 휴양소 이름으로 저장되므로 `name` 을 바꿀 때는 옛 이름을 `resort_aliases` 에 남기세요.
+- 고치기 · 숨기기(`active = 0`) · 추가는 관리자 페이지 → 휴양소 정보에서 합니다. 후기가 휴양소 이름으로 저장되므로, 관리자 페이지에서 이름을 바꾸면 옛 이름을 `resort_aliases` 에 **자동으로** 남깁니다 (도구로 바꿀 때는 직접 남기세요).
 
 ## API
 
@@ -66,9 +66,12 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | PUT  | `/api/favorites/:resortId` | 즐겨찾기 `{ on }` — true 추가 / false 해제 |
 | GET  | `/api/points/me` | 내 휴양소 포인트 잔액 + 내역 (`point_history`). 후기를 지우면 그 후기로 받은 포인트 차감 |
 | GET  | `/api/reviews?resort=이름` | 휴양소별 후기 목록 (정식명·옛 표기 모두 가능, 없으면 전체) |
-| GET  | `/api/reviews/mine?empno=사번` | 내가 쓴 후기 |
+| GET  | `/api/reviews/mine` | 내가 쓴 후기 (사번은 받지 않고 로그인 세션으로 판단) |
+| DELETE | `/api/reviews/:id` | 후기 지우기 (본인 또는 관리자). 그 후기로 받은 포인트 차감 · 사진 파일 · 알림 정리 |
 | POST | `/api/reviews/:id/like` | 좋아요 `{ liked }` — 1인 1회 (`review_likes`) |
 | POST | `/api/reviews/:id/comments` | 댓글 등록 |
+| GET  | `/api/notifications` | 내 알림 (내 후기에 달린 댓글 · 답글) + 읽은 알림 목록. 공지 알림은 화면이 공지 목록으로 만든다 |
+| POST | `/api/notifications/read` | 읽음 처리 `{ keys: [...] }` |
 | GET  | `/api/health` | 헬스체크 |
 
 🔒 표시가 없어도 **후기 등록 · 내 후기 · 삭제 · 좋아요 · 댓글 · 알림은 모두 로그인이 필요**합니다.
@@ -77,14 +80,16 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 ## 관리자 페이지 (PC)
 
 **http://localhost:8999/admin** (개발서버는 http://192.168.64.57:8999/admin). 앱과 같은 계정으로 로그인하고, **관리자(`role = admin`)만** 들어갑니다.
-화면은 `admin/`(index.html · admin.css · admin.js), API 는 `server/admin.js`. 권한은 화면이 아니라 서버가 세션으로 판단합니다(`requireAdmin`).
+화면은 `admin/` — index.html · admin.css · admin.js(로그인 · 메뉴 · 쪽 나누기 · 공지) + 메뉴별 admin-users.js · admin-content.js · admin-badges.js · admin-resorts.js.
+API 는 `server/admin.js`(공지 · 직원 · 포인트 · 후기 · 꿀팁) · `server/badges.js`(배지) · `server/admin-resorts.js`(휴양소).
+앱 로그인 화면 아래 '관리자 바로가기' 로도 열 수 있습니다 (새 탭). 권한은 화면이 아니라 서버가 세션으로 판단합니다(`requireAdmin`).
 
 | 메뉴 | 할 수 있는 것 |
 |---|---|
 | 공지사항 | 목록(숨긴 공지 · 조회수 포함) · 쓰기 · 고치기 · 숨기기/보이기 · 맨 위 고정 · 삭제 · 첨부 |
 | 직원 명단 · 권한 | 목록(상태 · 휴양소 포인트 · 마지막 로그인) · 포인트 칸을 누르면 내역 · 조정(더하기/빼기 + 이유, 직원 앱 적립내역에 '포인트 조정 · 이유') · 한 명 추가 · 엑셀로 여러 명 추가(양식 받기 → CSV 로 저장해 올리기 → 결과 확인 → 넣기, 엑셀 EUC-KR 도 읽음) · 고치기 · 관리자 지정 · 비밀번호 초기화 · 로그인 막기/풀기 |
 | 후기 · 꿀팁 | 전체 목록(숨긴 글 · 옮겨 온 글 표시) · 휴양소 · 상태 필터 · 본문 검색 · 자세히 보기(본문 · 사진 · 댓글) · 숨기기/보이기 · 삭제 |
-| 배지 | 기준(무엇을 셀지 · 기준 숫자) · 이름 · 설명 · 아이콘 · 색 · 보이기/숨기기 · 새 배지, 받은 사람 수 |
+| 배지 | 목록(검색 · 보이는/숨긴 필터) · 기준(무엇을 셀지 · 기준 숫자) · 이름 · 설명 · 아이콘 · 색 · 보이기/숨기기 · 새 배지, 받은 사람 수 |
 | 휴양소 정보 | 목록(후기 수 · 평점 · 종류 필터 · 검색) · 고치기(기본 정보 · 객실 · 문의 · 대표 사진 · 편의시설 칩 · 상세 표 · 주변 관광지 · 이용 수칙) · 숨기기/보이기 · 새 휴양소. 여러 곳을 한꺼번에 넣을 때는 `tools/import_resorts.js` |
 
 | 메서드 | 경로 | 설명 |
