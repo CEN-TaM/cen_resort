@@ -105,3 +105,28 @@ label.check input { width: 16px; height: 16px; accent-color: var(--brand); }
   background: #0F172A; color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 13px; transition: .2s;
 }
 .toast.show { opacity: 1; transform: translateX(-50%); }
+
+/* 팝업 (직원 추가 · CSV) */
+.modal { position: fixed; inset: 0; background: rgba(15, 23, 42, .45); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.modal-box { width: 560px; max-width: calc(100vw - 40px); max-height: calc(100vh - 60px); overflow: auto; background: #fff; border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.modal-box.wide { width: 860px; }
+.modal-box h2 { font-size: 18px; font-weight: 800; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.import-sum { display: flex; gap: 10px; font-size: 13px; font-weight: 700; }
+.import-sum .ok { color: #166534; } .import-sum .skip { color: #B45309; }
+.grid.small th, .grid.small td { padding: 7px 10px; font-size: 12px; }
+.grid tr.skip td { color: #B45309; background: #FFFBEB; }
+
+/* 직원 명단 */
+.chip.admin { background: var(--brand-50); color: var(--brand); }
+.chip.pending { background: #FEF3C7; color: #92400E; }
+.chip.blocked { background: #FEE2E2; color: #991B1B; }
+.grid td .muted { color: var(--text-3); font-size: 12px; }
+.grid td.mail { font-size: 13px; color: var(--text-2); }
+/* 내 계정 표시 — 역할 · 상태 배지(.chip)와 같은 모양으로 이름 옆에 */
+.me-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 7px; margin-left: 6px; border-radius: var(--pill); background: var(--brand); color: #fff; font-size: 11px; font-weight: 700; vertical-align: 1px; }
+.steps { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.steps .hint { display: block; }
+.steps .link { padding: 0; font-size: 13px; text-decoration: underline; }
+/* 버튼 앞 작은 아이콘 (선 그림 SVG) */
+.btn .ico { width: 16px; height: 16px; margin: -2px 6px 0 -2px; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }

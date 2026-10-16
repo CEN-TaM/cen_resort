@@ -81,7 +81,8 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | 메뉴 | 할 수 있는 것 |
 |---|---|
 | 공지사항 | 목록(숨긴 공지 · 조회수 포함) · 쓰기 · 고치기 · 숨기기/보이기 · 맨 위 고정 · 삭제 · 첨부 |
-| 직원 명단 · 후기 · 꿀팁 · 배지 · 휴양소 | 다음 단계 (지금은 `tools/` 도구) |
+| 직원 명단 · 권한 | 목록(상태 · 마지막 로그인) · 한 명 추가 · 엑셀로 여러 명 추가(양식 받기 → CSV 로 저장해 올리기 → 결과 확인 → 넣기, 엑셀 EUC-KR 도 읽음) · 고치기 · 관리자 지정 · 비밀번호 초기화 · 로그인 막기/풀기 |
+| 후기 · 꿀팁 · 배지 · 휴양소 | 다음 단계 (지금은 `tools/` 도구) |
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
@@ -89,6 +90,13 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | POST | `/api/admin/notices` | 새 공지 `{ category, title, body, author, pinned, active, files, createdAt }` |
 | PUT | `/api/admin/notices/:id` | 고치기 (보낸 칸만) |
 | DELETE | `/api/admin/notices/:id` | 지우기 (조회 기록도 지움 · 되돌릴 수 없음) |
+| GET · POST | `/api/admin/users` | 직원 명단 (비밀번호 해시 · 연락처는 보내지 않음) · 한 명 추가 |
+| PUT | `/api/admin/users/:empno` | 고치기 · 역할 · 로그인 막기 `{ active }` (막으면 지금 로그인도 끊음) |
+| POST | `/api/admin/users/:empno/reset` | 비밀번호 초기화 (로그인도 끊음 → 사번인증부터 다시) |
+| POST | `/api/admin/users/import` | CSV `{ csv, commit }` — commit 이 아니면 결과만 |
+
+- 자기 자신의 관리자 권한 빼기 · 로그인 막기 · 비밀번호 초기화는 안 됩니다 (아무도 못 들어가는 일 방지).
+- 회사명은 법인 표기(주식회사 · (주))를 떼고 저장합니다 (후기와 같은 규칙, `tools/clean_company.js`).
 
 - 관리자 지정은 `node tools/users.js role <사번> admin`.
 
@@ -105,7 +113,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 코드(`index.html`, `assets/js`)에는 계정이 없습니다. 서버 없이 열 때(시연)만 `auth.js` 의 시연 계정 `11223` / `0000` 이 쓰입니다.
 서버의 관리자 계정은 이와 별개로 `tools/users.js` 로 DB 에 만듭니다 (아래).
 
-명단 관리는 서버에서 `tools/users.js` 로 합니다.
+명단 관리는 **관리자 페이지 → 직원 명단 · 권한** 에서 합니다. 서버에서 `tools/users.js` 로도 됩니다.
 
 ```bash
 node tools/users.js list                                        # 명단 (상태: 사번인증 전 / 인증완료 / 막힘)

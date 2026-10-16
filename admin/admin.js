@@ -22,10 +22,35 @@ async function start() {
   try { me = (await api('/api/auth/me')).user; } catch (e) { /* 로그인 안 함 */ }
   if (!me) return showGate('관리자 계정으로 로그인하세요.');
   if (me.role !== 'admin') return showGate(`${me.name} 님은 관리자가 아닙니다. 관리자 계정으로 로그인하세요.`);
+  ME = me;
   $('gate').hidden = true; $('app').hidden = false;
   $('me-name').textContent = `${me.name}${me.position ? ' ' + me.position : ''} (${me.empno})`;
-  loadNotices();
+  showMenu((location.hash.slice(1) in MENUS) ? location.hash.slice(1) : 'notices');
 }
+
+// ───────── 메뉴 ─────────
+// 메뉴마다 첫 화면(목록)을 여는 함수. 직원 명단은 admin-users.js 가 MENUS.users 를 채운다
+let ME = null;
+const MENUS = { notices: () => loadNotices() };
+const FIRST_VIEW = { notices: 'notice-list-view', users: 'user-list-view' };
+function showMenu(name) {
+  if (!$('notice-edit-view').hidden && dirty && !confirm('저장하지 않은 공지가 있습니다. 나갈까요?')) return;
+  dirty = false;
+  document.querySelectorAll('.side-nav a[data-menu]').forEach(a => a.classList.toggle('on', a.dataset.menu === name));
+  document.querySelectorAll('section[data-view]').forEach(s => { s.hidden = s.id !== FIRST_VIEW[name]; });
+  history.replaceState(null, '', '#' + name);
+  MENUS[name]();
+}
+document.querySelector('.side-nav').addEventListener('click', e => {
+  const a = e.target.closest('a[data-menu]');
+  if (a) showMenu(a.dataset.menu);
+});
+// 팝업(직원 추가 · CSV) 닫기 — 바깥 누르기 · 취소 · Esc
+document.addEventListener('click', e => {
+  const m = e.target.closest('.modal');
+  if (m && (e.target === m || e.target.closest('[data-close]'))) m.hidden = true;
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal').forEach(m => { m.hidden = true; }); });
 function showGate(msg) {
   $('app').hidden = true; $('gate').hidden = false;
   $('gate-msg').textContent = msg;
@@ -178,4 +203,5 @@ function handleErr(e) {
   toast(e.message);
 }
 
-start();
+// 다른 메뉴 파일(admin-users.js)까지 읽힌 뒤 시작한다
+window.addEventListener('DOMContentLoaded', start);
