@@ -31,7 +31,7 @@ async function openPointHistory() {
     return `
       <div class="ph-row">
         <div class="ph-main">
-          <div class="ph-title">${escapeHtml(POINT_REASON[h.reason] || h.reason)}${h.resortName ? ` · ${escapeHtml(h.resortName)}` : ''}</div>
+          <div class="ph-title">${escapeHtml(POINT_REASON[h.reason] || h.reason)}${h.resortName ? ` · ${escapeHtml(h.resortName)}` : ''}${h.note ? ` · ${escapeHtml(h.note)}` : ''}</div>
           <div class="ph-date">${escapeHtml(date)}</div>
         </div>
         <div class="ph-amt ${plus ? 'plus' : 'minus'}">${plus ? '+' : ''}${h.amount}P</div>

@@ -32,6 +32,7 @@ function renderUsers() {
       <td class="mail">${esc(u.email)}</td>
       <td><span class="chip ${u.role === 'admin' ? 'admin' : ''}">${u.role === 'admin' ? '관리자' : '직원'}</span></td>
       <td><span class="chip ${u.status === 'ready' ? 'on' : u.status}">${USER_STATUS[u.status]}</span></td>
+      <td class="num"><button type="button" class="link pt-link" data-upoint="${esc(u.empno)}" title="포인트 내역 · 조정">${Number(u.points || 0).toLocaleString('ko-KR')}P</button></td>
       <td>${u.lastLogin ? fmtDate(u.lastLogin) : '<span class="muted">-</span>'}</td>
       <td><div class="acts">
         <button class="btn sm" data-uedit="${esc(u.empno)}">수정</button>
@@ -39,17 +40,18 @@ function renderUsers() {
         <button class="btn sm ${u.active ? 'danger' : ''}" data-uactive="${esc(u.empno)}">${u.active ? '로그인 막기' : '막기 풀기'}</button>`}
       </div></td>
     </tr>`;
-  }).join('') : `<tr><td colspan="9" class="empty">${users.length ? '조건에 맞는 직원이 없습니다.' : '명단이 비어 있습니다.'}</td></tr>`;
+  }).join('') : `<tr><td colspan="10" class="empty">${users.length ? '조건에 맞는 직원이 없습니다.' : '명단이 비어 있습니다.'}</td></tr>`;
 }
 $('user-q').addEventListener('input', () => { resetPage('users'); renderUsers(); });
 $('user-filter').addEventListener('change', () => { resetPage('users'); renderUsers(); });
 
 $('user-rows').addEventListener('click', async e => {
-  const b = e.target.closest('[data-uedit],[data-ureset],[data-uactive]');
+  const b = e.target.closest('[data-uedit],[data-ureset],[data-uactive],[data-upoint]');
   if (!b || b.disabled) return;
-  const empno = b.dataset.uedit || b.dataset.ureset || b.dataset.uactive;
+  const empno = b.dataset.uedit || b.dataset.ureset || b.dataset.uactive || b.dataset.upoint;
   const u = users.find(x => x.empno === empno);
   if (b.dataset.uedit) return openUserModal(u);
+  if (b.dataset.upoint) return openPointModal(u);
   try {
     if (b.dataset.ureset) {
       if (!confirm(`${u.name} 님의 비밀번호를 초기화할까요?\n\n지금 로그인도 끊기고, 앱의 '사번인증 및 비밀번호 설정' 에서 사번 + 회사 메일(${u.email})로 다시 정해야 합니다.`)) return;
@@ -146,4 +148,45 @@ $('import-commit').addEventListener('click', async () => {
   $('import-commit').disabled = true;
   try { const r = await previewImport(true); toast(`${r.added}명을 명단에 넣었습니다`); loadUsers(); }
   catch (err) { $('import-err').textContent = err.message; }
+});
+
+// ───────── 휴양소 포인트 (잔액 · 내역 · 조정) ─────────
+// API: GET · POST /api/admin/users/:empno/points. 조정은 내역에 '포인트 조정 · 이유' 로 쌓이고 직원 앱 적립내역에도 보인다
+let pointUser = null;
+async function openPointModal(u) {
+  pointUser = u;
+  $('point-modal-title').textContent = `${u.name} 님 휴양소 포인트`;
+  $('pt-amount').value = ''; $('pt-note').value = ''; $('pt-sign').value = '1'; $('pt-err').textContent = '';
+  $('pt-history').innerHTML = '<div class="muted">불러오는 중...</div>';
+  $('point-modal').hidden = false;
+  $('pt-amount').focus();
+  try { renderPoints(await api(`/api/admin/users/${encodeURIComponent(u.empno)}/points`)); } catch (err) { handleErr(err); }
+}
+function renderPoints(p) {
+  $('pt-balance').textContent = Number(p.balance).toLocaleString('ko-KR');
+  $('pt-history').innerHTML = p.history.length ? `<table class="grid sm"><thead><tr><th style="width:96px">날짜</th><th>내용</th><th style="width:90px" class="num">포인트</th></tr></thead><tbody>${
+    p.history.map(h => `<tr><td>${fmtDate(h.createdAt)}</td>
+      <td>${esc(h.reason)}${h.resortName ? ' · ' + esc(h.resortName) : ''}${h.note ? ' · ' + esc(h.note) : ''}${h.by ? ` <span class="muted">(${esc(h.by)})</span>` : ''}</td>
+      <td class="num pt-amt ${h.amount > 0 ? 'plus' : 'minus'}">${h.amount > 0 ? '+' : ''}${h.amount.toLocaleString('ko-KR')}P</td></tr>`).join('')
+  }</tbody></table>` : '<div class="muted">아직 포인트 내역이 없습니다.</div>';
+}
+$('point-form').addEventListener('submit', async () => {
+  const n = Number($('pt-amount').value);
+  const amount = n * Number($('pt-sign').value);
+  const note = $('pt-note').value.trim();
+  $('pt-err').textContent = '';
+  if (!Number.isInteger(n) || n < 1) { $('pt-err').textContent = '포인트를 1 이상 숫자로 적어 주세요.'; return; }
+  if (!note) { $('pt-err').textContent = '이유를 적어 주세요. 직원 앱 적립내역에 같이 보여요.'; return; }
+  if (!confirm(`${pointUser.name} 님에게 ${amount > 0 ? '+' : ''}${amount.toLocaleString('ko-KR')}P 를 ${amount > 0 ? '더할까요' : '뺄까요'}?
+
+이유: ${note}`)) return;
+  $('pt-save').disabled = true;
+  try {
+    const p = await api(`/api/admin/users/${encodeURIComponent(pointUser.empno)}/points`, { method: 'POST', body: JSON.stringify({ amount, note }) });
+    renderPoints(p);
+    $('pt-amount').value = ''; $('pt-note').value = '';
+    toast(`${pointUser.name} 님 포인트 ${amount > 0 ? '+' : ''}${amount.toLocaleString('ko-KR')}P — 지금 ${p.balance.toLocaleString('ko-KR')}P`);
+    loadUsers();
+  } catch (err) { $('pt-err').textContent = err.message; if (err.status === 401 || err.status === 403) handleErr(err); }
+  finally { $('pt-save').disabled = false; }
 });

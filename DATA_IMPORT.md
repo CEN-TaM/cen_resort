@@ -268,6 +268,8 @@ exit
 
 ### ① PDF 를 읽고 `정보.json` 만들기
 
+> 한두 곳만 고칠 때는 관리자 페이지 **휴양소 정보** 메뉴에서 바로 고칠 수 있습니다 (대표 사진 올리기 포함). 아래 순서는 여러 곳을 한꺼번에 넣을 때.
+
 - PDF 는 글자가 그림이라 복사가 안 됩니다. **Claude Code 에게 PDF 를 읽게 하고** 휴양소별로 옮기게 합니다.
 - 모양은 `tools/examples/resorts-info.sample.json` (가짜 값 예시), 칸 설명은 `tools/import_resorts.js` 맨 위 주석.
 - `id` 는 DB 휴양소 id 입니다 (`http://localhost:8999/api/resorts` 에서 확인). PDF 의 지역 · 숙소 이름으로 맞는 휴양소를 찾습니다.
