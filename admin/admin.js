@@ -85,12 +85,14 @@ async function start() {
 }
 
 // ───────── 메뉴 · 화면 주소 ─────────
-// 화면마다 주소가 있다: #notices · #notices/new · #notices/<공지 번호> · #users · #content
+// 화면마다 주소가 있다: #notices · #notices/new · #notices/<공지 번호> · #users · #content · #badges · #resorts · #resorts/<id>
 // 화면을 바꿀 때 브라우저 기록을 남겨서 뒤로가기 · 앞으로가기 · 새로고침이 그 화면으로 동작한다 (앱 core.js 와 같은 방식)
 // 메뉴마다 첫 화면(목록)을 여는 함수. 직원 명단은 admin-users.js, 후기 · 꿀팁은 admin-content.js 가 MENUS 를 채운다
 let ME = null;
 const MENUS = { notices: () => loadNotices() };
 const FIRST_VIEW = { notices: 'notice-list-view', users: 'user-list-view', content: 'content-view' };
+// 메뉴 안의 쓰기 · 고치기 화면 (#메뉴/new · #메뉴/<id>) — { view: 화면 id, render(sub) }. 휴양소는 admin-resorts.js 가 더한다
+const SUB_VIEWS = { notices: { view: 'notice-edit-view', render: sub => renderEditor(sub === 'new' ? null : sub) } };
 let currentRoute = '';
 
 // 앱 안에서 화면을 바꿀 때. fromApp 표시가 있으면 '목록으로' 를 뒤로가기로 처리해 기록이 겹겹이 쌓이지 않는다
@@ -106,17 +108,17 @@ function backTo(hash) {
 function route() {
   const h = location.hash.replace(/^#/, '') || 'notices';
   const [menu, sub] = h.split('/');
-  // 저장 안 한 공지를 쓰다가 다른 화면으로 가면 한 번 묻는다. 남겠다고 하면 주소를 되돌린다
-  if (currentRoute.startsWith('notices/') && h !== currentRoute && dirty) {
-    if (!confirm('저장하지 않은 공지가 있습니다. 나갈까요?')) { history.pushState({ fromApp: true }, '', '#' + currentRoute); return; }
+  // 저장 안 한 내용(공지 · 휴양소)을 쓰다가 다른 화면으로 가면 한 번 묻는다. 남겠다고 하면 주소를 되돌린다
+  if (currentRoute.includes('/') && h !== currentRoute && dirty) {
+    if (!confirm('저장하지 않은 내용이 있습니다. 나갈까요?')) { history.pushState({ fromApp: true }, '', '#' + currentRoute); return; }
   }
   dirty = false;
   if (!(menu in MENUS)) { history.replaceState(null, '', '#notices'); return route(); }
   currentRoute = h;
   document.querySelectorAll('.side-nav a[data-menu]').forEach(a => a.classList.toggle('on', a.dataset.menu === menu));
-  if (menu === 'notices' && sub) {
-    document.querySelectorAll('section[data-view]').forEach(s => { s.hidden = s.id !== 'notice-edit-view'; });
-    return renderEditor(sub === 'new' ? null : sub);
+  if (sub && SUB_VIEWS[menu]) {
+    document.querySelectorAll('section[data-view]').forEach(s => { s.hidden = s.id !== SUB_VIEWS[menu].view; });
+    return SUB_VIEWS[menu].render(sub);
   }
   document.querySelectorAll('section[data-view]').forEach(s => { s.hidden = s.id !== FIRST_VIEW[menu]; });
   MENUS[menu]();
@@ -316,7 +318,7 @@ $('edit-delete').addEventListener('click', async () => {
   const n = notices.find(x => x.id === editingId) || { id: editingId, title: $('f-title').value };
   try { if (await confirmDelete(n)) closeEditor(true); } catch (err) { handleErr(err); }
 });
-window.addEventListener('beforeunload', e => { if (dirty && !$('notice-edit-view').hidden) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (dirty && currentRoute.includes('/')) { e.preventDefault(); e.returnValue = ''; } });
 
 function handleErr(e) {
   if (e.status === 401) return showGate('로그인이 끝났습니다. 다시 로그인하세요.');

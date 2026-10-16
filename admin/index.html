@@ -34,7 +34,7 @@
         <a data-menu="users">직원 명단 · 권한</a>
         <a data-menu="content">후기 · 꿀팁</a>
         <a data-menu="badges">배지</a>
-        <a class="soon" title="다음 단계">휴양소 정보</a>
+        <a data-menu="resorts">휴양소 정보</a>
       </nav>
       <div class="side-foot">
         <div id="me-name"></div>
@@ -208,6 +208,106 @@
         </table>
         <nav class="pager" id="badge-pager" aria-label="쪽 넘기기"></nav>
       </section>
+      <!-- 휴양소 정보 목록 (admin-resorts.js) -->
+      <section id="resort-list-view" data-view="resorts" hidden>
+        <header class="page-head">
+          <div>
+            <h1>휴양소 정보</h1>
+            <p class="sub">앱의 휴양소 목록 · 지도 · 상세 화면에 나오는 정보입니다. 운영이 끝난 휴양소는 숨기세요 (후기가 이어져 있어 지우지 않아요).</p>
+          </div>
+          <button type="button" class="btn primary" id="resort-new-btn">+ 휴양소 추가</button>
+        </header>
+        <div class="toolbar">
+          <input type="search" id="resort-q" placeholder="이름 · 지역 · 숙소 이름 검색">
+          <select id="resort-type">
+            <option value="">종류 전체</option>
+            <option value="regular">정기</option>
+            <option value="summer">하계</option>
+            <option value="winter">동계</option>
+          </select>
+          <span class="count" id="resort-count"></span>
+          <select class="page-size" data-size-for="resorts" aria-label="한 쪽에 보는 개수"><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option><option value="50">50개씩 보기</option></select>
+        </div>
+        <table class="grid">
+          <thead>
+            <tr><th style="width:84px">사진</th><th>이름</th><th style="width:70px">종류</th><th>지역</th>
+              <th style="width:64px" class="num">후기</th><th style="width:64px" class="num">평점</th><th style="width:76px">상태</th><th style="width:150px"></th></tr>
+          </thead>
+          <tbody id="resort-rows"></tbody>
+        </table>
+        <nav class="pager" id="resort-pager" aria-label="쪽 넘기기"></nav>
+      </section>
+
+      <!-- 휴양소 추가 · 고치기 -->
+      <section id="resort-edit-view" data-view="resorts" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="resort-edit-title">휴양소 수정</h1>
+            <p class="sub" id="resort-edit-sub"></p>
+          </div>
+          <div class="head-actions">
+            <button type="button" class="btn" id="resort-cancel">취소</button>
+            <button type="button" class="btn primary" id="resort-save">저장</button>
+          </div>
+        </header>
+        <div class="editor">
+          <form class="form" id="resort-form" onsubmit="return false">
+            <div class="form-sec">기본 정보</div>
+            <div class="row2">
+              <label>이름 <input id="r-name" maxlength="40" placeholder="예: 애월 1호점"></label>
+              <label>종류<select id="r-type"><option value="regular">정기 휴양소</option><option value="summer">하계 이벤트</option><option value="winter">동계 이벤트</option></select></label>
+            </div>
+            <div class="row2">
+              <label><span>지역 <span class="hint">목록 카드에 나오는 짧은 위치</span></span><input id="r-loc" maxlength="40" placeholder="예: 제주 제주시 애월읍"></label>
+              <label><span>지도 지역 <span class="hint">앱 지도에서 이 지역 마커에 묶여요</span></span><select id="r-map"></select></label>
+            </div>
+            <label>주소<input id="r-address" maxlength="120"></label>
+            <div class="row2">
+              <label><span>숙소 이름 <span class="hint">실제 숙소 이름 (상세 화면 소개 위)</span></span><input id="r-facility" maxlength="60" placeholder="예: 아델라인"></label>
+              <label><span>운영 시즌 <span class="hint">하계 · 동계 이벤트만</span></span><input id="r-season" maxlength="30" placeholder="예: 2026 하계"></label>
+            </div>
+            <label>한 줄 소개<input id="r-summary" maxlength="200"></label>
+
+            <div class="form-sec">객실 · 문의</div>
+            <label>객실<input id="r-room" maxlength="200" placeholder="예: 40평 복층 (침실 2, 화장실 2)"></label>
+            <div class="row2">
+              <label>기준 인원<input id="r-cap-base" type="number" min="1" max="100"></label>
+              <label>최대 인원<input id="r-cap" type="number" min="1" max="100"></label>
+            </div>
+            <div class="row2">
+              <label><span>문의처 <span class="hint">숙소 대표 번호만 (담당자 개인 번호 X)</span></span><input id="r-phone" maxlength="40"></label>
+              <label>홈페이지<input id="r-website" maxlength="200" placeholder="https://"></label>
+            </div>
+
+            <div class="form-sec">대표 사진</div>
+            <div class="photo-edit">
+              <div class="photo-box" id="r-photo-box"></div>
+              <div class="photo-side">
+                <label class="dropzone" id="r-photo-drop">
+                  <input type="file" id="r-photo-input" accept="image/jpeg,image/png,image/webp" hidden>
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+                  <span><b>사진 선택</b> 또는 여기로 끌어다 놓기</span>
+                </label>
+                <span class="hint">JPG · PNG · WEBP. 큰 사진은 올릴 때 알맞게 줄여요. 사람 얼굴 · 차 번호가 보이는 사진은 피해 주세요.</span>
+                <button type="button" class="link" id="r-photo-del" hidden>사진 빼기 (기본 그림으로)</button>
+              </div>
+            </div>
+
+            <div class="form-sec">편의시설 <span class="hint">누르면 켜지고 꺼져요 · 상세 화면에 칩으로 나와요</span></div>
+            <div id="r-features"></div>
+
+            <div class="form-sec">상세 정보 <span class="hint">상세 화면의 표 — 입·퇴실, 교통, 비품, 부대시설 같은 것</span></div>
+            <div class="kv-list" id="r-details"></div>
+            <button type="button" class="btn sm add-row" id="r-detail-add">+ 줄 추가</button>
+
+            <label><span>주변 관광지 <span class="hint">쉼표로 나눠요</span></span><input id="r-nearby" placeholder="예: 협재해수욕장, 한림공원"></label>
+            <label><span>이용 수칙 <span class="hint">한 줄에 하나씩 · 와이파이 · 출입 비밀번호는 적지 않아요</span></span><textarea id="r-notices" rows="8"></textarea></label>
+
+            <label class="check"><input type="checkbox" id="r-active" checked> 앱에 보이기 (끄면 목록 · 지도 · 검색 · 후기 쓰기에서 빠져요. 후기는 남아요)</label>
+            <p class="form-err" id="resort-err"></p>
+          </form>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -316,5 +416,6 @@
   <script src="admin-users.js"></script>
   <script src="admin-content.js"></script>
   <script src="admin-badges.js"></script>
+  <script src="admin-resorts.js"></script>
 </body>
 </html>
