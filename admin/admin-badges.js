@@ -23,8 +23,12 @@ function ruleText(b) {
 const iconHtml = (b, size = 20) => `<span class="b-ico tone-${esc(b.tone)}" style="width:${size + 16}px;height:${size + 16}px"><i class="ms" style="font-size:${size}px">${esc(b.icon)}</i></span>`;
 
 function renderBadgeRows() {
-  const list = badgeData.badges;
-  $('badge-count').textContent = `${list.length}개 · 보임 ${list.filter(b => b.active).length}`;
+  const all = badgeData.badges;
+  const q = $('badge-q').value.trim().toLowerCase();
+  const f = $('badge-filter').value;
+  const list = all.filter(b => (!f || (f === 'active' ? b.active : !b.active)) &&
+    (!q || [b.name, b.description, ruleText(b)].join(' ').toLowerCase().includes(q)));
+  $('badge-count').textContent = `${list.length}개 / 전체 ${all.length}개 · 숨김 ${all.filter(b => !b.active).length}`;
   if (!list.length) paged('badges', list, 'badge-pager', renderBadgeRows);   // 비면 쪽 번호도 지운다
   $('badge-rows').innerHTML = list.length ? paged('badges', list, 'badge-pager', renderBadgeRows).map(b => `
     <tr class="${b.active ? '' : 'off'}">
@@ -37,8 +41,10 @@ function renderBadgeRows() {
         <button class="btn sm" data-bedit="${esc(b.id)}">수정</button>
         <button class="btn sm" data-btoggle="${esc(b.id)}">${b.active ? '숨기기' : '보이기'}</button>
       </div></td>
-    </tr>`).join('') : '<tr><td colspan="6" class="empty">배지가 없습니다.</td></tr>';
+    </tr>`).join('') : `<tr><td colspan="6" class="empty">${all.length ? '조건에 맞는 배지가 없습니다.' : '배지가 없습니다.'}</td></tr>`;
 }
+$('badge-q').addEventListener('input', () => { resetPage('badges'); renderBadgeRows(); });
+$('badge-filter').addEventListener('change', () => { resetPage('badges'); renderBadgeRows(); });
 $('badge-rows').addEventListener('click', async e => {
   const b = e.target.closest('[data-bedit],[data-btoggle]');
   if (!b) return;

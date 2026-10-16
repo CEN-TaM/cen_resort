@@ -196,6 +196,12 @@
           <button type="button" class="btn primary" id="badge-new-btn">+ 배지 추가</button>
         </header>
         <div class="toolbar">
+          <input type="search" id="badge-q" placeholder="이름 · 설명 · 받는 기준 검색">
+          <select id="badge-filter">
+            <option value="">전체</option>
+            <option value="active">보이는 배지</option>
+            <option value="hidden">숨긴 배지</option>
+          </select>
           <span class="count" id="badge-count"></span>
           <select class="page-size" data-size-for="badges" aria-label="한 쪽에 보는 개수"><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option><option value="50">50개씩 보기</option></select>
         </div>
