@@ -128,7 +128,7 @@ function loadReview(row, viewerEmpno) {
 }
 
 // ── 휴양소 포인트 (회사 복지포인트와 별개인 이 서비스의 포인트) ──
-const REVIEW_POINTS = 5;   // 후기 1건 작성 시 적립. 화면 문구(index.html '+5P')도 함께 바꾼다
+const REVIEW_POINTS = 10;  // 후기 1건 작성 시 적립. 화면 문구(screens/home · my · write.html '+10P')도 함께 바꾼다
 function pointBalance(empno) {
   return db.prepare('SELECT COALESCE(SUM(amount), 0) AS n FROM point_history WHERE empno = ?').get(empno).n;
 }
@@ -459,7 +459,8 @@ function tipRow(t, viewer) {
   const r = db.prepare('SELECT name FROM resorts WHERE id = ?').get(t.resort_id);
   return {
     id: String(t.id), resortId: t.resort_id, resort: r ? r.name : t.resort_id,
-    empno: t.empno, author: t.author, tag: t.tag || '', title: t.title, content: t.content, createdAt: t.created_at,
+    empno: t.empno, author: t.author, department: t.department || '', company: t.company || '',
+    tag: t.tag || '', title: t.title, content: t.content, createdAt: t.created_at,
     likes: db.prepare('SELECT COUNT(*) AS c FROM tip_likes WHERE tip_id = ?').get(t.id).c,
     liked: viewer ? !!db.prepare('SELECT 1 FROM tip_likes WHERE tip_id = ? AND empno = ?').get(t.id, viewer) : false,
   };
@@ -494,8 +495,9 @@ app.post('/api/tips', requireUser, (req, res) => {
     const tag = String(b.tag || '').trim().slice(0, 6);
     if (!id) return res.status(400).json({ error: '휴양소를 찾을 수 없습니다.' });
     if (!title || !content) return res.status(400).json({ error: '제목과 내용을 입력해주세요.' });
-    const info = db.prepare('INSERT INTO tips (resort_id, empno, author, tag, title, content, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-      .run(id, req.user.empno, auth.displayName(req.user), tag || null, title, content, new Date().toISOString());
+    const info = db.prepare('INSERT INTO tips (resort_id, empno, author, department, company, tag, title, content, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .run(id, req.user.empno, auth.displayName(req.user), req.user.department || null, req.user.company || null,
+        tag || null, title, content, new Date().toISOString());
     res.status(201).json({ tip: tipRow(db.prepare('SELECT * FROM tips WHERE id = ?').get(Number(info.lastInsertRowid)), req.user.empno) });
   } catch (err) {
     console.error('POST /api/tips 실패:', err);
@@ -676,10 +678,18 @@ app.post('/api/notifications/read', requireUser, (req, res) => {
 // 헬스체크
 app.get('/api/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
-// 정적 파일 (index.html, assets 등). API 라우트 뒤에 위치.
+// 정적 파일. API 라우트 뒤에 위치.
+// ⚠️ 저장소 폴더 전체(ROOT_DIR)를 열면 안 된다 — server/data/reviews.db(직원 명단 · 세션 · 비밀번호 해시)와
+//    .git 까지 주소로 받아졌다. 화면에 필요한 것만 연다: index.html · assets/ (후기 사진은 위 /uploads)
 // no-cache: 브라우저가 저장해 둔 파일을 쓰기 전에 바뀌었는지 매번 확인한다 (안 바뀌었으면 304 로 가볍게 끝남)
 // — 배포 뒤 화면(HTML)은 새것인데 JS 는 옛것이 섞여 기능이 안 되는 일을 막는다
-app.use(express.static(ROOT_DIR, { setHeaders: res => res.setHeader('Cache-Control', 'no-cache') }));
+const staticOpts = { setHeaders: res => res.setHeader('Cache-Control', 'no-cache'), dotfiles: 'deny', index: false };
+app.get(['/', '/index.html'], (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(ROOT_DIR, 'index.html'));
+});
+app.use('/assets', express.static(path.join(ROOT_DIR, 'assets'), staticOpts));
+app.use((_req, res) => res.status(404).send('Not Found'));
 
 app.listen(PORT, () => {
   console.log(`cen_resort 서버 실행 중 → http://localhost:${PORT}`);

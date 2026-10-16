@@ -5,13 +5,19 @@ function setBg(el, url) {
   el.style.backgroundPosition = 'center';
   el.style.backgroundRepeat = 'no-repeat';
 }
-document.querySelectorAll('[data-img]').forEach(el => {
-  const cfg = IMG[el.getAttribute('data-img')];
-  if (!cfg) return;
+// 로컬 파일(local)이 있으면 먼저 시도하고, 없으면 바로 대체 이미지(fallback).
+// local 을 비워 둔 항목은 시도하지 않는다 — 없는 파일을 매번 불러 404 오류가 쌓였다 (data/images.js)
+function paintImg(el, cfg) {
+  if (!cfg.local) { setBg(el, cfg.fallback); return; }
   const probe = new Image();
   probe.onload = () => setBg(el, cfg.local);
   probe.onerror = () => setBg(el, cfg.fallback);
   probe.src = cfg.local;
+}
+document.querySelectorAll('[data-img]').forEach(el => {
+  const cfg = IMG[el.getAttribute('data-img')];
+  if (!cfg) return;
+  paintImg(el, cfg);
 });
 
 
@@ -28,10 +34,7 @@ function paintThumb(el) {
 function applyBg(el, key) {
   const cfg = IMG[key];
   if (!cfg || !el) return;
-  const probe = new Image();
-  probe.onload = () => setBg(el, cfg.local);
-  probe.onerror = () => setBg(el, cfg.fallback);
-  probe.src = cfg.local;
+  paintImg(el, cfg);
 }
 function clampScore(v) { return Math.round(Math.max(0, Math.min(5, v)) * 10) / 10; }
 // 별 5칸. 빈 별은 색을 따로 주려고 <span class="empty"> 로 감싼다
@@ -62,6 +65,9 @@ function syncSwipeArrows(row) {
   const head = row && row.previousElementSibling;
   if (!head || !head.classList.contains('tip-head')) return;
   const [prev, next] = head.querySelectorAll('.tip-arrow');
+  // 카드가 1개 이하면 넘길 게 없으니 화살표를 숨긴다 (빈 안내 .tip-empty 는 카드로 세지 않는다)
+  const few = row.querySelectorAll(':scope > :not(.tip-empty)').length < 2;
+  [prev, next].forEach(b => { if (b) b.hidden = few; });
   const max = row.scrollWidth - row.clientWidth;
   if (prev) prev.disabled = row.scrollLeft <= 2;
   if (next) next.disabled = row.scrollLeft >= max - 2;

@@ -1,5 +1,5 @@
 // 내 배지 — 실제 활동(GET /api/me/stats)으로 계산한다. 배지 기준은 아래 BADGES 한 곳에서 정한다.
-// 화면: 나의 페이지 '내 배지 컬렉션 N / M' · 내 배지 화면(screens/badges.html)
+// 화면: 나의 페이지 '내 배지 N / M' · 내 배지 화면(screens/badges.html)
 // 서버가 없으면(시연) 활동이 없는 것으로 보여준다.
 
 // get: 활동 숫자 → 지금 값, goal: 받는 기준
@@ -33,7 +33,7 @@ function badgeItemHtml(b, s) {
     </div>`;
 }
 
-// 나의 페이지 '내 배지 컬렉션 N / M'
+// 나의 페이지 '내 배지 N / M'
 async function refreshBadgeCount() {
   const el = document.getElementById('my-badges-count');
   if (!el) return;

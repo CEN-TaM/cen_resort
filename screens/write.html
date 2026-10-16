@@ -10,7 +10,7 @@
       <img class="seni-mini" src="assets/images/seni-laptop.png" alt="세니 작업 중" onerror="this.style.display='none'">
       <div>
         <div class="tx-title">세니가 응원해요</div>
-        <div class="tx-sub">후기를 작성하면<br><b>5P</b>가 적립돼요</div>
+        <div class="tx-sub">후기를 작성하면<br><b>10P</b>가 적립돼요</div>
       </div>
     </div>
 
@@ -91,22 +91,11 @@
     </div>
 
     <div class="form-section">
-      <div class="form-label">누구와 함께? <span class="hint hint-pill">선택</span></div>
-      <div class="chip-row">
-        <div class="chip companion-chip" onclick="toggleChip(this)">가족</div>
-        <div class="chip companion-chip" onclick="toggleChip(this)">친구</div>
-        <div class="chip companion-chip" onclick="toggleChip(this)">혼자</div>
-        <div class="chip companion-chip" onclick="toggleChip(this)">동료</div>
-        <div class="chip companion-chip" onclick="toggleChip(this)">연인</div>
-      </div>
-    </div>
-
-    <div class="form-section">
       <div class="form-label">상세 후기</div>
       <textarea class="textarea" placeholder="이런 점이 좋았어요 / 아쉬웠어요…&#10;💡 위치·시설·청결 외에 분위기, 가성비 후기도 좋아요"></textarea>
     </div>
 
-    <button class="write-submit" onclick="submitReview('device1')">후기 등록하기 (+5P)</button>
+    <button class="write-submit" onclick="submitReview('device1')">후기 등록하기 (+10P)</button>
   </div>
 
   <!-- 포인트 적립 모달 -->
@@ -115,7 +104,7 @@
       <img class="seni-jump" src="assets/images/seni-desk.png" alt="세니 체크" onerror="this.style.display='none'">
       <h3>후기 등록 완료!</h3>
       <div class="pmsub"><span id="point-modal-name">관리자</span>님의 소중한 후기는<br>다른 동료들의 휴가를 더 빛나게 해요</div>
-      <div class="gain" id="point-gain">+5P</div>
+      <div class="gain" id="point-gain">+10P</div>
       <button onclick="closeModal('device1')">확인</button>
     </div>
   </div>

@@ -4,7 +4,6 @@
 let editingTipId = null;
 function setTipForm(t) {
   editingTipId = t ? String(t.id) : null;
-  document.getElementById('tip-tag-input').value = t ? (t.tag || '') : '';
   document.getElementById('tip-title-input').value = t ? t.title : '';
   document.getElementById('tip-content-input').value = t ? t.content : '';
   document.getElementById('tip-modal-title').textContent = t ? '✏️ 꿀팁 수정하기' : '💡 꿀팁 공유하기';
@@ -77,14 +76,6 @@ const TipAPI = {
     localTips.save(localTips.load().filter(t => t.id !== id));
     return { ok: true };
   },
-  async like(id, on) {
-    if (await this.server()) return apiFetch(`/api/tips/${encodeURIComponent(id)}/like`, { method: 'POST', body: JSON.stringify({ liked: on }) });
-    const set = localTips.likes();
-    on ? set.add(id) : set.delete(id);
-    localTips.saveLikes(set);
-    const t = localTips.all().find(x => x.id === id);
-    return { likes: t ? t.likes : 0, liked: on };
-  },
 };
 
 function isMyTip(t) {
@@ -100,31 +91,7 @@ function tipWhen(t) {
   return (typeof timeAgo === 'function' && timeAgo(t.createdAt)) || '';
 }
 
-// ===== 꿀팁 좋아요 (1인 1회 · 서버가 합계를 준다) =====
-async function toggleTipLike(id, event) {
-  if (event) event.stopPropagation();      // 카드 전체 클릭(상세 열기)과 겹치지 않게
-  const t = tipCache.get(String(id));
-  if (!t) return;
-  try {
-    const res = await TipAPI.like(t.id, !t.liked);
-    t.liked = res.liked; t.likes = res.likes;
-  } catch (e) {
-    if (typeof showToast === 'function') showToast('좋아요를 반영하지 못했어요');
-  }
-  document.querySelectorAll(`[data-tip-like="${CSS.escape(String(id))}"]`).forEach(b => { b.outerHTML = tipLikeBtn(t); });
-}
-
-// 하트 버튼 한 조각
-function tipLikeBtn(t) {
-  const on = !!t.liked;
-  return `<button type="button" class="tip-like${on ? ' on' : ''}" data-tip-like="${escapeHtml(t.id)}" onclick="toggleTipLike('${escapeHtml(t.id)}',event)"
-    aria-label="좋아요"><i class="ms${on ? '' : ' outline'}">favorite</i>${t.likes || 0}</button>`;
-}
-
-// 태그는 글 아래 해시태그로 붙인다
-function tipTagHtml(t) {
-  return t.tag ? `<div class="tip-tags">#${escapeHtml(t.tag)}</div>` : '';
-}
+// 꿀팁 좋아요 · 태그는 화면에서 뺐다 (상세 시트 · 내가 쓴 꿀팁 카드 모두). 서버 API(/api/tips/:id/like)와 tag 칸은 남아 있다
 
 // 카드에는 따옴표로 감싼 본문 2줄만. 제목·태그·작성자·좋아요는 상세 시트(openTipDetail)에 있다
 function tipCardHtml(t) {
@@ -160,7 +127,6 @@ async function renderResortTips(resortName) {
 
 let submittingTip = false;
 async function submitTip() {
-  const tagEl = document.getElementById('tip-tag-input');
   const titleEl = document.getElementById('tip-title-input');
   const contentEl = document.getElementById('tip-content-input');
   const title = (titleEl.value || '').trim();
@@ -173,7 +139,9 @@ async function submitTip() {
   submittingTip = true;
   const editing = editingTipId;
   try {
-    const body = { tag: (tagEl.value || '').trim(), title, content };
+    // 태그 칸은 없앴다. 고칠 때는 예전에 붙은 태그를 그대로 둔다 (서버 PUT 은 tag 도 함께 덮어쓴다)
+    const old = editing ? tipCache.get(editing) : null;
+    const body = { tag: (old && old.tag) || '', title, content };
     if (editing) {
       const t = await TipAPI.update(editing, body);
       if (t) tipCache.set(String(t.id), t);
@@ -224,8 +192,7 @@ async function renderMyTips() {
       </div>
       <div class="ttitle">${escapeHtml(t.title)}</div>
       <div class="tcontent">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
-      ${tipTagHtml(t)}
-      <div class="tfoot"><span>${tipWhen(t)}</span>${tipLikeBtn(t)}</div>
+      <div class="tfoot"><span>${tipWhen(t)}</span></div>
     </div>`;
   }).join('');
 }
@@ -362,20 +329,33 @@ function openTipDetail(id) {
   const t = tipCache.get(String(id));
   const out = document.getElementById('tip-detail-body');
   if (!t || !out) return;
-  out.innerHTML = `
-    <div class="td-top">
-      <span class="td-resort">${escapeHtml(t.resort || '')}</span>
-      ${canEditTip(t) ? `<span class="td-manage">
+  // 휴양소 상세에서 열면 이미 그 휴양소 화면이라 이름을 빼고, '내가 쓴 꿀팁' 에서 열 때만 보인다.
+  // 태그 · 좋아요는 보이지 않는다
+  const fromDetail = !!document.querySelector('.screen.active[data-screen="detail"]');
+  // 수정 · 삭제는 따로 한 줄을 쓰지 않고 제목 줄 오른쪽에 둔다
+  const manage = canEditTip(t) ? `<span class="td-manage">
         <button type="button" onclick="editTip('${escapeHtml(t.id)}')">수정</button>
         <button type="button" class="del" onclick="deleteMyTip('${escapeHtml(t.id)}',event)">삭제</button>
-      </span>` : ''}
+      </span>` : '';
+  // 작성자 줄은 후기 카드와 같은 모양: 세니 프로필 + 이름 · 날짜 + 회사 · 부서 (review-server.js seniAvatarHtml · rtOrgRow)
+  // 프로필은 작성자 이름으로 고른다 → 같은 사람의 꿀팁은 늘 같은 세니
+  const org = typeof rtOrgRow === 'function' ? rtOrgRow(t) : '';
+  const avatar = typeof seniAvatarHtml === 'function' ? seniAvatarHtml(t.author || t.id, t.author || t.id) : '';
+  out.innerHTML = `
+    ${!fromDetail && t.resort ? `<div class="td-top"><span class="td-resort">${escapeHtml(t.resort)}</span></div>` : ''}
+    <div class="td-title-row">
+      <div class="td-title">${escapeHtml(t.title)}</div>
+      ${manage}
     </div>
-    <div class="td-title">${escapeHtml(t.title)}</div>
     <div class="td-content">${escapeHtml(t.content).replace(/\n/g, '<br>')}</div>
-    ${t.tag ? `<div class="tip-tags">#${escapeHtml(t.tag)}</div>` : ''}
     <div class="td-foot">
-      <span>${escapeHtml(t.author || '동료')}${isMyTip(t) ? ' (나)' : ''} · ${tipWhen(t)}</span>
-      ${tipLikeBtn(t)}
+      <div class="td-who rt-head">
+        ${avatar}
+        <div class="rt-who">
+          <div class="rt-name-row"><span class="rt-name">${escapeHtml(t.author || '동료')}${isMyTip(t) ? ' (나)' : ''}</span><span class="rt-date">· ${tipWhen(t)}</span></div>
+          ${org}
+        </div>
+      </div>
     </div>`;
   const m = document.getElementById('tip-detail-modal');
   if (m) m.classList.add('show');

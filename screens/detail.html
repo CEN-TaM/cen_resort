@@ -4,7 +4,7 @@
     <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','detail')">
     <div class="title">휴양소</div>
     <!-- 즐겨찾기 data-fav 는 tips.js openResort() 가 그 휴양소로 채운다 -->
-    <div class="actions"><img class="hd-ico" src="assets/images/ico_share.png" alt="공유하기" onclick="openShareSheet()"><span
+    <div class="actions"><span
         class="fav-btn inline header-style" id="detail-fav" data-fav="" onclick="toggleFavorite(event,this.dataset.fav)"
         aria-label="즐겨찾기"><img class="hd-ico fav-ico-off" src="assets/images/ico_star.png" alt=""><img class="hd-ico fav-ico-on" src="assets/images/ico_star_on.png" alt=""></span></div>
   </div>
@@ -74,6 +74,7 @@
       <div class="tip-head">
         <h3>다녀온 동료들의 꿀팁</h3>
         <div class="tip-nav">
+          <button type="button" class="tip-write-btn" onclick="openTipModal()">꿀팁 작성하기</button>
           <button type="button" class="tip-arrow" onclick="scrollSwipe(this,-1)" aria-label="이전 꿀팁"><i
               class="ti ti-chevron-left"></i></button>
           <button type="button" class="tip-arrow" onclick="scrollSwipe(this,1)" aria-label="다음 꿀팁"><i
@@ -83,11 +84,6 @@
 
       <!-- 꿀팁 목록은 tips.js 가 휴양소별로 그린다 -->
       <div class="swipe-row" id="tip-row"></div>
-      <div class="tip-write">
-        <button type="button" class="tip-write-btn" onclick="openTipModal()">꿀팁 작성하기</button>
-        <img class="tip-mascot" src="assets/images/img_btnseni.png" alt="" aria-hidden="true"
-          onerror="this.style.display='none'">
-      </div>
     </div>
 
     <div class="detail-gap" aria-hidden="true"></div>
@@ -104,14 +100,12 @@
       </div>
 
       <!-- 보던 휴양소를 골라 둔 채 후기 작성 화면을 연다 (review-write.js writeReviewForDetail) -->
-      <button type="button" class="rev-write-btn" onclick="writeReviewForDetail()">
-        <i class="ti ti-pencil" aria-hidden="true"></i> 후기 작성하기
-      </button>
-
-      <!-- 동행 칩: lightbox.js renderReviewFilters() 가 실제 후기로 숫자를 세고, 누르면 그 동행 후기만 남긴다 (여러 개 고르면 하나라도 맞는 후기) -->
-      <div class="rev-filter-row" id="rev-companion-row" hidden>
-        <span class="rev-filter-label">동행</span>
-        <div class="rev-chips" id="rev-companion-chips"></div>
+      <div class="rev-write">
+        <button type="button" class="rev-write-btn" onclick="writeReviewForDetail()">
+          <i class="ti ti-pencil" aria-hidden="true"></i> 후기 작성하기
+        </button>
+        <img class="rev-mascot" src="assets/images/img_btnseni.png" alt="" aria-hidden="true"
+          onerror="this.style.display='none'">
       </div>
 
       <div class="rev-divider"></div>

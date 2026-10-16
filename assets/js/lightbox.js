@@ -66,20 +66,10 @@ function fmtDate(iso) {
 let detailReviews = [];
 function findReview(id) { return detailReviews.find(r => String(r.id) === String(id)); }
 
-// '가족' → '가족과', '친구' → '친구와'. '아이와'처럼 이미 조사가 붙은 건 그대로
-function withJosa(word) {
-  const s = String(word || '');
-  if (/(와|과)$/.test(s)) return s;
-  const code = s.charCodeAt(s.length - 1);
-  const hasBatchim = code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 !== 0;
-  return s + (hasBatchim ? '과' : '와');
-}
-
 // 후기 카드 하나 — 서버 후기와 샘플 후기를 같은 모양으로 그린다.
 // 좋아요·댓글 버튼은 둘 다에 있고, 댓글은 카드 아래가 아니라 바텀시트(social.js openComments)로 연다.
 function serverReviewCard(rv) {
   const name = escapeHtml(rv.authorName || '동료');
-  const comp = (rv.companions && rv.companions.length) ? ' · ' + escapeHtml(withJosa(rv.companions.join(', '))) + ' 함께' : '';
   const r = rv.ratings || {};
   const avg = r.avg != null ? Number(r.avg).toFixed(1) : '';
   const sc = v => (v == null ? '-' : Number(v).toFixed(1));
@@ -91,7 +81,7 @@ function serverReviewCard(rv) {
     <div class="review-head rt-head">
       ${seniAvatarHtml(rv.id || rv.authorName, rv.authorName || rv.id)}
       <div class="rt-who">
-        <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}${comp}</span></div>
+        <div class="rt-name-row"><span class="rt-name">${name}</span>${reviewBadge(rv)}<span class="rt-date">· ${fmtDate(rv.createdAt)}</span></div>
         ${rtOrgRow(rv)}
       </div>
       ${isMyReview(rv) ? `<button type="button" class="rev-del-btn" onclick="askDeleteReview('${idArg}')" aria-label="내 후기 삭제"><i class="ms outline">delete</i></button>` : ''}
@@ -143,7 +133,6 @@ function syncDetailStats(reviews) {
 async function loadServerReviews(resortName) {
   // 다른 휴양소로 바뀌면 필터를 비운다 (삭제 후 같은 휴양소를 다시 읽을 때는 그대로)
   if (window._detailResort !== resortName) {
-    revCompanionFilter = new Set();
     const po = document.getElementById('rev-photo-only'); if (po) po.checked = false;
   }
   window._detailResort = resortName; // 삭제 후 상세 새로고침용
@@ -163,41 +152,21 @@ async function loadServerReviews(resortName) {
   renderReviewList();
 }
 
-// 후기 필터 — 동행(여러 개 고르면 하나라도 맞는 후기) · 사진 있는 후기만
-const REV_COMPANIONS = ['가족', '친구', '연인', '동료', '혼자'];   // 후기 작성 화면(write.html)의 동행 칩과 같은 이름
-let revCompanionFilter = new Set();
-
-// 동행 칩 — 지금 휴양소 후기에서 실제로 센 숫자. 0건인 동행은 칩을 만들지 않는다
+// 후기 필터 — 사진 있는 후기만 (동행 칩 필터는 없앴다)
+// 사진 후기 수 — 0건이면 토글을 숨긴다 (눌러도 빈 목록뿐이라)
 function renderReviewFilters() {
-  const row = document.getElementById('rev-companion-row');
-  const box = document.getElementById('rev-companion-chips');
-  if (!row || !box) return;
-  // 사진 후기 수 — 0건이면 토글을 숨긴다 (눌러도 빈 목록뿐이라)
   const photoN = detailReviews.filter(r => (r.photos || []).length).length;
   const po = document.getElementById('rev-photo-only');
   const pc = document.getElementById('rev-photo-count');
   if (pc) pc.textContent = photoN;
   if (po) { po.closest('label').hidden = !photoN; if (!photoN) po.checked = false; }
-  const count = {};
-  detailReviews.forEach(r => (r.companions || []).forEach(c => { count[c] = (count[c] || 0) + 1; }));
-  const names = [...REV_COMPANIONS, ...Object.keys(count).filter(c => !REV_COMPANIONS.includes(c))].filter(c => count[c]);
-  revCompanionFilter = new Set([...revCompanionFilter].filter(c => count[c]));
-  row.hidden = !names.length;
-  box.innerHTML = names.map(c => `<button class="rev-chip${revCompanionFilter.has(c) ? ' active' : ''}" onclick="toggleRevCompanion('${escapeHtml(c)}')">${escapeHtml(c)}<em>${count[c]}</em></button>`).join('');
-}
-function toggleRevCompanion(c) {
-  revCompanionFilter.has(c) ? revCompanionFilter.delete(c) : revCompanionFilter.add(c);
-  renderReviewFilters();
-  renderReviewList();
 }
 
 function renderReviewList() {
   const box = document.getElementById('server-reviews');
   if (!box) return;
   const photoOnly = !!(document.getElementById('rev-photo-only') || {}).checked;
-  const list = detailReviews.filter(r =>
-    (!photoOnly || (r.photos || []).length) &&
-    (!revCompanionFilter.size || (r.companions || []).some(c => revCompanionFilter.has(c))));
+  const list = detailReviews.filter(r => !photoOnly || (r.photos || []).length);
   box.innerHTML = list.length
     ? list.map(serverReviewCard).join('')
     : detailReviews.length

@@ -1,4 +1,4 @@
-// 전역 토스트 · 공유하기 · 즐겨찾기 정렬
+// 전역 토스트 · 즐겨찾기 정렬
 // ===== 전역 토스트 =====
 function showToast(msg) {
   const toast = document.getElementById('app-toast');
@@ -8,31 +8,6 @@ function showToast(msg) {
   toast.classList.add('show');
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => toast.classList.remove('show'), 2000);
-}
-
-// ===== 공유하기 (레이어팝업 시트) =====
-function openShareSheet() {
-  const m = document.getElementById('share-modal');
-  if (m) m.classList.add('show');
-}
-function closeShareSheet(event) {
-  if (event && event.target.closest && event.target.closest('.comment-sheet')) return;
-  document.getElementById('share-modal').classList.remove('show');
-}
-function shareVia(type) {
-  if (type === 'link') {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(location.href)
-        .then(() => showToast('링크가 복사되었습니다'))
-        .catch(() => showToast('링크 복사에 실패했습니다'));
-    } else {
-      showToast('링크가 복사되었습니다');
-    }
-  } else {
-    const label = { kakao: '카카오톡', sms: 'SMS', insta: '인스타그램' }[type] || '';
-    showToast(label + '(으)로 공유합니다');
-  }
-  closeShareSheet();
 }
 
 // 즐겨찾기 정렬은 assets/js/favorites.js (sortFav)

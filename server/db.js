@@ -239,6 +239,11 @@ db.exec(`
   );
 `);
 
+// 꿀팁 작성자의 회사 · 부서 (후기 카드처럼 이름 아래 보여준다). 앱에서 쓰면 로그인한 직원 정보로 채운다
+for (const col of ['department', 'company']) {
+  try { db.exec(`ALTER TABLE tips ADD COLUMN ${col} TEXT`); } catch (e) { /* 이미 있음 */ }
+}
+
 // 즐겨찾기 — 사람(사번) × 휴양소(id). 휴양소가 지워지면 같이 지워진다
 db.exec(`
   CREATE TABLE IF NOT EXISTS favorites (

@@ -73,6 +73,11 @@
   transition: border-color 0.15s, color 0.15s, transform 0.1s;
 }
 
+/* 꿀팁이 1개 이하일 때 resort.js syncSwipeArrows() 가 hidden 을 붙인다 (위 display 보다 우선) */
+.tip-arrow[hidden] {
+  display: none;
+}
+
 .tip-arrow:hover:not(:disabled) {
   border-color: var(--border-strong);
   color: var(--text-1);
@@ -199,68 +204,6 @@
 .tag.hot {
   background: var(--coral-bg);
   color: var(--coral-fg);
-}
-
-/* 공유하기 시트 */
-.share-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  padding: 16px 18px 24px;
-}
-
-.share-opt {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  font-family: inherit;
-}
-
-.share-ic {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.1s;
-}
-
-.share-ic i {
-  font-size: 26px;
-}
-
-.share-ic.kakao {
-  background: #FEE500;
-  color: #3C1E1E;
-}
-
-.share-ic.sms {
-  background: #34C759;
-  color: #fff;
-}
-
-.share-ic.insta {
-  background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
-  color: #fff;
-}
-
-.share-ic.link {
-  background: var(--surface-3);
-  color: var(--text-2);
-}
-
-.share-opt:active .share-ic {
-  transform: scale(0.92);
-}
-
-.share-label {
-  font-size: 11px;
-  color: var(--text-2);
 }
 
 /* 즐겨찾기 정렬 시트 */
@@ -428,7 +371,7 @@
 }
 
 .td-resort {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--brand);
 }
@@ -439,6 +382,35 @@
   letter-spacing: -0.02em;
   color: var(--text-1);
   line-height: 1.4;
+}
+
+/* 제목 + (본인 · 관리자만) 수정 · 삭제 — 버튼이 혼자 한 줄을 쓰지 않게 제목 줄 오른쪽에 */
+.td-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.td-title-row .td-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.tip-detail-body .td-title-row .td-manage {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* 작성자 · 날짜 아래 회사 · 부서 (.rt-org 는 후기 카드와 공용 — cards.css) */
+/* 작성자 줄 (.rt-head · .rt-avatar · .rt-org 는 후기 카드와 공용 — cards.css). 시트 바닥이라 아래 여백은 없앤다 */
+.td-who {
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+.td-who.rt-head {
+  margin-bottom: 0;
 }
 
 .td-content {
@@ -460,45 +432,6 @@
   color: var(--text-3);
 }
 
-/* 좋아요 — 누르면 채워진 하트로 바뀐다 */
-.tip-like {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 4px;
-  margin: -2px -4px;
-  background: none;
-  border: 0;
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-3);
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.tip-like i {
-  font-size: 15px;
-  line-height: 1;
-}
-
-.tip-like:hover {
-  color: #E94A4A;
-}
-
-.tip-like.on {
-  color: #E94A4A;
-}
-
-/* 글 아래 해시태그 */
-.tip-tags {
-  margin-top: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--brand);
-  letter-spacing: -0.01em;
-}
-
 .mytip-card .ttitle {
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -506,10 +439,6 @@
   overflow: hidden;
 }
 
-.td-content+.tip-tags {
-  margin-top: 12px;
-  font-size: 12px;
-}
 
 /* 꿀팁 상세: 내 꿀팁(또는 관리자)만 보이는 수정 · 삭제 */
 .tip-detail-body .td-top {
