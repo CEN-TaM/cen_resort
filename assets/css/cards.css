@@ -130,9 +130,20 @@
   width: 268px;
 }
 
-/* 꿀팁은 한 화면에 2장 (gap 10px 의 절반씩 뺀다) */
+/* 꿀팁은 한 화면에 딱 2장 (gap 10px 의 절반씩 뺀다). 옆 카드는 보이지 않는다
+   (다음 카드를 살짝 보이게 했더니 마지막에서 오른쪽이 비어 줄이 찌그러져 보였다) */
 .swipe-row .tip-card {
   flex: 0 0 calc(50% - 5px);
+}
+
+/* 좌우 여백(18px)에 걸치는 앞 · 뒤 카드를 잘라 낸다 — 두 장이 줄을 꽉 채우므로 끝까지 넘겨도 자리가 같다 */
+.swipe-row#tip-row {
+  clip-path: inset(0 18px);
+}
+
+/* 꿀팁이 1개뿐이면 한 줄을 다 쓴다 */
+.swipe-row .tip-card:only-child {
+  flex-basis: 100%;
 }
 
 .place-card {

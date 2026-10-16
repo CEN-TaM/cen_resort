@@ -113,8 +113,18 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 0;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(15, 23, 42, 0.22) transparent;
+  /* 헤더(.app-header)가 이 안에 있어서, 스크롤바가 생기는 화면과 안 생기는 화면을 오가면
+     헤더 폭이 바뀌어 가운데 제목이 좌우로 흔들린다 → 스크롤바 자리를 늘 비워 둔다 */
+  scrollbar-gutter: stable;
+}
+
+/* 크롬은 scrollbar-width 를 주면 아래 ::-webkit-scrollbar(3px)를 무시하고 10px 막대를 그린다.
+   그래서 scrollbar-width 는 ::-webkit-scrollbar 가 없는 브라우저(파이어폭스)에만 준다 */
+@supports not selector(::-webkit-scrollbar) {
+  .scroll-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 23, 42, 0.22) transparent;
+  }
 }
 
 .scroll-body::-webkit-scrollbar {
@@ -171,7 +181,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;

@@ -32,8 +32,8 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | `notifications` · `notification_reads` | 알림 · 읽음 | 앱 |
 | `favorites` | 즐겨찾기 (사번 × 휴양소) | 앱 |
 | `notices` · `notice_views` | 공지사항 · 본 사람(조회수) | `tools/notices.js` (`DATA_IMPORT.md` '공지사항 올리기') |
-| `tips` · `tip_likes` | 꿀팁 · 꿀팁 좋아요(1인 1회) | 앱 |
-| `point_history` | 휴양소 포인트 내역 (후기 1건 +5P) | 앱 |
+| `tips` · `tip_likes` | 꿀팁 · 꿀팁 좋아요(1인 1회) | 앱, 또는 `tools/import_tips.js` (`DATA_IMPORT.md` '꿀팁 올리기') |
+| `point_history` | 휴양소 포인트 내역 (후기 1건 +10P) | 앱 |
 | `users` · `sessions` · `verify_codes` | 직원 명단 · 로그인 · 사번인증 코드 | `tools/users.js` |
 
 ## 휴양소 데이터
@@ -56,7 +56,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | PUT  | `/api/auth/me` | 연락처·메일·비밀번호 수정 🔒 |
 | POST | `/api/auth/verify/code` · `/verify/check` · `/api/auth/activate` | 사번인증 및 비밀번호 설정 (코드 발급 → 확인 → 설정) |
 | GET  | `/api/resorts` | 휴양소 목록 (평점·후기 수는 후기에서 계산) |
-| POST | `/api/reviews` | 후기 등록 (사진 base64 — JPG·PNG·WEBP, 최대 10장, 장당 10MB) → 작성자에게 **+5P** |
+| POST | `/api/reviews` | 후기 등록 (사진 base64 — JPG·PNG·WEBP, 최대 10장, 장당 10MB) → 작성자에게 **+10P** |
 | GET  | `/api/notices` · `/api/notices/:id` | 공지 목록 · 상세 (상세를 열면 조회수에 기록) |
 | GET  | `/api/tips?resort=` · `/api/tips/mine` | 휴양소 꿀팁 · 내 꿀팁 |
 | POST | `/api/tips` · PUT · DELETE `/api/tips/:id` · POST `/api/tips/:id/like` | 꿀팁 쓰기 · 고치기 · 지우기(본인·관리자) · 좋아요 `{ liked }` |

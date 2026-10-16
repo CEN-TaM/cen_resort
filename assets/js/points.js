@@ -2,7 +2,7 @@
 // 서버(GET /api/points/me)가 잔액과 내역을 준다. 적립·차감은 서버가 후기 등록·삭제 때 직접 한다 (화면은 보여주기만).
 // 회사 복지포인트(복지몰)와는 별개인 이 서비스의 포인트다.
 
-const POINT_REASON = { review: '후기 작성', review_deleted: '후기 삭제' };
+const POINT_REASON = { review: '후기 작성', review_deleted: '후기 삭제', adjust: '포인트 조정' };
 
 async function fetchMyPoints() {
   if (!(await hasReviewServer()) || !getProfile()) return null;

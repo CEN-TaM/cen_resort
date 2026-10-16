@@ -99,13 +99,6 @@
   font-weight: 700;
 }
 
-/* 동행 선택 칩: 선택 시 체크표시 */
-.companion-chip.active::before {
-  content: "✓";
-  margin-right: 4px;
-  font-weight: 900;
-}
-
 .select-box {
   padding: 14px;
   background: #FFFFFF;

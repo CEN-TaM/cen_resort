@@ -25,9 +25,8 @@ function collectReviewForm() {
     clean: num(rateEls[2]),
   };
 
-  // 4) 동행 (active 칩)
-  const companions = Array.from(form.querySelectorAll('.companion-chip.active'))
-    .map(c => c.textContent.trim());
+  // 4) 동행 — 선택 칸을 없앴다. API 모양은 그대로 두려고 빈 배열을 보낸다
+  const companions = [];
 
   // 5) 상세 후기
   const content = (form.querySelector('.textarea')?.value || '').trim();
@@ -102,8 +101,6 @@ function resetReviewForm() {
   const grid = form.querySelector('#photo-grid');
   if (grid) grid.querySelectorAll('.photo-thumb').forEach(el => el.remove());
   if (typeof updatePhotoCount === 'function') updatePhotoCount();
-  // 동행은 고른 사람만 (미리 골라 두지 않는다 — 실제로 누구와 갔는지만 남게)
-  form.querySelectorAll('.companion-chip.active').forEach(c => c.classList.remove('active'));
 }
 function closeModal(deviceId) {
   document.getElementById('modal-' + deviceId).classList.remove('show');
@@ -155,7 +152,7 @@ function applyWriteResortLock(r) {
   const sel = document.getElementById('rv-resort-select');
   if (sel) sel.value = r.name;
   const t = document.getElementById('rv-fixed-type');
-  // 상세 제목 옆 뱃지와 같은 글자 (예: 정기휴양소 · 2026 하계 이벤트 휴양소)
+  // 상세 제목 옆 배지와 같은 글자 (예: 정기휴양소 · 2026 하계 이벤트 휴양소)
   const dt = document.getElementById('detail-resort-type');
   if (t) t.textContent = (dt && dt.textContent.trim()) || ((TYPE_LABEL[r.type] || '') + ' 휴양소');
   const n = document.getElementById('rv-fixed-name');

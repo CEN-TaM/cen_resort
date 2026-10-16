@@ -90,7 +90,13 @@ async function addComment(parentId) {
   const input = document.getElementById(parentId ? `rc-input-${parentId}` : 'comment-input');
   const text = (input && input.value || '').trim();
   const rv = findReview(currentReviewId);
-  if (!text || !rv || commentBusy) return;
+  if (!text) {
+    // 빈 칸으로 '등록' 을 누르면 아무 일도 없어 고장 난 것처럼 보였다 → 안내하고 입력칸으로
+    if (typeof showToast === 'function') showToast('댓글 내용을 입력해주세요');
+    if (input) input.focus();
+    return;
+  }
+  if (!rv || commentBusy) return;
   commentBusy = true;
   try {
     const res = await ReviewAPI.addComment(rv, parentId || null, text);
