@@ -51,7 +51,8 @@ function renderContent() {
     $('content-head').innerHTML = `<tr><th style="width:96px">작성일</th><th style="width:130px">휴양소</th><th style="width:170px">작성자</th><th>내용</th>
       <th style="width:52px" class="num">평점</th><th style="width:52px" class="num">사진</th><th style="width:52px" class="num">댓글</th><th style="width:64px" class="num">좋아요</th>
       <th style="width:64px">상태</th><th style="width:190px"></th></tr>`;
-    $('content-rows').innerHTML = list.length ? list.slice(0, 500).map(x => `
+    if (!list.length) paged('content-' + ctab, list, 'content-pager', renderContent);   // 비면 쪽 번호도 지운다
+  $('content-rows').innerHTML = list.length ? paged('content-' + ctab, list, 'content-pager', renderContent).map(x => `
       <tr class="${x.hidden ? 'off' : ''}">
         <td>${fmtDate(x.createdAt)}</td><td>${esc(x.resortName)}</td><td>${whoHtml(x)}</td>
         <td class="snip" data-cview="${esc(x.id)}"><span>${esc(oneLine(x.content))}</span></td>
@@ -61,7 +62,8 @@ function renderContent() {
   } else {
     $('content-head').innerHTML = `<tr><th style="width:96px">작성일</th><th style="width:130px">휴양소</th><th style="width:170px">작성자</th><th>제목 · 내용</th>
       <th style="width:64px">상태</th><th style="width:190px"></th></tr>`;
-    $('content-rows').innerHTML = list.length ? list.slice(0, 500).map(x => `
+    if (!list.length) paged('content-' + ctab, list, 'content-pager', renderContent);   // 비면 쪽 번호도 지운다
+  $('content-rows').innerHTML = list.length ? paged('content-' + ctab, list, 'content-pager', renderContent).map(x => `
       <tr class="${x.hidden ? 'off' : ''}">
         <td>${fmtDate(x.createdAt)}</td><td>${esc(x.resortName)}</td><td>${whoHtml(x)}</td>
         <td class="snip" data-cview="${esc(x.id)}"><b>${esc(x.title)}</b><span>${esc(x.content)}</span></td>
@@ -75,9 +77,9 @@ const emptyRow = n => `<tr><td colspan="${n}" class="empty">${contentData[ctab].
 
 document.querySelector('.tabs').addEventListener('click', e => {
   const b = e.target.closest('[data-ctab]');
-  if (b) { ctab = b.dataset.ctab; renderContent(); }
+  if (b) { ctab = b.dataset.ctab; renderContent(); }   // 탭마다 쪽 번호를 따로 기억한다
 });
-['content-q', 'content-resort', 'content-filter'].forEach(id => $(id).addEventListener(id === 'content-q' ? 'input' : 'change', renderContent));
+['content-q', 'content-resort', 'content-filter'].forEach(id => $(id).addEventListener(id === 'content-q' ? 'input' : 'change', () => { resetPage('content-reviews'); resetPage('content-tips'); renderContent(); }));
 
 $('content-rows').addEventListener('click', async e => {
   const b = e.target.closest('[data-cview],[data-ctoggle],[data-cdel]');

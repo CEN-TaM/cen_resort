@@ -27,7 +27,7 @@
 
 // 화면 분류 칩과 같아야 한다 (screens/tips.html · tools/notices.js 도 이 목록을 쓴다)
 // 2026-10 이벤트 · 시설은 뺐다 (쓰는 공지가 없거나 이용수칙과 겹쳐서). 다시 쓰려면 여기와 screens/tips.html 칩을 같이 더한다
-const NOTICE_CATEGORIES = ['이용수칙', '예약', '복지포인트'];
+const NOTICE_CATEGORIES = ['이용수칙', '예약', '포인트'];
 
 // 공지 첨부 파일 — server/uploads/notices/<무작위>/<원래 이름> 에 저장 (받을 때 원래 이름 그대로 내려받아진다)
 // 웹페이지 · 스크립트처럼 열면 실행될 수 있는 종류는 받지 않는다. /uploads/notices 는 늘 '내려받기' 로 보낸다 (server/index.js)

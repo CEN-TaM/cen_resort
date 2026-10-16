@@ -762,7 +762,7 @@
             <span class="notice-cat active" onclick="selectNoticeCat(this)">전체</span>
             <span class="notice-cat" onclick="selectNoticeCat(this)">이용수칙</span>
             <span class="notice-cat" onclick="selectNoticeCat(this)">예약</span>
-            <span class="notice-cat" onclick="selectNoticeCat(this)">복지포인트</span>
+            <span class="notice-cat" onclick="selectNoticeCat(this)">포인트</span>
           </div>
 
           <!-- 공지 카드는 notice.js renderNotices() 가 그린다 (서버 DB 공지, 서버가 없으면 예시 공지) -->
@@ -1005,7 +1005,7 @@
           <div class="section-head">
             <div class="title">배지</div>
           </div>
-          <!-- 배지는 badges.js renderBadges() 가 실제 활동으로 그린다 (기준은 badges.js BADGES) -->
+          <!-- 배지는 badges.js renderBadges() 가 그린다. 기준은 DB badges (관리자 페이지 → 배지), 계산은 server/badges.js -->
           <div class="badge-grid" id="badge-grid"></div>
           <div style="height:30px"></div>
         </div>
@@ -1281,6 +1281,18 @@
             <i class="ti ti-x" onclick="closeFeatureModal()"></i>
           </div>
           <div class="feature-modal-body" id="feature-modal-body"></div>
+        </div>
+      </div>
+
+      <!-- 배지 자세히 보기 바텀시트 (badges.js openBadgeDetail) -->
+      <div class="comment-modal" id="badge-modal" onclick="closeBadgeDetail(event)">
+        <div class="comment-sheet" onclick="event.stopPropagation()">
+          <div class="comment-sheet-handle"></div>
+          <div class="comment-sheet-header">
+            <div class="ct">배지</div>
+            <i class="ti ti-x" onclick="closeBadgeDetail()"></i>
+          </div>
+          <div class="bd-body" id="badge-detail-body"></div>
         </div>
       </div>
 

@@ -24,7 +24,7 @@ const NOTICES = {
     ]
   },
   n2: {
-    pinned: true, category: '복지포인트', categoryTone: 'mint',
+    pinned: true, category: '포인트', categoryTone: 'mint',
     title: '2분기 복지포인트 적립 안내 (+50,000P)',
     author: '총무팀', authorInitial: '총', date: '2026.05.17', views: '1,756',
     body: `<p>4월 1일자로 <strong>분기 복지포인트 50,000P</strong>가 일괄 적립되었습니다.</p>
@@ -61,7 +61,7 @@ const NOTICES = {
     ]
   },
   n4: {
-    pinned: false, category: '복지포인트', categoryTone: 'mint',
+    pinned: false, category: '포인트', categoryTone: 'mint',
     title: '첫 후기 작성하고 +500P 받기 이벤트',
     author: '인사복지팀', authorInitial: '인', date: '2026.05.13', views: '1,341',
     body: `<p>아직 휴양소 후기를 한 번도 작성하지 않으셨나요? 지금이 기회입니다!</p>

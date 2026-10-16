@@ -11,7 +11,7 @@
 //   { "category": "예약", "title": "...", "pinned": false,    (author 작성 부서는 선택 — 앱에 보이지 않는다)
 //     "body": "본문",  "files": [{ "name": "안내.pdf", "url": "https://...", "size": "1.2MB" }],
 //     "createdAt": "2026-10-14T09:00:00+09:00" }        ← 없으면 지금
-//   category 는 화면 분류 칩과 같아야 한다: 이용수칙 · 예약 · 복지포인트 (server/admin.js NOTICE_CATEGORIES)
+//   category 는 화면 분류 칩과 같아야 한다: 이용수칙 · 예약 · 포인트 (server/admin.js NOTICE_CATEGORIES)
 //   body 표기 (HTML 은 쓰지 않는다 — 화면이 글자로만 그린다)
 //     ### 소제목        - 목록 한 줄        > 강조 상자        **굵게**        빈 줄 = 문단 나눔
 //   files 의 url 은 사내에서 열리는 주소. 없으면 첨부 칸에 이름만 보인다

@@ -5,6 +5,62 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmtDate = iso => { const d = new Date(iso); return isNaN(d) ? '' : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`; };
 
+// ───────── 쪽 나누기 (모든 목록 표 공용) ─────────
+// paged('users', list) → 이번 쪽 줄만 돌려주고 표 아래 <nav class="pager" id="users-pager 같은 곳"> 에 쪽 번호를 그린다.
+// 검색 · 필터가 바뀌면 resetPage(key) 로 1쪽부터. 쪽 수가 줄면 마지막 쪽으로 맞춘다
+// 한 쪽에 보는 개수 — 도구줄의 '10 · 20 · 50개씩 보기' (select.page-size[data-size-for]). 고른 값은 브라우저에 기억한다.
+// 후기 · 꿀팁 두 탭은 같은 선택을 쓴다 (쪽 번호 key 'content-reviews' · 'content-tips' → 개수 key 'content')
+const PAGE_SIZE_DEFAULT = 10;   // 처음엔 모든 목록 10개씩 (도구줄에서 20 · 50 으로 바꿀 수 있다)
+const pageNow = {};
+const sizeKeyOf = key => key.split('-')[0];
+function pageSize(key) {
+  const k = sizeKeyOf(key);
+  let v = 0;
+  try { v = Number(localStorage.getItem('admin-page-size-' + k)); } catch (e) { /* 저장 못 하는 브라우저 */ }
+  return [10, 20, 50].includes(v) ? v : PAGE_SIZE_DEFAULT;
+}
+function resetPage(key) { pageNow[key] = 1; }
+// 개수를 바꾸면 그 목록의 모든 쪽 번호를 1쪽으로 · 다시 그린다 (다시 그리는 함수는 메뉴마다 PAGE_RENDER 에 등록)
+const PAGE_RENDER = {};
+document.addEventListener('change', e => {
+  const sel = e.target.closest('select.page-size');
+  if (!sel) return;
+  const k = sel.dataset.sizeFor;
+  try { localStorage.setItem('admin-page-size-' + k, sel.value); } catch (err) { /* 무시 */ }
+  Object.keys(pageNow).filter(key => sizeKeyOf(key) === k).forEach(resetPage);
+  if (PAGE_RENDER[k]) PAGE_RENDER[k]();
+});
+function paged(key, list, pagerId, rerender) {
+  const size = pageSize(key);
+  PAGE_RENDER[sizeKeyOf(key)] = rerender;
+  const sel = document.querySelector(`select.page-size[data-size-for="${sizeKeyOf(key)}"]`);
+  if (sel && Number(sel.value) !== size) sel.value = String(size);
+  const last = Math.max(1, Math.ceil(list.length / size));
+  const p = Math.min(Math.max(1, pageNow[key] || 1), last);
+  pageNow[key] = p;
+  const el = $(pagerId);
+  if (el) {
+    if (last <= 1) el.innerHTML = '';
+    else {
+      // 지금 쪽 앞뒤로 2쪽씩 + 처음 · 끝 (사이가 비면 …)
+      const nums = [...new Set([1, last, p - 2, p - 1, p, p + 1, p + 2].filter(n => n >= 1 && n <= last))].sort((a, b) => a - b);
+      const btn = (n, label, extra = '') => `<button type="button" data-page="${n}"${extra}>${label}</button>`;
+      el.innerHTML = btn(p - 1, '‹', p === 1 ? ' disabled aria-label="이전 쪽"' : ' aria-label="이전 쪽"')
+        + nums.map((n, i) => (i && n - nums[i - 1] > 1 ? '<span class="gap">…</span>' : '') + btn(n, n, n === p ? ' class="on" aria-current="page"' : '')).join('')
+        + btn(p + 1, '›', p === last ? ' disabled aria-label="다음 쪽"' : ' aria-label="다음 쪽"')
+        + `<span class="range">${((p - 1) * size + 1).toLocaleString('ko-KR')}–${Math.min(p * size, list.length).toLocaleString('ko-KR')} / ${list.length.toLocaleString('ko-KR')}</span>`;
+    }
+    el.onclick = e => {
+      const b = e.target.closest('[data-page]');
+      if (!b || b.disabled) return;
+      pageNow[key] = Number(b.dataset.page);
+      rerender();
+      el.closest('section').scrollIntoView({ block: 'start' });
+    };
+  }
+  return list.slice((p - 1) * size, p * size);
+}
+
 async function api(path, opts = {}) {
   const res = await fetch(path, { ...opts, headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) } });
   const json = await res.json().catch(() => ({}));
@@ -111,7 +167,8 @@ function renderNotices() {
     (!q || n.title.toLowerCase().includes(q)) &&
     (!f || (f === 'active' && n.active) || (f === 'hidden' && !n.active) || (f === 'pinned' && n.pinned)));
   $('notice-count').textContent = `${list.length}개 / 전체 ${notices.length}개`;
-  $('notice-rows').innerHTML = list.length ? list.map(n => `
+  if (!list.length) paged('notices', list, 'notice-pager', renderNotices);   // 비면 쪽 번호도 지운다
+  $('notice-rows').innerHTML = list.length ? paged('notices', list, 'notice-pager', renderNotices).map(n => `
     <tr class="${n.active ? '' : 'off'}">
       <td><button class="pin-btn${n.pinned ? ' on' : ''}" title="${n.pinned ? '고정 풀기' : '맨 위에 고정'}" data-pin="${esc(n.id)}">📌</button></td>
       <td><span class="chip">${esc(n.category)}</span></td>
@@ -126,8 +183,8 @@ function renderNotices() {
       </div></td>
     </tr>`).join('') : `<tr><td colspan="7" class="empty">${notices.length ? '조건에 맞는 공지가 없습니다.' : '아직 공지가 없습니다. 오른쪽 위 \'+ 새 공지\' 로 첫 공지를 써 보세요.'}</td></tr>`;
 }
-$('notice-q').addEventListener('input', renderNotices);
-$('notice-filter').addEventListener('change', renderNotices);
+$('notice-q').addEventListener('input', () => { resetPage('notices'); renderNotices(); });
+$('notice-filter').addEventListener('change', () => { resetPage('notices'); renderNotices(); });
 $('notice-rows').addEventListener('click', async e => {
   const b = e.target.closest('[data-edit],[data-toggle],[data-pin],[data-del]');
   if (!b) return;

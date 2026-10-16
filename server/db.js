@@ -199,7 +199,7 @@ seedResorts();
 db.exec(`
   CREATE TABLE IF NOT EXISTS notices (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    category    TEXT NOT NULL,          -- 이용수칙 | 예약 | 복지포인트 (화면의 분류 칩 · server/admin.js NOTICE_CATEGORIES)
+    category    TEXT NOT NULL,          -- 이용수칙 | 예약 | 포인트 (화면의 분류 칩 · server/admin.js NOTICE_CATEGORIES)
     title       TEXT NOT NULL,
     body        TEXT NOT NULL,
     author      TEXT NOT NULL,          -- 부서 이름 (예: 인사복지팀)
@@ -239,6 +239,8 @@ db.exec(`
     FOREIGN KEY (tip_id) REFERENCES tips(id) ON DELETE CASCADE
   );
 `);
+// 공지 분류 '복지포인트' → '포인트' (2026-10 이름 바꿈. 이미 쓴 공지도 맞춘다)
+db.exec(`UPDATE notices SET category = '포인트' WHERE category = '복지포인트'`);
 
 // 꿀팁 작성자의 회사 · 부서 (후기 카드처럼 이름 아래 보여준다). 앱에서 쓰면 로그인한 직원 정보로 채운다
 for (const col of ['department', 'company']) {

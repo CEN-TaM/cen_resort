@@ -34,6 +34,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | `notices` · `notice_views` | 공지사항 · 본 사람(조회수) | `tools/notices.js` (`DATA_IMPORT.md` '공지사항 올리기') |
 | `tips` · `tip_likes` | 꿀팁 · 꿀팁 좋아요(1인 1회) | 앱, 또는 `tools/import_tips.js` (`DATA_IMPORT.md` '꿀팁 올리기') |
 | `point_history` | 휴양소 포인트 내역 (후기 1건 +10P) | 앱 |
+| `badges` · `badge_awards` | 배지 기준 · 받은 기록 (한 번 받으면 유지) | 처음엔 자동(기본 13개), 이후 관리자 페이지 → 배지 |
 | `users` · `sessions` · `verify_codes` | 직원 명단 · 로그인 · 사번인증 코드 | `tools/users.js` |
 
 ## 휴양소 데이터
@@ -60,7 +61,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | GET  | `/api/notices` · `/api/notices/:id` | 공지 목록 · 상세 (상세를 열면 조회수에 기록) |
 | GET  | `/api/tips?resort=` · `/api/tips/mine` | 휴양소 꿀팁 · 내 꿀팁 |
 | POST | `/api/tips` · PUT · DELETE `/api/tips/:id` · POST `/api/tips/:id/like` | 꿀팁 쓰기 · 고치기 · 지우기(본인·관리자) · 좋아요 `{ liked }` |
-| GET  | `/api/me/stats` | 내 활동 숫자 (배지 — 기준은 `assets/js/badges.js`) |
+| GET  | `/api/me/badges` | 내 배지 (기준은 DB `badges` — 관리자 페이지에서 고침, 받은 기록 `badge_awards`, 계산은 `server/badges.js`) |
 | GET  | `/api/favorites` | 내 즐겨찾기 (휴양소 id, 추가한 순서) |
 | PUT  | `/api/favorites/:resortId` | 즐겨찾기 `{ on }` — true 추가 / false 해제 |
 | GET  | `/api/points/me` | 내 휴양소 포인트 잔액 + 내역 (`point_history`). 후기를 지우면 그 후기로 받은 포인트 차감 |
@@ -83,7 +84,8 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | 공지사항 | 목록(숨긴 공지 · 조회수 포함) · 쓰기 · 고치기 · 숨기기/보이기 · 맨 위 고정 · 삭제 · 첨부 |
 | 직원 명단 · 권한 | 목록(상태 · 마지막 로그인) · 한 명 추가 · 엑셀로 여러 명 추가(양식 받기 → CSV 로 저장해 올리기 → 결과 확인 → 넣기, 엑셀 EUC-KR 도 읽음) · 고치기 · 관리자 지정 · 비밀번호 초기화 · 로그인 막기/풀기 |
 | 후기 · 꿀팁 | 전체 목록(숨긴 글 · 옮겨 온 글 표시) · 휴양소 · 상태 필터 · 본문 검색 · 자세히 보기(본문 · 사진 · 댓글) · 숨기기/보이기 · 삭제 |
-| 배지 · 휴양소 | 다음 단계 (지금은 `tools/` 도구) |
+| 배지 | 기준(무엇을 셀지 · 기준 숫자) · 이름 · 설명 · 아이콘 · 색 · 순서 · 보이기/숨기기 · 새 배지, 받은 사람 수 |
+| 휴양소 정보 | 다음 단계 (지금은 `tools/import_resorts.js`) |
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
@@ -99,6 +101,11 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | GET | `/api/admin/reviews` · `/api/admin/reviews/:id` | 후기 전체 (숨김 포함) · 한 개 (사진 · 댓글) |
 | GET | `/api/admin/tips` | 꿀팁 전체 (숨김 포함) |
 | PUT | `/api/admin/reviews/:id` · `/api/admin/tips/:id` | `{ hidden }` 숨기기 / 보이기 |
+| GET · POST | `/api/admin/badges` | 배지 전체 + 받은 사람 수 + 셀 수 있는 항목(metrics) · 새 배지 |
+| PUT | `/api/admin/badges/:id` | 배지 고치기 (기준을 바꿔도 이미 받은 사람은 유지) |
+
+- 배지가 '무엇을 셀지' 는 `server/badges.js` 의 METRICS 에서만 고릅니다 (후기 · 사진 있는 후기 · 휴양소 수 · 종류별 · 지역별 · 꿀팁 · 댓글 · 받은/누른 좋아요). 새 셈법은 거기에 더합니다.
+- 앱에서 직접 쓴 글만 세고 숨긴 글은 뺍니다. 기준을 넘으면 앱의 '내 배지' 를 열 때 받은 기록을 남깁니다.
 
 - **숨긴 후기 · 꿀팁**(`hidden = 1`)은 앱 어디에도 안 보이고, 휴양소 평점 · 후기 수 · 배지 계산 · 좋아요 · 댓글에서도 빠집니다. 데이터는 남습니다.
 - 지우기는 앱과 같은 `DELETE /api/reviews/:id` · `/api/tips/:id` (관리자는 남의 글도). 후기를 지우면 받은 포인트 차감 · 사진 파일 · 알림도 정리됩니다.

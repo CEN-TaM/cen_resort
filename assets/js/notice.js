@@ -4,7 +4,7 @@
 // 서버가 없으면(시연) data/notices.js 의 예시 공지 (NOTICES) 를 보여준다.
 // 화면: 공지 탭(screens/tips.html #notice-list) · 공지 상세(screens/notice-detail.html) · 알림(notification.js)
 
-const NOTICE_TONE = { '예약': 'sky', '복지포인트': 'mint', '이용수칙': 'peach', '이벤트': 'coral', '시설': 'lilac' };
+const NOTICE_TONE = { '예약': 'sky', '포인트': 'mint', '이용수칙': 'peach', '이벤트': 'coral', '시설': 'lilac' };
 let currentNotice = null;   // 지금 열린 공지 (첨부 받기용)
 
 // 예시 공지(시연) → 서버와 같은 모양. 예시 본문은 코드에 적힌 HTML 이라 html 로 넘긴다
