@@ -19,7 +19,7 @@ npm start        # = node index.js
 
 - DB: `server/data/reviews.db`
   - WAL 모드라 최근 쓰기가 `reviews.db-wal`에 있습니다. 켜진 채로 `.db`만 복사하면 누락·손상될 수 있으니 **백업은 `node backup.js`** 로 하세요.
-- 사진: `server/uploads/` (후기 사진) · `server/uploads/resorts/` (휴양소 대표 사진). `/uploads/...` 로 제공
+- 사진 · 첨부: `server/uploads/` (후기 사진) · `server/uploads/resorts/` (휴양소 대표 사진) · `server/uploads/notices/` (공지 첨부). `/uploads/...` 로 제공 (공지 첨부는 늘 내려받기)
 - 두 폴더는 `.gitignore` 처리되어 저장소에 올라가지 않습니다.
 
 DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`, `server/auth.js`)
@@ -88,9 +88,10 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | 메서드 | 경로 | 설명 |
 |---|---|---|
 | GET | `/api/admin/notices` · `/api/admin/notices/:id` | 공지 전체 (숨김 포함) · 한 개 |
-| POST | `/api/admin/notices` | 새 공지 `{ category, title, body, author, pinned, active, files, createdAt }` |
+| POST | `/api/admin/notices` | 새 공지 `{ category, title, body, pinned, active, files, createdAt } (author 작성 부서는 선택 · 화면에 안 보임)` |
 | PUT | `/api/admin/notices/:id` | 고치기 (보낸 칸만) |
-| DELETE | `/api/admin/notices/:id` | 지우기 (조회 기록도 지움 · 되돌릴 수 없음) |
+| DELETE | `/api/admin/notices/:id` | 지우기 (조회 기록 · 첨부 파일도 지움 · 되돌릴 수 없음) |
+| POST | `/api/admin/notice-files` | 공지 첨부 올리기 `{ name, data(base64) }` → `{ name, url, size }` — PDF · 한글 · 오피스 · JPG · PNG · ZIP · TXT · CSV, 20MB 까지. `server/uploads/notices/<무작위>/<원래 이름>` 에 저장, 받을 때 원래 이름으로 내려받음. 공지에서 빼거나 공지를 지우면 파일도 지움 |
 | GET · POST | `/api/admin/users` | 직원 명단 (비밀번호 해시 · 연락처는 보내지 않음) · 한 명 추가 |
 | PUT | `/api/admin/users/:empno` | 고치기 · 역할 · 로그인 막기 `{ active }` (막으면 지금 로그인도 끊음) |
 | POST | `/api/admin/users/:empno/reset` | 비밀번호 초기화 (로그인도 끊음 → 사번인증부터 다시) |

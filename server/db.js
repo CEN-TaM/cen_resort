@@ -199,7 +199,7 @@ seedResorts();
 db.exec(`
   CREATE TABLE IF NOT EXISTS notices (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    category    TEXT NOT NULL,          -- 이용수칙 | 예약 | 복지포인트 | 이벤트 | 시설 (화면의 분류 칩)
+    category    TEXT NOT NULL,          -- 이용수칙 | 예약 | 복지포인트 (화면의 분류 칩 · server/admin.js NOTICE_CATEGORIES)
     title       TEXT NOT NULL,
     body        TEXT NOT NULL,
     author      TEXT NOT NULL,          -- 부서 이름 (예: 인사복지팀)

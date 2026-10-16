@@ -54,7 +54,11 @@ require('./admin').register(app, db, auth, { loadReview });
 // 업로드된 사진 정적 제공
 app.use('/uploads', express.static(UPLOADS_DIR, {
   // 브라우저가 파일 내용을 보고 형식을 추측하지 않게 한다 (확장자대로만 이미지로 보여준다)
-  setHeaders: res => res.set('X-Content-Type-Options', 'nosniff'),
+  // 공지 첨부(uploads/notices/)는 열지 말고 늘 내려받게 한다 (이름은 주소 끝의 원래 파일 이름)
+  setHeaders: (res, filePath) => {
+    res.set('X-Content-Type-Options', 'nosniff');
+    if (filePath.split(path.sep).includes('notices')) res.set('Content-Disposition', 'attachment');
+  },
 }));
 
 // ───────────────────────── 헬퍼 ─────────────────────────

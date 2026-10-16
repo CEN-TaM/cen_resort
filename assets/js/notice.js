@@ -46,7 +46,7 @@ function noticeCardHtml(n) {
       <div class="notice-title">${escapeHtml(n.title)}</div>
       <div class="notice-body">${escapeHtml(n.summary || '')}</div>
       <div class="notice-foot">
-        <span>${escapeHtml(n.author)}${when ? ' · ' + escapeHtml(when) : ''}</span>
+        <span>${escapeHtml(when)}</span>
         <span class="views"><span class="ms outline">visibility</span> ${Number(n.views || 0).toLocaleString('ko-KR')}</span>
       </div>
     </div>`;
@@ -76,8 +76,6 @@ async function openNoticeDetail(id) {
   document.getElementById('nd-meta').innerHTML = (n.pinned ? `<span class="pin"><i class="ms">push_pin</i> 고정</span>` : '') +
     `<span class="tag tone-${tone}">${escapeHtml(n.category)}</span>`;
   document.getElementById('nd-title').textContent = n.title;
-  document.getElementById('nd-avatar').textContent = (n.author || '?').trim()[0];
-  document.getElementById('nd-author-name').textContent = n.author;
   document.getElementById('nd-date').textContent = ' ' + ((typeof fmtDate === 'function' && fmtDate(n.createdAt)) || '');
   document.getElementById('nd-views').textContent = ' ' + Number(n.views || 0).toLocaleString('ko-KR');
   document.getElementById('nd-body').innerHTML = n.html != null ? n.html : noticeBodyHtml(n.body);

@@ -53,7 +53,7 @@
           <button type="button" class="btn primary" id="new-notice-btn">+ 새 공지</button>
         </header>
         <div class="toolbar">
-          <input type="search" id="notice-q" placeholder="제목 · 부서 검색">
+          <input type="search" id="notice-q" placeholder="제목 검색">
           <select id="notice-filter">
             <option value="">전체</option>
             <option value="active">보이는 공지</option>
@@ -64,7 +64,7 @@
         </div>
         <table class="grid">
           <thead>
-            <tr><th style="width:56px">고정</th><th style="width:96px">분류</th><th>제목</th><th style="width:120px">작성 부서</th>
+            <tr><th style="width:56px">고정</th><th style="width:96px">분류</th><th>제목</th>
               <th style="width:76px">상태</th><th style="width:64px" class="num">조회</th><th style="width:104px">작성일</th><th style="width:190px"></th></tr>
           </thead>
           <tbody id="notice-rows"></tbody>
@@ -75,7 +75,6 @@
       <section id="notice-edit-view" data-view="notices" hidden>
         <header class="page-head">
           <div>
-            <button type="button" class="link back" id="edit-back">← 목록</button>
             <h1 id="edit-title">새 공지</h1>
           </div>
           <div class="head-actions">
@@ -87,28 +86,31 @@
           <form class="form" id="notice-form" onsubmit="return false">
             <div class="row2">
               <label>분류<select id="f-category"></select></label>
-              <label>작성 부서<input id="f-author" maxlength="30" placeholder="예: 인사복지팀"></label>
+              <label><span>작성일 <span class="hint">비워 두면 지금</span></span><input type="datetime-local" id="f-created"></label>
             </div>
             <label>제목<input id="f-title" maxlength="100" placeholder="공지 제목"></label>
             <div class="row2">
               <label class="check"><input type="checkbox" id="f-pinned"> 목록 맨 위에 고정</label>
               <label class="check"><input type="checkbox" id="f-active" checked> 앱에 보이기</label>
             </div>
-            <label>작성일 <span class="hint">비워 두면 지금 · 목록 순서와 '며칠 전' 표시에 쓰인다</span>
-              <input type="datetime-local" id="f-created"></label>
             <label>본문
               <span class="hint">### 소제목 · - 목록 · &gt; 강조 상자 · **굵게** · 빈 줄 = 문단 나눔 (HTML 은 글자로 보입니다)</span>
               <textarea id="f-body" rows="16" placeholder="본문을 입력하세요"></textarea>
             </label>
             <div class="files">
-              <div class="files-head">첨부 <span class="hint">사내에서 열리는 주소(http/https)가 있을 때만 앱에 받기 버튼이 생깁니다</span>
-                <button type="button" class="link" id="file-add">+ 첨부 추가</button></div>
-              <div id="file-rows"></div>
+              <div class="files-head">첨부 <span class="hint">PDF · 한글 · 워드 · 엑셀 · 파워포인트 · JPG · PNG · ZIP · TXT · CSV, 한 개 20MB 까지 · 최대 10개</span></div>
+              <!-- 파일 고르기 · 끌어다 놓기 (여러 개 한 번에). 고르면 바로 서버에 올리고 아래 목록에 쌓인다 — admin.js -->
+              <label class="dropzone" id="file-drop">
+                <input type="file" id="file-input" multiple hidden
+                  accept=".pdf,.hwp,.hwpx,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.zip,.txt,.csv">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+                <span><b>파일 선택</b> 또는 여기로 끌어다 놓기 <span class="hint">· 여러 개 한 번에 올릴 수 있어요</span></span>
+              </label>
+              <ul class="file-list" id="file-rows"></ul>
             </div>
             <p class="form-err" id="form-err"></p>
             <div class="danger-zone" id="danger-zone" hidden>
               <button type="button" class="btn danger" id="edit-delete">이 공지 삭제</button>
-              <span class="hint">삭제하면 되돌릴 수 없습니다. 잠깐 내리려면 '앱에 보이기' 를 끄세요.</span>
             </div>
           </form>
         </div>
