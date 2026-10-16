@@ -32,26 +32,7 @@ const NoticeAPI = {
   },
 };
 
-// 본문 표기 → HTML (### 소제목 · - 목록 · > 강조 · **굵게** · 빈 줄 문단). 글자는 모두 이스케이프한 뒤 바꾼다
-function noticeBodyHtml(text) {
-  const inline = s => escapeHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  const out = [];
-  let list = null;
-  const flush = () => { if (list) { out.push('<ul>' + list.map(l => `<li>${inline(l)}</li>`).join('') + '</ul>'); list = null; } };
-  String(text || '').split(/\r?\n\s*\r?\n/).forEach(block => {
-    block.split(/\r?\n/).forEach(line => {
-      const t = line.trim();
-      if (!t) return;
-      if (/^- /.test(t)) { (list = list || []).push(t.slice(2)); return; }
-      flush();
-      if (/^### /.test(t)) out.push(`<h4>${inline(t.slice(4))}</h4>`);
-      else if (/^> /.test(t)) out.push(`<div class="callout">${inline(t.slice(2))}</div>`);
-      else out.push(`<p>${inline(t)}</p>`);
-    });
-    flush();
-  });
-  return out.join('');
-}
+// 본문 표기 → HTML 은 notice-format.js noticeBodyHtml()
 
 function noticeCardHtml(n) {
   const tone = NOTICE_TONE[n.category] || 'sky';

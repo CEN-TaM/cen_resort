@@ -78,15 +78,15 @@ switch (cmd) {
   case 'import': {
     const [file] = args;
     if (!file || !fs.existsSync(file)) fail('사용법: node tools/users.js import <명단.csv> [--commit]');
-    const lines = fs.readFileSync(file, 'utf8').replace(/^﻿/, '').split(/\r?\n/).filter(l => l.trim());
+    // CSV 읽기는 관리자 페이지와 같은 함수 (server/admin.js parseUserCsv — 따옴표 칸도 읽는다)
+    const { parseUserCsv } = require('../server/admin');
     let added = 0, skipped = 0;
     db.exec('BEGIN');
-    lines.slice(1).forEach((line, i) => {
-      const [empno, name, position, email, dept, company] = line.split(',').map(s => s.trim());
-      const at = `${i + 2}행`;
-      if (!empno || !name || !isMail(email)) { console.log(`  건너뜀 ${at}: 사번·이름·회사메일 확인 (${line})`); skipped++; return; }
-      if (find(empno)) { console.log(`  건너뜀 ${at}: ${empno} 이미 있음`); skipped++; return; }
-      insert.run(empno, name, position || '', dept || null, company || null, email.toLowerCase(), 'user', now(), now());
+    parseUserCsv(fs.readFileSync(file, 'utf8')).forEach(r => {
+      const at = `${r.line}행`;
+      if (!r.empno || !r.name || !isMail(r.email)) { console.log(`  건너뜀 ${at}: 사번·이름·회사메일 확인 (${r.empno} ${r.name} ${r.email})`); skipped++; return; }
+      if (find(r.empno)) { console.log(`  건너뜀 ${at}: ${r.empno} 이미 있음`); skipped++; return; }
+      insert.run(r.empno, r.name, r.position || '', r.department || null, r.company || null, r.email, 'user', now(), now());
       added++;
     });
     if (flags.commit) { db.exec('COMMIT'); console.log(`✅ ${added}명 추가, ${skipped}건 건너뜀`); }

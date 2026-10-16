@@ -1,4 +1,4 @@
-// 공지사항 관리 (관리자 화면이 생기기 전까지 이 도구로 쓴다 · 서버에서 실행)
+// 공지사항 관리 (보통은 관리자 페이지 /admin 에서 쓴다. 이 도구는 여러 개를 한 번에 넣을 때 · 서버에서 실행)
 //
 //   node tools/notices.js list
 //   node tools/notices.js add <공지.json> [--commit]       새 공지 (여러 개면 배열)
@@ -19,7 +19,7 @@
 const fs = require('fs');
 const db = require('../server/db');
 
-const CATEGORIES = ['이용수칙', '예약', '복지포인트', '이벤트', '시설'];
+const { NOTICE_CATEGORIES: CATEGORIES } = require('../server/admin');   // 관리자 화면과 같은 분류 목록
 const [cmd, ...rest] = process.argv.slice(2);
 const COMMIT = rest.includes('--commit');
 const args = rest.filter(a => a !== '--commit');
