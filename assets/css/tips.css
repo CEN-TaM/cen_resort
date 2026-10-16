@@ -179,10 +179,11 @@
   vertical-align: text-top;
 }
 
+/* 닫는 따옴표는 마지막 줄 글자 윗선에 맞춘다 (여는 따옴표가 첫 줄 윗선에 붙는 것과 같은 높이) */
 .tip-card .tq-close {
   position: absolute;
   right: 14px;
-  bottom: 16px;
+  bottom: 25px;
   width: 10px;
   height: auto;
 }
