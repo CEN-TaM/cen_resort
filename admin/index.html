@@ -147,7 +147,7 @@
         <table class="grid">
           <thead>
             <tr><th style="width:90px">사번</th><th style="width:110px">이름</th><th style="width:70px">직급</th><th>회사 · 부서</th><th>회사 메일</th>
-              <th style="width:76px">역할</th><th style="width:96px">상태</th><th style="width:100px">마지막 로그인</th><th style="width:250px"></th></tr>
+              <th style="width:76px">역할</th><th style="width:96px">상태</th><th style="width:84px" class="num">포인트</th><th style="width:100px">마지막 로그인</th><th style="width:250px"></th></tr>
           </thead>
           <tbody id="user-rows"></tbody>
         </table>
@@ -332,6 +332,26 @@
       <div class="modal-actions">
         <button type="button" class="btn" data-close>취소</button>
         <button type="submit" class="btn primary" id="user-save">저장</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 휴양소 포인트 조정 (admin-users.js) -->
+  <div class="modal" id="point-modal" hidden>
+    <form class="modal-box wide" id="point-form" onsubmit="return false">
+      <h2 id="point-modal-title">포인트</h2>
+      <div class="pt-balance">지금 포인트 <b id="pt-balance">0</b>P</div>
+      <div class="pt-form">
+        <select id="pt-sign" aria-label="더하기 또는 빼기"><option value="1">더하기 (+)</option><option value="-1">빼기 (−)</option></select>
+        <input id="pt-amount" type="number" min="1" max="100000" placeholder="포인트" aria-label="포인트">
+        <input id="pt-note" maxlength="40" placeholder="이유 (예: 10월 이벤트 당첨) — 직원 앱 적립내역에 보여요" aria-label="이유">
+        <button type="submit" class="btn primary" id="pt-save">적용</button>
+      </div>
+      <p class="hint">내역은 지워지지 않아요. 잘못 넣었으면 반대로 한 번 더 조정하세요.</p>
+      <p class="form-err" id="pt-err"></p>
+      <div class="pt-list" id="pt-history"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-close>닫기</button>
       </div>
     </form>
   </div>

@@ -33,7 +33,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | `favorites` | 즐겨찾기 (사번 × 휴양소) | 앱 |
 | `notices` · `notice_views` | 공지사항 · 본 사람(조회수) | `tools/notices.js` (`DATA_IMPORT.md` '공지사항 올리기') |
 | `tips` · `tip_likes` | 꿀팁 · 꿀팁 좋아요(1인 1회) | 앱, 또는 `tools/import_tips.js` (`DATA_IMPORT.md` '꿀팁 올리기') |
-| `point_history` | 휴양소 포인트 내역 (후기 1건 +10P) | 앱 |
+| `point_history` | 휴양소 포인트 내역 (후기 1건 +10P · 관리자 조정은 reason=adjust + note 이유 · by_empno) | 앱 · 관리자 페이지 → 직원 명단 |
 | `badges` · `badge_awards` | 배지 기준 · 받은 기록 (한 번 받으면 유지) | 처음엔 자동(기본 13개), 이후 관리자 페이지 → 배지 |
 | `users` · `sessions` · `verify_codes` | 직원 명단 · 로그인 · 사번인증 코드 | `tools/users.js` |
 
@@ -82,7 +82,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | 메뉴 | 할 수 있는 것 |
 |---|---|
 | 공지사항 | 목록(숨긴 공지 · 조회수 포함) · 쓰기 · 고치기 · 숨기기/보이기 · 맨 위 고정 · 삭제 · 첨부 |
-| 직원 명단 · 권한 | 목록(상태 · 마지막 로그인) · 한 명 추가 · 엑셀로 여러 명 추가(양식 받기 → CSV 로 저장해 올리기 → 결과 확인 → 넣기, 엑셀 EUC-KR 도 읽음) · 고치기 · 관리자 지정 · 비밀번호 초기화 · 로그인 막기/풀기 |
+| 직원 명단 · 권한 | 목록(상태 · 휴양소 포인트 · 마지막 로그인) · 포인트 칸을 누르면 내역 · 조정(더하기/빼기 + 이유, 직원 앱 적립내역에 '포인트 조정 · 이유') · 한 명 추가 · 엑셀로 여러 명 추가(양식 받기 → CSV 로 저장해 올리기 → 결과 확인 → 넣기, 엑셀 EUC-KR 도 읽음) · 고치기 · 관리자 지정 · 비밀번호 초기화 · 로그인 막기/풀기 |
 | 후기 · 꿀팁 | 전체 목록(숨긴 글 · 옮겨 온 글 표시) · 휴양소 · 상태 필터 · 본문 검색 · 자세히 보기(본문 · 사진 · 댓글) · 숨기기/보이기 · 삭제 |
 | 배지 | 기준(무엇을 셀지 · 기준 숫자) · 이름 · 설명 · 아이콘 · 색 · 보이기/숨기기 · 새 배지, 받은 사람 수 |
 | 휴양소 정보 | 목록(후기 수 · 평점 · 종류 필터 · 검색) · 고치기(기본 정보 · 객실 · 문의 · 대표 사진 · 편의시설 칩 · 상세 표 · 주변 관광지 · 이용 수칙) · 숨기기/보이기 · 새 휴양소. 여러 곳을 한꺼번에 넣을 때는 `tools/import_resorts.js` |
@@ -98,6 +98,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | PUT | `/api/admin/users/:empno` | 고치기 · 역할 · 로그인 막기 `{ active }` (막으면 지금 로그인도 끊음) |
 | POST | `/api/admin/users/:empno/reset` | 비밀번호 초기화 (로그인도 끊음 → 사번인증부터 다시) |
 | POST | `/api/admin/users/import` | CSV `{ csv, commit }` — commit 이 아니면 결과만 |
+| GET · POST | `/api/admin/users/:empno/points` | 휴양소 포인트 잔액 + 내역 · 조정 `{ amount(+/-), note(이유, 꼭) }` — `point_history` 에 `reason=adjust` 로 쌓임 (지우지 않음, 잔액이 0 밑으로는 못 뺌) |
 | GET | `/api/admin/reviews` · `/api/admin/reviews/:id` | 후기 전체 (숨김 포함) · 한 개 (사진 · 댓글) |
 | GET | `/api/admin/tips` | 꿀팁 전체 (숨김 포함) |
 | PUT | `/api/admin/reviews/:id` · `/api/admin/tips/:id` | `{ hidden }` 숨기기 / 보이기 |

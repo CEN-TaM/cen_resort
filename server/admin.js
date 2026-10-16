@@ -14,6 +14,8 @@
 //   PUT    /api/admin/users/:empno         고치기 { name, position, department, company, email, role, active }
 //   POST   /api/admin/users/:empno/reset   비밀번호 초기화 → 그 직원은 사번인증부터 다시 (로그인도 끊는다)
 //   POST   /api/admin/users/import         CSV 명단 { csv, commit } — commit 이 아니면 결과만 보여주고 넣지 않는다
+//   GET    /api/admin/users/:empno/points  휴양소 포인트 잔액 + 내역
+//   POST   /api/admin/users/:empno/points  포인트 조정 { amount(+더하기 / -빼기), note(이유, 꼭) } — 앱 적립내역에 '포인트 조정 · 이유'
 //   자기 자신의 관리자 권한 빼기 · 로그인 막기는 안 된다 (아무도 관리자 페이지에 못 들어가는 일을 막는다)
 //
 //   후기 · 꿀팁 (숨기면 앱 어디에도 안 보이고 평점 · 후기 수 · 배지에서도 빠진다. 지우지는 않는다)
@@ -212,10 +214,11 @@ function register(app, db, auth, { loadReview } = {}) {
   const status = u => (!u.active ? 'blocked' : u.password_hash ? 'ready' : 'pending');
   const lastLogin = db.prepare('SELECT MAX(created_at) AS t FROM sessions WHERE empno = ?');
   const reviewCount = db.prepare('SELECT COUNT(*) AS c FROM reviews WHERE empno = ?');
+  const pointSum = db.prepare('SELECT COALESCE(SUM(amount), 0) AS n FROM point_history WHERE empno = ?');
   const userOut = u => ({
     empno: u.empno, name: u.name, position: u.position || '', department: u.department || '', company: u.company || '',
     email: u.email || '', role: u.role, active: !!u.active, status: status(u),
-    lastLogin: lastLogin.get(u.empno).t || null, reviews: reviewCount.get(u.empno).c,
+    lastLogin: lastLogin.get(u.empno).t || null, reviews: reviewCount.get(u.empno).c, points: pointSum.get(u.empno).n,
     createdAt: u.created_at, updatedAt: u.updated_at,
   });
   const T = v => String(v ?? '').trim();
@@ -277,6 +280,36 @@ function register(app, db, auth, { loadReview } = {}) {
     db.prepare('DELETE FROM sessions WHERE empno = ?').run(u.empno);
     console.log(`[admin] 비밀번호 초기화 ${u.empno} by ${req.user.empno}`);
     res.json({ user: userOut(findUser(u.empno)) });
+  });
+
+  // ───────── 휴양소 포인트 조정 ─────────
+  // 내역은 지우지 않고 쌓기만 한다 (잘못 넣었으면 반대로 한 번 더 조정). 잔액이 0 밑으로 내려가게는 못 뺀다
+  const POINT_REASON_TEXT = { review: '후기 작성', review_deleted: '후기 삭제', adjust: '포인트 조정' };
+  const pointsOut = empno => ({
+    balance: pointSum.get(empno).n,
+    history: db.prepare(`SELECT p.amount, p.reason, p.resort_name, p.note, p.by_empno, p.created_at, u.name AS by_name
+      FROM point_history p LEFT JOIN users u ON u.empno = p.by_empno WHERE p.empno = ? ORDER BY p.id DESC LIMIT 100`).all(empno)
+      .map(h => ({ amount: h.amount, reason: POINT_REASON_TEXT[h.reason] || h.reason, resortName: h.resort_name || '', note: h.note || '',
+        by: h.by_empno ? (h.by_name || h.by_empno) : '', createdAt: h.created_at })),
+  });
+  app.get('/api/admin/users/:empno/points', requireAdmin, (req, res) => {
+    const u = findUser(req.params.empno);
+    if (!u) return res.status(404).json({ error: '명단에 없는 사번입니다.' });
+    res.json(pointsOut(u.empno));
+  });
+  app.post('/api/admin/users/:empno/points', requireAdmin, (req, res) => {
+    const u = findUser(req.params.empno);
+    if (!u) return res.status(404).json({ error: '명단에 없는 사번입니다.' });
+    const amount = Number((req.body || {}).amount);
+    const note = T((req.body || {}).note).slice(0, 40);
+    if (!Number.isInteger(amount) || amount === 0 || Math.abs(amount) > 100000) return bad(res, '포인트는 1 ~ 100,000 사이 숫자로 적어 주세요.');
+    if (!note) return bad(res, '이유를 적어 주세요. 직원 앱의 적립내역에 같이 보여요.');
+    const bal = pointSum.get(u.empno).n;
+    if (bal + amount < 0) return bad(res, `지금 ${bal.toLocaleString('ko-KR')}P 라서 ${(-amount).toLocaleString('ko-KR')}P 를 뺄 수 없습니다.`);
+    db.prepare('INSERT INTO point_history (empno, amount, reason, note, by_empno, created_at) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(u.empno, amount, 'adjust', note, req.user.empno, now());
+    console.log(`[admin] 포인트 조정 ${u.empno} ${amount > 0 ? '+' : ''}${amount} by ${req.user.empno}`);
+    res.status(201).json(pointsOut(u.empno));
   });
 
   app.post('/api/admin/users/import', requireAdmin, (req, res) => {

@@ -114,13 +114,17 @@ db.exec(`
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     empno        TEXT NOT NULL,
     amount       INTEGER NOT NULL,         -- +적립 / -차감
-    reason       TEXT NOT NULL,            -- review(후기 작성) | review_deleted(후기 삭제)
+    reason       TEXT NOT NULL,            -- review(후기 작성) | review_deleted(후기 삭제) | adjust(관리자 조정)
     review_id    INTEGER,                  -- 후기가 지워져도 내역은 남기므로 FK 를 걸지 않는다
     resort_name  TEXT,                     -- 내역에 보여줄 휴양소명
     created_at   TEXT NOT NULL
   );
   CREATE INDEX IF NOT EXISTS idx_points_empno ON point_history(empno);
 `);
+// 관리자 조정(adjust) 이유 · 한 사람 — 앱 적립내역에 '포인트 조정 · <이유>' 로 보인다
+for (const col of ['note', 'by_empno']) {
+  try { db.exec(`ALTER TABLE point_history ADD COLUMN ${col} TEXT`); } catch (e) { /* 이미 있음 */ }
+}
 
 // ───────────────────────── 휴양소 ─────────────────────────
 // 휴양소 목록 · 검색 · 지도 · 상세 · 후기 작성 선택지가 모두 이 테이블을 본다 (GET /api/resorts).

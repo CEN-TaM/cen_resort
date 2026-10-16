@@ -602,8 +602,8 @@ app.put('/api/favorites/:resortId', requireUser, (req, res) => {
 app.get('/api/points/me', requireUser, (req, res) => {
   try {
     const history = db.prepare(
-      'SELECT amount, reason, resort_name, created_at FROM point_history WHERE empno = ? ORDER BY id DESC LIMIT 50'
-    ).all(req.user.empno).map(h => ({ amount: h.amount, reason: h.reason, resortName: h.resort_name, createdAt: h.created_at }));
+      'SELECT amount, reason, resort_name, note, created_at FROM point_history WHERE empno = ? ORDER BY id DESC LIMIT 50'
+    ).all(req.user.empno).map(h => ({ amount: h.amount, reason: h.reason, resortName: h.resort_name, note: h.note || '', createdAt: h.created_at }));
     res.json({ balance: pointBalance(req.user.empno), perReview: REVIEW_POINTS, history });
   } catch (err) {
     console.error('GET /api/points/me 실패:', err);
