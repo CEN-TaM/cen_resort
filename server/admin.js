@@ -4,7 +4,7 @@
 //   공지사항
 //   GET    /api/admin/notices          전체 (숨긴 공지 포함) + 조회수
 //   GET    /api/admin/notices/:id      한 개 (본문 · 첨부 포함)
-//   POST   /api/admin/notices          새 공지  { category, title, body, author, pinned, active, files, createdAt }
+//   POST   /api/admin/notices          새 공지  { category, title, body, pinned, active, files, createdAt } (author 작성 부서는 선택 · 화면에 안 보임)
 //   PUT    /api/admin/notices/:id      고치기   (보낸 칸만 바뀐다)
 //   DELETE /api/admin/notices/:id      지우기   (조회 기록도 같이 지워진다. 되돌릴 수 없어 화면은 숨기기를 먼저 권한다)
 //
@@ -26,7 +26,31 @@
 //   후기를 지우면 그 후기로 받은 포인트 차감 · 사진 파일 · 알림까지 같이 정리된다 — server/index.js)
 
 // 화면 분류 칩과 같아야 한다 (screens/tips.html · tools/notices.js 도 이 목록을 쓴다)
-const NOTICE_CATEGORIES = ['이용수칙', '예약', '복지포인트', '이벤트', '시설'];
+// 2026-10 이벤트 · 시설은 뺐다 (쓰는 공지가 없거나 이용수칙과 겹쳐서). 다시 쓰려면 여기와 screens/tips.html 칩을 같이 더한다
+const NOTICE_CATEGORIES = ['이용수칙', '예약', '복지포인트'];
+
+// 공지 첨부 파일 — server/uploads/notices/<무작위>/<원래 이름> 에 저장 (받을 때 원래 이름 그대로 내려받아진다)
+// 웹페이지 · 스크립트처럼 열면 실행될 수 있는 종류는 받지 않는다. /uploads/notices 는 늘 '내려받기' 로 보낸다 (server/index.js)
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const NOTICE_FILE_DIR = path.join(__dirname, 'uploads', 'notices');
+const NOTICE_FILE_EXT = new Set(['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'zip', 'txt', 'csv']);
+const NOTICE_FILE_MAX = 20 * 1024 * 1024;   // 20MB (요청 한도 express.json 30mb 안 — base64 는 1.37배)
+const humanSize = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(n / 1024)) + 'KB');
+// 경로를 벗어나거나 OS 가 못 쓰는 글자는 _ 로
+const safeFileName = n => path.basename(String(n || '')).replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').replace(/^\.+/, '').trim().slice(0, 100);
+const isNoticeFileUrl = u => /^\/uploads\/notices\/[a-f0-9]{16}\/[^/]+$/.test(String(u || ''));
+// 공지에서 빠진 첨부 파일을 지운다 (/uploads/notices/... 만, 그 폴더 밖은 건드리지 않는다)
+function removeNoticeFiles(urls) {
+  for (const u of urls) {
+    if (!isNoticeFileUrl(u)) continue;
+    const p = path.resolve(path.join(__dirname, decodeURIComponent(u)));
+    if (!p.startsWith(NOTICE_FILE_DIR + path.sep)) continue;
+    try { fs.rmSync(path.dirname(p), { recursive: true, force: true }); } catch (e) { /* 이미 없음 */ }
+  }
+}
+const fileUrls = json => { try { return (JSON.parse(json || '[]') || []).map(f => f.url).filter(Boolean); } catch (e) { return []; } };
 const LIMIT = { title: 100, author: 30, body: 20000, files: 10 };
 
 // 직원 명단 CSV — 첫 줄은 머리글. 열: 사번,이름,직급,이메일[,부서,회사] (tools/users.js import 와 같은 모양)
@@ -76,14 +100,16 @@ function register(app, db, auth, { loadReview } = {}) {
       if (!NOTICE_CATEGORIES.includes(b.category)) return { error: `분류는 ${NOTICE_CATEGORIES.join(' · ')} 중 하나여야 합니다.` };
       out.category = b.category;
     }
-    for (const k of ['title', 'author', 'body']) {
+    for (const k of ['title', 'body']) {
       if (!partial || has(k)) {
         const v = String(b[k] ?? '').trim();
-        if (!v) return { error: { title: '제목', author: '작성 부서', body: '본문' }[k] + '을(를) 입력해주세요.' };
-        if (v.length > LIMIT[k]) return { error: `${k === 'title' ? '제목' : k === 'author' ? '작성 부서' : '본문'}이 너무 깁니다 (${LIMIT[k]}자 이내).` };
+        if (!v) return { error: (k === 'title' ? '제목' : '본문') + '을 입력해주세요.' };
+        if (v.length > LIMIT[k]) return { error: `${k === 'title' ? '제목' : '본문'}이 너무 깁니다 (${LIMIT[k]}자 이내).` };
         out[k] = v;
       }
     }
+    // 작성 부서는 화면에 보이지 않아 받지 않아도 된다 (DB 칸은 남아 있어 비우면 '' 로 저장)
+    if (!partial || has('author')) out.author = String(b.author ?? '').trim().slice(0, LIMIT.author);
     if (has('pinned')) out.pinned = b.pinned ? 1 : 0;
     if (has('active')) out.active = b.active ? 1 : 0;
     if (has('files')) {
@@ -93,8 +119,8 @@ function register(app, db, auth, { loadReview } = {}) {
         const name = String(f?.name || '').trim();
         const url = String(f?.url || '').trim();
         if (!name) continue;
-        // 받기 주소는 http(s) 만 (javascript: 같은 주소로 엉뚱한 동작을 막는다)
-        if (url && !/^https?:\/\//i.test(url)) return { error: `첨부 주소는 http:// 또는 https:// 로 시작해야 합니다: ${name}` };
+        // 받기 주소는 여기서 올린 파일(/uploads/notices/...) 또는 http(s) 만 (javascript: 같은 주소로 엉뚱한 동작을 막는다)
+        if (url && !isNoticeFileUrl(url) && !/^https?:\/\//i.test(url)) return { error: `첨부 주소가 올바르지 않습니다: ${name}` };
         files.push({ name: name.slice(0, 100), ...(url ? { url } : {}), ...(f.size ? { size: String(f.size).slice(0, 20) } : {}) });
       }
       out.files = files.length ? JSON.stringify(files) : null;
@@ -137,26 +163,48 @@ function register(app, db, auth, { loadReview } = {}) {
     if (error) return bad(res, error);
     const cols = Object.keys(out);
     if (!cols.length) return bad(res, '바꿀 내용이 없습니다.');
+    const before = db.prepare('SELECT files FROM notices WHERE id = ?').get(id).files;
     db.prepare(`UPDATE notices SET ${cols.map(c => c + ' = ?').join(', ')}, updated_at = ? WHERE id = ?`)
       .run(...cols.map(c => out[c]), now(), id);
+    // 이번에 빠진 첨부 파일은 서버에서도 지운다
+    if ('files' in out) { const keep = new Set(fileUrls(out.files)); removeNoticeFiles(fileUrls(before).filter(u => !keep.has(u))); }
     console.log(`[admin] 공지 수정 #${id} (${cols.join(',')}) by ${req.user.empno}`);
     res.json({ notice: rowOut(db.prepare('SELECT * FROM notices WHERE id = ?').get(id), true) });
   });
 
   app.delete('/api/admin/notices/:id', requireAdmin, (req, res) => {
     const id = Number(req.params.id);
+    const files = (db.prepare('SELECT files FROM notices WHERE id = ?').get(id) || {}).files;
     db.exec('BEGIN');
     try {
       db.prepare('DELETE FROM notice_views WHERE notice_id = ?').run(id);
       const n = db.prepare('DELETE FROM notices WHERE id = ?').run(id).changes;
       db.exec('COMMIT');
       if (!n) return res.status(404).json({ error: '공지를 찾을 수 없습니다.' });
+      removeNoticeFiles(fileUrls(files));
       console.log(`[admin] 공지 삭제 #${id} by ${req.user.empno}`);
       res.json({ ok: true });
     } catch (e) {
       db.exec('ROLLBACK');
       throw e;
     }
+  });
+
+  // 첨부 올리기 — 한 번에 한 파일 { name, data(base64) } → { name, url, size }. 공지에 붙는 건 저장할 때 (files)
+  app.post('/api/admin/notice-files', requireAdmin, (req, res) => {
+    const name = safeFileName((req.body || {}).name);
+    const ext = (name.split('.').pop() || '').toLowerCase();
+    if (!name || !name.includes('.') || !NOTICE_FILE_EXT.has(ext)) {
+      return bad(res, `올릴 수 없는 파일입니다: ${name || '(이름 없음)'} — PDF · 한글 · 워드 · 엑셀 · 파워포인트 · JPG · PNG · ZIP · TXT · CSV 만 됩니다.`);
+    }
+    const buf = Buffer.from(String(req.body.data || '').replace(/^data:[^,]*,/, ''), 'base64');
+    if (!buf.length) return bad(res, `빈 파일입니다: ${name}`);
+    if (buf.length > NOTICE_FILE_MAX) return bad(res, `20MB 를 넘는 파일은 올릴 수 없습니다: ${name} (${humanSize(buf.length)})`);
+    const dir = crypto.randomBytes(8).toString('hex');
+    fs.mkdirSync(path.join(NOTICE_FILE_DIR, dir), { recursive: true });
+    fs.writeFileSync(path.join(NOTICE_FILE_DIR, dir, name), buf);
+    console.log(`[admin] 공지 첨부 올림 ${dir}/${name} (${humanSize(buf.length)}) by ${req.user.empno}`);
+    res.status(201).json({ file: { name, url: `/uploads/notices/${dir}/${encodeURIComponent(name)}`, size: humanSize(buf.length) } });
   });
 
   // ───────── 직원 명단 ─────────

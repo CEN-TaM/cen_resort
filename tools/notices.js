@@ -8,10 +8,10 @@
 // add · edit 는 --commit 없이 실행하면 들어갈 내용만 보여주고 되돌린다.
 //
 // 공지.json
-//   { "category": "예약", "title": "...", "author": "인사복지팀", "pinned": false,
+//   { "category": "예약", "title": "...", "pinned": false,    (author 작성 부서는 선택 — 앱에 보이지 않는다)
 //     "body": "본문",  "files": [{ "name": "안내.pdf", "url": "https://...", "size": "1.2MB" }],
 //     "createdAt": "2026-10-14T09:00:00+09:00" }        ← 없으면 지금
-//   category 는 화면 분류 칩과 같아야 한다: 이용수칙 · 예약 · 복지포인트 · 이벤트 · 시설
+//   category 는 화면 분류 칩과 같아야 한다: 이용수칙 · 예약 · 복지포인트 (server/admin.js NOTICE_CATEGORIES)
 //   body 표기 (HTML 은 쓰지 않는다 — 화면이 글자로만 그린다)
 //     ### 소제목        - 목록 한 줄        > 강조 상자        **굵게**        빈 줄 = 문단 나눔
 //   files 의 url 은 사내에서 열리는 주소. 없으면 첨부 칸에 이름만 보인다
@@ -33,7 +33,7 @@ function readJson(file) {
 }
 function check(n, partial) {
   if (!partial || n.category !== undefined) if (!CATEGORIES.includes(n.category)) fail(`분류는 ${CATEGORIES.join(' · ')} 중 하나: ${n.category}`);
-  if (!partial) for (const k of ['title', 'body', 'author']) if (!String(n[k] || '').trim()) fail(`'${k}' 가 비어 있습니다 (${n.title || ''})`);
+  if (!partial) for (const k of ['title', 'body']) if (!String(n[k] || '').trim()) fail(`'${k}' 가 비어 있습니다 (${n.title || ''})`);
   if (n.files && !Array.isArray(n.files)) fail('files 는 배열이어야 합니다');
 }
 function toIso(v) {
@@ -57,7 +57,7 @@ switch (cmd) {
     const ins = db.prepare('INSERT INTO notices (category, title, body, author, pinned, files, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)');
     list.forEach(n => {
       const at = toIso(n.createdAt);
-      const info = ins.run(n.category, n.title.trim(), n.body.trim(), n.author.trim(), n.pinned ? 1 : 0, n.files ? JSON.stringify(n.files) : null, at, at);
+      const info = ins.run(n.category, n.title.trim(), n.body.trim(), String(n.author || '').trim(), n.pinned ? 1 : 0, n.files ? JSON.stringify(n.files) : null, at, at);
       console.log(`+ ${info.lastInsertRowid}번 [${n.category}] ${n.title}${n.pinned ? ' (고정)' : ''}`);
     });
     if (COMMIT) { db.exec('COMMIT'); console.log('>>> 반영 완료'); } else { db.exec('ROLLBACK'); console.log('>>> 시험 실행(되돌림). 실제로 넣으려면 --commit'); }

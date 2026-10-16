@@ -63,7 +63,6 @@ textarea { resize: vertical; line-height: 1.6; font-family: inherit; }
 .page-head h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
 .sub, .hint { color: var(--text-3); font-size: 12px; font-weight: 400; }
 .sub { margin-top: 4px; }
-.back { font-size: 13px; margin-bottom: 6px; padding: 0; }
 .head-actions { display: flex; gap: 8px; }
 
 /* 목록 */
@@ -89,16 +88,29 @@ table.grid { width: 100%; border-collapse: collapse; background: #fff; border: 1
 .pin-btn.on { opacity: 1; }
 
 /* 쓰기 */
-.editor { max-width: 860px; }
+/* 쓰기 화면 — 목록처럼 화면 폭을 다 쓴다 (위 저장 · 취소 버튼과 오른쪽 끝을 맞춘다) */
+.editor { max-width: none; }
 .form { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 16px; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 label.check { flex-direction: row; align-items: center; gap: 8px; font-weight: 600; color: var(--text-1); cursor: pointer; }
 label.check input { width: 16px; height: 16px; accent-color: var(--brand); }
 .files-head { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; }
 .files-head .link { margin-left: auto; }
-.file-row { display: grid; grid-template-columns: 1.2fr 2fr 90px auto; gap: 8px; margin-bottom: 8px; }
+/* 첨부 — 끌어다 놓는 칸 + 올린 파일 목록 */
+.dropzone { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 18px; border: 1.5px dashed var(--border-strong); border-radius: 10px; background: var(--surface-2); color: var(--text-2); font-size: 13px; font-weight: 400; cursor: pointer; flex-direction: row; transition: border-color .15s, background .15s; }
+.dropzone:hover, .dropzone.over { border-color: var(--brand); background: var(--brand-50); }
+.dropzone b { color: var(--brand); }
+.dropzone .ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.file-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.file-list li { display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-size: 13px; }
+.file-list li.uploading { opacity: .6; }
+.file-list .fext { flex-shrink: 0; min-width: 40px; text-align: center; padding: 2px 6px; border-radius: 4px; background: var(--surface-3); color: var(--text-2); font-size: 11px; font-weight: 700; }
+.file-list .fname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-1); text-decoration: none; font-weight: 600; }
+.file-list a.fname:hover { color: var(--brand); text-decoration: underline; }
+.file-list .fsize { color: var(--text-3); font-size: 12px; white-space: nowrap; }
 .form-err { color: #DC2626; font-size: 13px; min-height: 18px; }
-.danger-zone { border-top: 1px dashed var(--border); padding-top: 14px; display: flex; align-items: center; gap: 12px; }
+/* 이 공지 삭제 — 폼 맨 아래 오른쪽 (저장 · 취소는 위). 실수는 누를 때 뜨는 확인창이 막는다 */
+.danger-zone { border-top: 1px dashed var(--border); padding-top: 14px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
 
 .toast {
   position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none;
@@ -164,3 +176,8 @@ label.check input { width: 16px; height: 16px; accent-color: var(--brand); }
 .cm-comments .c em { font-style: normal; color: var(--text-3); font-size: 12px; }
 #content-modal .modal-box { gap: 18px; padding: 26px 28px 24px; }
 .cm-photos:empty, .cm-comments:empty { display: none; }   /* 꿀팁 · 사진 없는 후기는 빈 자리 없이 */
+
+/* 첨부 목록의 빼기 — 글자 대신 × 아이콘 (마우스를 올리면 빨갛게) */
+.x-btn { flex-shrink: 0; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: none; color: var(--text-3); cursor: pointer; }
+.x-btn:hover { background: #FEE2E2; color: #DC2626; }
+.x-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }

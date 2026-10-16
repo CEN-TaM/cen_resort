@@ -61,7 +61,7 @@ const NOTICES = {
     ]
   },
   n4: {
-    pinned: false, category: '이벤트', categoryTone: 'coral',
+    pinned: false, category: '복지포인트', categoryTone: 'mint',
     title: '첫 후기 작성하고 +500P 받기 이벤트',
     author: '인사복지팀', authorInitial: '인', date: '2026.05.13', views: '1,341',
     body: `<p>아직 휴양소 후기를 한 번도 작성하지 않으셨나요? 지금이 기회입니다!</p>
@@ -79,7 +79,7 @@ const NOTICES = {
     ]
   },
   n5: {
-    pinned: false, category: '시설', categoryTone: 'lilac',
+    pinned: false, category: '이용수칙', categoryTone: 'peach',
     title: '조천 휴양소 정기 시설 점검 (5/22 ~ 5/24)',
     author: '시설관리팀', authorInitial: '시', date: '2026.05.13', views: '614',
     body: `<p>조천 휴양소 1호점이 정기 시설 점검을 위해 일시 이용이 중단됩니다.</p>

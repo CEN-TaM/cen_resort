@@ -25,25 +25,50 @@ async function start() {
   ME = me;
   $('gate').hidden = true; $('app').hidden = false;
   $('me-name').textContent = `${me.name}${me.position ? ' ' + me.position : ''} (${me.empno})`;
-  showMenu((location.hash.slice(1) in MENUS) ? location.hash.slice(1) : 'notices');
+  route();
 }
 
-// ───────── 메뉴 ─────────
-// 메뉴마다 첫 화면(목록)을 여는 함수. 직원 명단은 admin-users.js 가 MENUS.users 를 채운다
+// ───────── 메뉴 · 화면 주소 ─────────
+// 화면마다 주소가 있다: #notices · #notices/new · #notices/<공지 번호> · #users · #content
+// 화면을 바꿀 때 브라우저 기록을 남겨서 뒤로가기 · 앞으로가기 · 새로고침이 그 화면으로 동작한다 (앱 core.js 와 같은 방식)
+// 메뉴마다 첫 화면(목록)을 여는 함수. 직원 명단은 admin-users.js, 후기 · 꿀팁은 admin-content.js 가 MENUS 를 채운다
 let ME = null;
 const MENUS = { notices: () => loadNotices() };
 const FIRST_VIEW = { notices: 'notice-list-view', users: 'user-list-view', content: 'content-view' };
-function showMenu(name) {
-  if (!$('notice-edit-view').hidden && dirty && !confirm('저장하지 않은 공지가 있습니다. 나갈까요?')) return;
-  dirty = false;
-  document.querySelectorAll('.side-nav a[data-menu]').forEach(a => a.classList.toggle('on', a.dataset.menu === name));
-  document.querySelectorAll('section[data-view]').forEach(s => { s.hidden = s.id !== FIRST_VIEW[name]; });
-  history.replaceState(null, '', '#' + name);
-  MENUS[name]();
+let currentRoute = '';
+
+// 앱 안에서 화면을 바꿀 때. fromApp 표시가 있으면 '목록으로' 를 뒤로가기로 처리해 기록이 겹겹이 쌓이지 않는다
+function go(hash) {
+  if (location.hash !== hash) history.pushState({ fromApp: true }, '', hash);
+  route();
 }
+// 지금 화면을 닫고 그 메뉴 목록으로 (앱에서 들어왔으면 뒤로가기, 주소로 바로 들어왔으면 목록 주소로 바꾼다)
+function backTo(hash) {
+  if (history.state && history.state.fromApp) history.back();
+  else { history.replaceState(null, '', hash); route(); }
+}
+function route() {
+  const h = location.hash.replace(/^#/, '') || 'notices';
+  const [menu, sub] = h.split('/');
+  // 저장 안 한 공지를 쓰다가 다른 화면으로 가면 한 번 묻는다. 남겠다고 하면 주소를 되돌린다
+  if (currentRoute.startsWith('notices/') && h !== currentRoute && dirty) {
+    if (!confirm('저장하지 않은 공지가 있습니다. 나갈까요?')) { history.pushState({ fromApp: true }, '', '#' + currentRoute); return; }
+  }
+  dirty = false;
+  if (!(menu in MENUS)) { history.replaceState(null, '', '#notices'); return route(); }
+  currentRoute = h;
+  document.querySelectorAll('.side-nav a[data-menu]').forEach(a => a.classList.toggle('on', a.dataset.menu === menu));
+  if (menu === 'notices' && sub) {
+    document.querySelectorAll('section[data-view]').forEach(s => { s.hidden = s.id !== 'notice-edit-view'; });
+    return renderEditor(sub === 'new' ? null : sub);
+  }
+  document.querySelectorAll('section[data-view]').forEach(s => { s.hidden = s.id !== FIRST_VIEW[menu]; });
+  MENUS[menu]();
+}
+window.addEventListener('popstate', () => { if (ME) route(); });
 document.querySelector('.side-nav').addEventListener('click', e => {
   const a = e.target.closest('a[data-menu]');
-  if (a) showMenu(a.dataset.menu);
+  if (a) go('#' + a.dataset.menu);
 });
 // 팝업(직원 추가 · CSV) 닫기 — 바깥 누르기 · 취소 · Esc
 document.addEventListener('click', e => {
@@ -83,7 +108,7 @@ function renderNotices() {
   const q = $('notice-q').value.trim().toLowerCase();
   const f = $('notice-filter').value;
   const list = notices.filter(n =>
-    (!q || (n.title + ' ' + n.author).toLowerCase().includes(q)) &&
+    (!q || n.title.toLowerCase().includes(q)) &&
     (!f || (f === 'active' && n.active) || (f === 'hidden' && !n.active) || (f === 'pinned' && n.pinned)));
   $('notice-count').textContent = `${list.length}개 / 전체 ${notices.length}개`;
   $('notice-rows').innerHTML = list.length ? list.map(n => `
@@ -91,7 +116,6 @@ function renderNotices() {
       <td><button class="pin-btn${n.pinned ? ' on' : ''}" title="${n.pinned ? '고정 풀기' : '맨 위에 고정'}" data-pin="${esc(n.id)}">📌</button></td>
       <td><span class="chip">${esc(n.category)}</span></td>
       <td class="title" data-edit="${esc(n.id)}">${esc(n.title)}</td>
-      <td>${esc(n.author)}</td>
       <td><span class="chip ${n.active ? 'on' : 'off'}">${n.active ? '보임' : '숨김'}</span></td>
       <td class="num">${Number(n.views || 0).toLocaleString('ko-KR')}</td>
       <td>${fmtDate(n.createdAt)}</td>
@@ -100,7 +124,7 @@ function renderNotices() {
         <button class="btn sm" data-toggle="${esc(n.id)}">${n.active ? '숨기기' : '보이기'}</button>
         <button class="btn sm danger" data-del="${esc(n.id)}">삭제</button>
       </div></td>
-    </tr>`).join('') : `<tr><td colspan="8" class="empty">${notices.length ? '조건에 맞는 공지가 없습니다.' : '아직 공지가 없습니다. 오른쪽 위 \'+ 새 공지\' 로 첫 공지를 써 보세요.'}</td></tr>`;
+    </tr>`).join('') : `<tr><td colspan="7" class="empty">${notices.length ? '조건에 맞는 공지가 없습니다.' : '아직 공지가 없습니다. 오른쪽 위 \'+ 새 공지\' 로 첫 공지를 써 보세요.'}</td></tr>`;
 }
 $('notice-q').addEventListener('input', renderNotices);
 $('notice-filter').addEventListener('change', renderNotices);
@@ -109,7 +133,7 @@ $('notice-rows').addEventListener('click', async e => {
   if (!b) return;
   const id = b.dataset.edit || b.dataset.toggle || b.dataset.pin || b.dataset.del;
   const n = notices.find(x => x.id === id);
-  if (b.dataset.edit) return openEditor(id);
+  if (b.dataset.edit) return go('#notices/' + id);
   try {
     if (b.dataset.toggle) { await api(`/api/admin/notices/${id}`, { method: 'PUT', body: JSON.stringify({ active: !n.active }) }); toast(n.active ? '앱에서 숨겼습니다' : '앱에 다시 보입니다'); }
     if (b.dataset.pin) { await api(`/api/admin/notices/${id}`, { method: 'PUT', body: JSON.stringify({ pinned: !n.pinned }) }); toast(n.pinned ? '고정을 풀었습니다' : '맨 위에 고정했습니다'); }
@@ -128,72 +152,112 @@ async function confirmDelete(n) {
 let editingId = null, dirty = false;
 const toLocalInput = iso => { if (!iso) return ''; const d = new Date(iso); const p = v => String(v).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; };
 
-async function openEditor(id) {
+// 쓰기 · 고치기 화면을 그린다 — 주소(#notices/new · #notices/<번호>)가 바뀌면 route() 가 부른다
+async function renderEditor(id) {
   editingId = id || null;
-  let n = { category: categories[0], title: '', author: localStorage.getItem('admin-last-author') || '', body: '', pinned: false, active: true, files: [], createdAt: '' };
-  if (id) { try { n = (await api(`/api/admin/notices/${id}`)).notice; } catch (e) { return handleErr(e); } }
+  // 주소로 바로 들어오면(새로고침 등) 분류 목록이 아직 없다
+  if (!categories.length) { try { categories = (await api('/api/admin/notices')).categories; } catch (e) { return handleErr(e); } }
+  let n = { category: categories[0], title: '', body: '', pinned: false, active: true, files: [], createdAt: '' };
+  if (id) {
+    try { n = (await api(`/api/admin/notices/${id}`)).notice; }
+    catch (e) { if (e.status === 404) { toast('없는 공지입니다'); history.replaceState(null, '', '#notices'); return route(); } return handleErr(e); }
+  }
   $('f-category').innerHTML = categories.map(c => `<option${c === n.category ? ' selected' : ''}>${esc(c)}</option>`).join('');
-  $('f-title').value = n.title; $('f-author').value = n.author; $('f-body').value = n.body;
+  $('f-title').value = n.title; $('f-body').value = n.body;
   $('f-pinned').checked = !!n.pinned; $('f-active').checked = n.active !== false;
   $('f-created').value = toLocalInput(n.createdAt);
-  $('file-rows').innerHTML = ''; (n.files || []).forEach(addFileRow);
+  editFiles = (n.files || []).map(f => ({ ...f })); renderFiles();
   $('edit-title').textContent = id ? '공지 수정' : '새 공지';
   $('danger-zone').hidden = !id;
   $('form-err').textContent = '';
-  $('notice-list-view').hidden = true; $('notice-edit-view').hidden = false;
   dirty = false;
   $('f-title').focus();
 }
+// 목록으로 — 저장 안 한 내용이 있으면 route() 가 묻는다. force(저장 · 삭제 뒤)면 묻지 않는다
 function closeEditor(force) {
-  if (!force && dirty && !confirm('저장하지 않은 내용이 있습니다. 나갈까요?')) return;
-  $('notice-edit-view').hidden = true; $('notice-list-view').hidden = false;
-  dirty = false;
+  if (force) dirty = false;
+  backTo('#notices');
 }
-function addFileRow(f = {}) {
-  const row = document.createElement('div');
-  row.className = 'file-row';
-  row.innerHTML = `<input class="fn" placeholder="파일 이름 (예: 이용안내.pdf)" value="${esc(f.name || '')}">
-    <input class="fu" placeholder="받기 주소 (https://… 없으면 이름만 보임)" value="${esc(f.url || '')}">
-    <input class="fs" placeholder="크기 (1.2MB)" value="${esc(f.size || '')}">
-    <button type="button" class="btn sm">빼기</button>`;
-  row.querySelector('button').onclick = () => { row.remove(); dirty = true; };
-  $('file-rows').appendChild(row);
+// ───────── 첨부 — 파일을 고르거나 끌어다 놓으면 바로 서버에 올리고(/api/admin/notice-files) 아래 목록에 쌓는다 ─────────
+// 공지에 붙는 건 '저장' 할 때. 저장 전에 빼면 서버 파일은 남지만 공지에는 안 붙는다 (빠진 파일은 저장할 때 서버가 지운다)
+const FILE_MAX = 20 * 1024 * 1024, FILE_LIMIT = 10;
+let editFiles = [];      // { name, url, size } · 올리는 중이면 { name, uploading: true }
+function renderFiles() {
+  const ext = n => (String(n).split('.').pop() || '').toUpperCase().slice(0, 4);
+  $('file-rows').innerHTML = editFiles.map((f, i) => `
+    <li class="${f.uploading ? 'uploading' : ''}">
+      <span class="fext">${esc(ext(f.name))}</span>
+      ${f.url ? `<a class="fname" href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.name)}</a>` : `<span class="fname">${esc(f.name)}</span>`}
+      <span class="fsize">${f.uploading ? '올리는 중…' : esc(f.size || '')}${!f.uploading && !f.url ? ' · 받기 주소 없음' : ''}</span>
+      ${f.uploading ? '' : `<button type="button" class="x-btn" data-fdel="${i}" title="빼기" aria-label="${esc(f.name)} 빼기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`}
+    </li>`).join('');
 }
+$('file-rows').addEventListener('click', e => {
+  const b = e.target.closest('[data-fdel]');
+  if (!b) return;
+  editFiles.splice(Number(b.dataset.fdel), 1); dirty = true; renderFiles();
+});
+const readAsDataUrl = file => new Promise((ok, fail) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => fail(r.error); r.readAsDataURL(file); });
+async function addFiles(list) {
+  const files = [...list];
+  $('form-err').textContent = '';
+  const room = FILE_LIMIT - editFiles.filter(f => !f.failed).length;
+  if (files.length > room) { $('form-err').textContent = `첨부는 ${FILE_LIMIT}개까지입니다. ${room}개만 더 올릴 수 있어요.`; files.length = Math.max(0, room); }
+  const errs = [];
+  // 한 개씩 차례로 올린다 (큰 파일 여러 개를 한꺼번에 보내면 요청 한도를 넘는다)
+  for (const file of files) {
+    if (file.size > FILE_MAX) { errs.push(`${file.name}: 20MB 를 넘습니다`); continue; }
+    const slot = { name: file.name, uploading: true };
+    editFiles.push(slot); renderFiles();
+    try {
+      const { file: up } = await api('/api/admin/notice-files', { method: 'POST', body: JSON.stringify({ name: file.name, data: await readAsDataUrl(file) }) });
+      Object.assign(slot, up, { uploading: false });
+      dirty = true;
+    } catch (err) {
+      editFiles.splice(editFiles.indexOf(slot), 1);
+      errs.push(err.message);
+      if (err.status === 401 || err.status === 403) { handleErr(err); break; }
+    }
+    renderFiles();
+  }
+  if (errs.length) $('form-err').textContent = errs.join(' / ');
+}
+$('file-input').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
+const drop = $('file-drop');
+['dragenter', 'dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
+
 function formValue() {
-  const files = [...document.querySelectorAll('#file-rows .file-row')].map(r => ({
-    name: r.querySelector('.fn').value.trim(), url: r.querySelector('.fu').value.trim(), size: r.querySelector('.fs').value.trim(),
-  })).filter(f => f.name);
+  const files = editFiles.filter(f => !f.uploading).map(f => ({ name: f.name, ...(f.url ? { url: f.url } : {}), ...(f.size ? { size: f.size } : {}) }));
   const created = $('f-created').value;
   return {
-    category: $('f-category').value, title: $('f-title').value.trim(), author: $('f-author').value.trim(),
+    category: $('f-category').value, title: $('f-title').value.trim(),
     body: $('f-body').value, pinned: $('f-pinned').checked, active: $('f-active').checked, files,
     ...(created ? { createdAt: new Date(created).toISOString() } : {}),
   };
 }
 $('notice-form').addEventListener('input', () => { dirty = true; });
 $('notice-form').addEventListener('change', () => { dirty = true; });
-$('file-add').addEventListener('click', () => { addFileRow(); dirty = true; });
-$('new-notice-btn').addEventListener('click', () => openEditor(null));
-$('edit-back').addEventListener('click', () => closeEditor());
+$('new-notice-btn').addEventListener('click', () => go('#notices/new'));
 $('edit-cancel').addEventListener('click', () => closeEditor());
 $('edit-save').addEventListener('click', async () => {
   const v = formValue();
   $('form-err').textContent = '';
-  if (!v.title || !v.author || !v.body.trim()) { $('form-err').textContent = '분류 · 작성 부서 · 제목 · 본문은 꼭 입력해야 합니다.'; return; }
+  if (!v.title || !v.body.trim()) { $('form-err').textContent = '분류 · 제목 · 본문은 꼭 입력해야 합니다.'; return; }
+  if (editFiles.some(f => f.uploading)) { $('form-err').textContent = '첨부 파일을 올리는 중이에요. 다 올라간 뒤 저장해 주세요.'; return; }
   $('edit-save').disabled = true;
   try {
     if (editingId) await api(`/api/admin/notices/${editingId}`, { method: 'PUT', body: JSON.stringify(v) });
     else await api('/api/admin/notices', { method: 'POST', body: JSON.stringify(v) });
-    localStorage.setItem('admin-last-author', v.author);
     toast(editingId ? '저장했습니다' : '공지를 올렸습니다' + (v.active ? '' : ' (숨김 상태)'));
     closeEditor(true);
-    loadNotices();
   } catch (err) { $('form-err').textContent = err.message; if (err.status === 401 || err.status === 403) handleErr(err); }
   finally { $('edit-save').disabled = false; }
 });
 $('edit-delete').addEventListener('click', async () => {
   const n = notices.find(x => x.id === editingId) || { id: editingId, title: $('f-title').value };
-  try { if (await confirmDelete(n)) { closeEditor(true); loadNotices(); } } catch (err) { handleErr(err); }
+  try { if (await confirmDelete(n)) closeEditor(true); } catch (err) { handleErr(err); }
 });
 window.addEventListener('beforeunload', e => { if (dirty && !$('notice-edit-view').hidden) { e.preventDefault(); e.returnValue = ''; } });
 

@@ -61,17 +61,23 @@ function backupDatabase(destDir) {
 function backupUploads(destDir) {
   if (!fs.existsSync(UPLOADS_DIR)) { log('uploads 없음 — 건너뜀'); return 0; }
   const dest = path.join(destDir, 'uploads');
-  fs.mkdirSync(dest, { recursive: true });
   let linked = 0, copied = 0;
-  for (const name of fs.readdirSync(UPLOADS_DIR)) {
-    const src = path.join(UPLOADS_DIR, name);
-    if (!fs.statSync(src).isFile()) continue;
-    const dst = path.join(dest, name);
-    if (fs.existsSync(dst)) continue;
-    try { fs.linkSync(src, dst); linked++; }
-    catch { fs.copyFileSync(src, dst); copied++; }   // 파일시스템이 다르면 복사로 대체
-  }
-  log(`사진 ${linked + copied}개 (하드링크 ${linked} / 복사 ${copied})`);
+  // 하위 폴더(resorts/ 휴양소 사진 · notices/ 공지 첨부)까지 따라 들어간다.
+  // (예전엔 uploads/ 바로 아래 파일만 남겨서 휴양소 대표 사진이 백업에서 빠졌다)
+  const walk = (srcDir, dstDir) => {
+    fs.mkdirSync(dstDir, { recursive: true });
+    for (const name of fs.readdirSync(srcDir)) {
+      const src = path.join(srcDir, name);
+      const dst = path.join(dstDir, name);
+      const st = fs.statSync(src);
+      if (st.isDirectory()) { walk(src, dst); continue; }
+      if (!st.isFile() || fs.existsSync(dst)) continue;
+      try { fs.linkSync(src, dst); linked++; }
+      catch { fs.copyFileSync(src, dst); copied++; }   // 파일시스템이 다르면 복사로 대체
+    }
+  };
+  walk(UPLOADS_DIR, dest);
+  log(`사진 · 첨부 ${linked + copied}개 (하드링크 ${linked} / 복사 ${copied})`);
   return linked + copied;
 }
 
