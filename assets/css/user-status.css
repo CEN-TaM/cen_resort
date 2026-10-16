@@ -204,3 +204,23 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* 로그인 화면 — 관리자 바로가기 (사번인증 줄 아래) */
+.login-admin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  margin: 14px auto 0;
+  padding: 8px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--pill);
+  background: #fff;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.login-admin .ti { font-size: 16px; }
+.login-admin:active { background: var(--surface-2); }
