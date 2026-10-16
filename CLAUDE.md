@@ -36,7 +36,7 @@ assets/js/          화면 동작. 주요 창구:
   favorites.js points.js badges.js  즐겨찾기 · 휴양소 포인트 · 배지(기준은 DB badges, 서버가 계산)
   notice.js           공지(NoticeAPI)      tips.js  꿀팁(TipAPI) · 휴양소 상세
   data/resorts.js     휴양소 기본값(시드) · 편의시설 아이콘(FEATURE_META)
-admin/              관리자 페이지 (PC, /admin) — 관리자만. API 는 server/admin.js
+admin/              관리자 페이지 (PC, /admin) — 관리자만. API 는 server/admin.js · badges.js · admin-resorts.js
 server/             index.js(API) · admin.js(관리자 API) · admin-resorts.js(관리자 휴양소) · badges.js(배지 기준 · 계산) · db.js(테이블) · auth.js(로그인 · 권한) · data/reviews.db(DB, git 제외)
 tools/              build_index.js · 적재 도구(import_*.js · xlsx_to_meta.js · pdf_photos.js · prepare_photos.js) · users.js(직원 명단) · notices.js(공지)
 ```
