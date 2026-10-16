@@ -31,7 +31,7 @@
       <nav class="side-nav">
         <a class="on" data-menu="notices">공지사항</a>
         <a data-menu="users">직원 명단 · 권한</a>
-        <a class="soon" title="다음 단계">후기 · 꿀팁</a>
+        <a data-menu="content">후기 · 꿀팁</a>
         <a class="soon" title="다음 단계">배지 · 포인트</a>
         <a class="soon" title="다음 단계">휴양소 정보</a>
       </nav>
@@ -146,6 +146,36 @@
           <tbody id="user-rows"></tbody>
         </table>
       </section>
+      <!-- 후기 · 꿀팁 (admin-content.js) -->
+      <section id="content-view" data-view="content" hidden>
+        <header class="page-head">
+          <div>
+            <h1>후기 · 꿀팁</h1>
+            <p class="sub">숨기면 앱 어디에도 안 보이고 평점 · 후기 수 · 배지에서도 빠집니다 (지우지는 않아 언제든 다시 보이게 할 수 있어요).
+              삭제는 되돌릴 수 없습니다.</p>
+          </div>
+        </header>
+        <div class="tabs">
+          <button type="button" class="tab on" data-ctab="reviews">후기 <em id="ctab-reviews-n"></em></button>
+          <button type="button" class="tab" data-ctab="tips">꿀팁 <em id="ctab-tips-n"></em></button>
+        </div>
+        <div class="toolbar">
+          <input type="search" id="content-q" placeholder="작성자 · 본문 · 회사 · 휴양소 검색">
+          <select id="content-resort"><option value="">휴양소 전체</option></select>
+          <select id="content-filter">
+            <option value="">전체</option>
+            <option value="shown">보이는 글</option>
+            <option value="hidden">숨긴 글</option>
+            <option value="member">앱에서 직접 쓴 글</option>
+            <option value="imported">옮겨 온 글 (엑셀 · PDF)</option>
+          </select>
+          <span class="count" id="content-count"></span>
+        </div>
+        <table class="grid">
+          <thead id="content-head"></thead>
+          <tbody id="content-rows"></tbody>
+        </table>
+      </section>
     </main>
   </div>
 
@@ -194,9 +224,33 @@
     </div>
   </div>
 
+  <!-- 후기 · 꿀팁 자세히 보기 -->
+  <div class="modal" id="content-modal" hidden>
+    <div class="modal-box wide">
+      <div class="cm-head">
+        <div>
+          <div class="cm-meta" id="cm-meta"></div>
+          <h2 id="cm-title"></h2>
+          <div class="cm-who" id="cm-who"></div>
+        </div>
+        <span class="chip" id="cm-state"></span>
+      </div>
+      <div class="cm-body" id="cm-body"></div>
+      <div class="cm-photos" id="cm-photos"></div>
+      <div class="cm-comments" id="cm-comments"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn danger" id="cm-delete">삭제</button>
+        <span style="flex:1"></span>
+        <button type="button" class="btn" data-close>닫기</button>
+        <button type="button" class="btn primary" id="cm-toggle"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script src="admin.js"></script>
   <script src="admin-users.js"></script>
+  <script src="admin-content.js"></script>
 </body>
 </html>

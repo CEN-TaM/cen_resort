@@ -86,6 +86,7 @@ db.exec(`
 for (const [table, col, type] of [
   ['reviews', 'department', 'TEXT'],
   ['reviews', 'company', 'TEXT'],
+  ['reviews', 'hidden', 'INTEGER NOT NULL DEFAULT 0'],   // 1 = 관리자가 숨김 (앱 어디에도 안 보임 · 평점 · 배지에서도 빠짐. 지우지는 않음)
   ['review_comments', 'parent_id', 'INTEGER'],
   ['review_comments', 'empno', 'TEXT'],
 ]) {
@@ -243,6 +244,8 @@ db.exec(`
 for (const col of ['department', 'company']) {
   try { db.exec(`ALTER TABLE tips ADD COLUMN ${col} TEXT`); } catch (e) { /* 이미 있음 */ }
 }
+// 1 = 관리자가 숨김 (앱에 안 보임, 지우지는 않음 — 관리자 페이지 '후기 · 꿀팁')
+try { db.exec('ALTER TABLE tips ADD COLUMN hidden INTEGER NOT NULL DEFAULT 0'); } catch (e) { /* 이미 있음 */ }
 
 // 즐겨찾기 — 사람(사번) × 휴양소(id). 휴양소가 지워지면 같이 지워진다
 db.exec(`
