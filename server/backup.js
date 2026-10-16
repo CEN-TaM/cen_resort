@@ -12,6 +12,12 @@
 //
 // 결과물   ~/backups/YYYY-MM-DD/{reviews.db, uploads/, manifest.json}
 //
+// 다른 서버에도 한 부 (서버가 통째로 고장 나도 남게)
+//   ~/.cen_resort_backup.json 이 있으면, 그날 백업 폴더를 그 서버로 scp 로 복사하고 오래된 것을 지운다.
+//   { "remote": "devadm01@192.168.64.58", "port": 7722, "key": "~/.ssh/cen_resort_backup", "dir": "backups_from_dev", "keepDays": 30 }
+//   (키는 비밀번호 없는 전용 키. 파일이 없으면 이 단계는 건너뛴다 — 저장소에는 넣지 않는다)
+//   받는 쪽에서 복구할 때는 아래 '복구' 의 ~/backups/ 대신 받는 서버의 ~/backups_from_dev/ 에서 가져온다
+//
 // 복구
 //   pm2 stop cen-resort
 //   cp ~/backups/2026-08-24/reviews.db  ~/cen_resort/server/data/reviews.db
@@ -21,6 +27,7 @@
 
 const fs = require('fs');
 const os = require('os');
+const { spawnSync } = require('child_process');
 const path = require('path');
 const { DatabaseSync } = require('node:sqlite');
 
@@ -94,6 +101,30 @@ function prune() {
   }
 }
 
+// 다른 서버로 한 부 — 실패해도 이 서버 백업은 이미 끝났으니 오류만 남긴다 (pm2 logs 에서 보임)
+const REMOTE_CONF = path.join(os.homedir(), '.cen_resort_backup.json');
+function copyRemote(destDir) {
+  if (!fs.existsSync(REMOTE_CONF)) { log('다른 서버 복사 — 설정 없음, 건너뜀'); return null; }
+  const c = JSON.parse(fs.readFileSync(REMOTE_CONF, 'utf8'));
+  const dir = String(c.dir || 'backups_from_dev').replace(/[^\w.-]/g, '');
+  const keep = Number(c.keepDays || 30);
+  const port = String(c.port || 22);
+  const ssh = ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=20', '-i', String(c.key || '').replace(/^~(?=\/)/, os.homedir())];
+  const run = (cmd, args) => {
+    const r = spawnSync(cmd, args, { encoding: 'utf8', timeout: 30 * 60_000 });
+    if (r.status !== 0) throw new Error(`${cmd} 실패 (${r.status}): ${String(r.stderr || r.error || '').trim().split('\n').pop()}`);
+  };
+  const name = path.basename(destDir);
+  // 같은 날 두 번 돌면 덮어쓴다 (먼저 지우고 복사)
+  run('ssh', [...ssh, '-p', port, c.remote, `mkdir -p ~/${dir} && rm -rf ~/${dir}/${name}`]);
+  run('scp', [...ssh, '-P', port, '-r', '-q', destDir, `${c.remote}:${dir}/`]);
+  // 받는 쪽 정리 — 날짜 이름 폴더만, keepDays 보다 오래된 것
+  run('ssh', [...ssh, '-p', port, c.remote,
+    `find ~/${dir} -mindepth 1 -maxdepth 1 -type d -name '20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]' -mtime +${keep} -exec rm -rf {} +`]);
+  log(`다른 서버 복사 완료 → ${c.remote}:~/${dir}/${name} (보관 ${keep}일)`);
+  return c.remote;
+}
+
 function main() {
   const destDir = path.join(BACKUP_ROOT, today());
   fs.mkdirSync(destDir, { recursive: true });
@@ -108,6 +139,12 @@ function main() {
   );
 
   prune();
+  let remote = null;
+  try { remote = copyRemote(destDir); } catch (err) { console.error('[backup] 다른 서버 복사 실패:', err.message); process.exitCode = 1; }
+  if (remote) {
+    const mf = path.join(destDir, 'manifest.json');
+    fs.writeFileSync(mf, JSON.stringify({ ...JSON.parse(fs.readFileSync(mf, 'utf8')), copiedTo: remote }, null, 2));
+  }
   const kept = fs.existsSync(BACKUP_ROOT)
     ? fs.readdirSync(BACKUP_ROOT).filter((n) => DATE_RE.test(n)).sort()
     : [];
