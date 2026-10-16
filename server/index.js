@@ -48,6 +48,9 @@ app.use(express.json({ limit: '30mb' }));
 // 로그인 · 세션 — 이 아래 모든 /api 요청에 req.user(로그인한 회원, 없으면 null)를 채운다
 auth.register(app, db);
 
+// 관리자 API (/api/admin/...) — 관리자만. 화면은 admin/ (아래 정적 파일)
+require('./admin').register(app, db, auth);
+
 // 업로드된 사진 정적 제공
 app.use('/uploads', express.static(UPLOADS_DIR, {
   // 브라우저가 파일 내용을 보고 형식을 추측하지 않게 한다 (확장자대로만 이미지로 보여준다)
@@ -680,7 +683,7 @@ app.get('/api/health', (_req, res) => res.json({ ok: true, time: new Date().toIS
 
 // 정적 파일. API 라우트 뒤에 위치.
 // ⚠️ 저장소 폴더 전체(ROOT_DIR)를 열면 안 된다 — server/data/reviews.db(직원 명단 · 세션 · 비밀번호 해시)와
-//    .git 까지 주소로 받아졌다. 화면에 필요한 것만 연다: index.html · assets/ (후기 사진은 위 /uploads)
+//    .git 까지 주소로 받아졌다. 화면에 필요한 것만 연다: index.html · assets/ · admin/ (후기 사진은 위 /uploads)
 // no-cache: 브라우저가 저장해 둔 파일을 쓰기 전에 바뀌었는지 매번 확인한다 (안 바뀌었으면 304 로 가볍게 끝남)
 // — 배포 뒤 화면(HTML)은 새것인데 JS 는 옛것이 섞여 기능이 안 되는 일을 막는다
 const staticOpts = { setHeaders: res => res.setHeader('Cache-Control', 'no-cache'), dotfiles: 'deny', index: false };
@@ -689,6 +692,9 @@ app.get(['/', '/index.html'], (_req, res) => {
   res.sendFile(path.join(ROOT_DIR, 'index.html'));
 });
 app.use('/assets', express.static(path.join(ROOT_DIR, 'assets'), staticOpts));
+// 관리자 페이지 (PC 용). 파일은 누구나 받을 수 있지만 데이터는 /api/admin 이 관리자만 준다
+// (/admin → /admin/ 로 넘기는 것은 express.static 이 해 준다)
+app.use('/admin', express.static(path.join(ROOT_DIR, 'admin'), { ...staticOpts, index: 'index.html' }));
 app.use((_req, res) => res.status(404).send('Not Found'));
 
 app.listen(PORT, () => {

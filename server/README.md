@@ -73,6 +73,25 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 🔒 표시가 없어도 **후기 등록 · 내 후기 · 삭제 · 좋아요 · 댓글 · 알림은 모두 로그인이 필요**합니다.
 작성자와 "본인인지"는 화면이 보낸 사번이 아니라 **서버 세션**으로 판단합니다. 후기 삭제는 본인 또는 관리자만 됩니다.
 
+## 관리자 페이지 (PC)
+
+**http://localhost:8999/admin** (개발서버는 http://192.168.64.57:8999/admin). 앱과 같은 계정으로 로그인하고, **관리자(`role = admin`)만** 들어갑니다.
+화면은 `admin/`(index.html · admin.css · admin.js), API 는 `server/admin.js`. 권한은 화면이 아니라 서버가 세션으로 판단합니다(`requireAdmin`).
+
+| 메뉴 | 할 수 있는 것 |
+|---|---|
+| 공지사항 | 목록(숨긴 공지 · 조회수 포함) · 쓰기 · 고치기 · 숨기기/보이기 · 맨 위 고정 · 삭제 · 첨부 |
+| 직원 명단 · 후기 · 꿀팁 · 배지 · 휴양소 | 다음 단계 (지금은 `tools/` 도구) |
+
+| 메서드 | 경로 | 설명 |
+|---|---|---|
+| GET | `/api/admin/notices` · `/api/admin/notices/:id` | 공지 전체 (숨김 포함) · 한 개 |
+| POST | `/api/admin/notices` | 새 공지 `{ category, title, body, author, pinned, active, files, createdAt }` |
+| PUT | `/api/admin/notices/:id` | 고치기 (보낸 칸만) |
+| DELETE | `/api/admin/notices/:id` | 지우기 (조회 기록도 지움 · 되돌릴 수 없음) |
+
+- 관리자 지정은 `node tools/users.js role <사번> admin`.
+
 ## 직원 명단 · 로그인
 
 **회원가입은 없습니다.** 직원 명단은 DB 의 **`users` 테이블**에 있고, 관리자가 미리 넣어 둡니다(사번 · 이름 · 직급 · 회사 메일).
