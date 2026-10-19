@@ -1,4 +1,4 @@
-// 관리자 페이지 — 휴양소 정보 (목록 · 찾기 · 추가 · 고치기 · 숨기기 · 대표 사진)
+// 관리자 페이지 — 휴양소 정보 (목록 · 찾기 · 추가 · 고치기 · 숨기기 · 사진 여러 장)
 // API: /api/admin/resorts · /api/admin/resort-photos (server/admin-resorts.js). 공용 함수($ · esc · api · toast · handleErr · go · backTo)는 admin.js
 // 주소: #resorts (목록) · #resorts/new · #resorts/<id> — 쓰기 화면은 공지처럼 한 화면 (저장 안 하고 나가면 묻는다, admin.js route)
 
@@ -16,14 +16,18 @@ SUB_VIEWS.resorts = { view: 'resort-edit-view', render: sub => renderResortEdito
 async function loadResorts() {
   try { resortData = await api('/api/admin/resorts'); renderResortRows(); } catch (e) { handleErr(e); }
 }
+// 목록 사진 칸 — 대표(첫 장) + 여러 장이면 장 수
 const thumbHtml = r => r.photo
-  ? `<span class="r-thumb" style="background-image:url('${esc(r.photo)}')"></span>`
+  ? `<span class="r-thumb" style="background-image:url('${esc(r.photo)}')" title="사진 ${r.photos.length}장">${r.photos.length > 1 ? `<em>${r.photos.length}</em>` : ''}</span>`
   : '<span class="r-thumb none"><i class="ms">image</i></span>';
 
 function resortList() {
   const q = $('resort-q').value.trim().toLowerCase();
   const t = $('resort-type').value;
+  const pf = $('resort-photo').value;
+  const n = r => r.photos.length;
   return resortData.resorts.filter(r => (!t || r.type === t) &&
+    (!pf || (pf === 'none' && !n(r)) || (pf === 'one' && n(r) === 1) || (pf === 'many' && n(r) > 1)) &&
     (!q || [r.name, r.loc, r.address, r.facilityName, ...r.aliases].join(' ').toLowerCase().includes(q)));
 }
 function renderResortRows() {
@@ -48,6 +52,7 @@ function renderResortRows() {
 }
 $('resort-q').addEventListener('input', () => { resetPage('resorts'); renderResortRows(); });
 $('resort-type').addEventListener('change', () => { resetPage('resorts'); renderResortRows(); });
+$('resort-photo').addEventListener('change', () => { resetPage('resorts'); renderResortRows(); });
 $('resort-new-btn').addEventListener('click', () => go('#resorts/new'));
 $('resort-rows').addEventListener('click', async e => {
   const b = e.target.closest('[data-redit],[data-rtoggle]');
@@ -69,13 +74,13 @@ async function renderResortEditor(id) {
   if (!resortData.resorts.length) { try { resortData = await api('/api/admin/resorts'); } catch (e) { return handleErr(e); } }
   const r = editingResort ? resortData.resorts.find(x => x.id === editingResort) : {
     name: '', type: 'regular', loc: '', address: '', facilityName: '', summary: '', season: '', roomType: '',
-    capacity: null, capacityBase: null, phone: '', website: '', photo: '', details: [], nearby: [], notices: [],
+    capacity: null, capacityBase: null, phone: '', website: '', photo: '', photos: [], details: [], nearby: [], notices: [],
     features: {}, mapLabel: '', active: true, aliases: [],
   };
   if (!r) { toast('없는 휴양소입니다'); history.replaceState(null, '', '#resorts'); return route(); }
   $('resort-edit-title').textContent = editingResort ? `'${r.name}' 수정` : '휴양소 추가';
   $('resort-edit-sub').textContent = editingResort
-    ? `후기 ${r.reviews}개${r.aliases.length ? ` · 옛 이름: ${r.aliases.join(', ')} (이 이름으로 쓴 후기도 이 휴양소 후기로 셉니다)` : ''}`
+    ? `후기 ${r.reviews}개 · 사진 ${r.photos.length}장${r.aliases.length ? ` · 옛 이름: ${r.aliases.join(', ')} (이 이름으로 쓴 후기도 이 휴양소 후기로 셉니다)` : ''}`
     : '저장하면 바로 앱에 나와요. 아직 준비 중이면 아래 \'앱에 보이기\' 를 끄고 저장하세요.';
   $('r-map').innerHTML = '<option value="">지도에 안 나옴</option>' + resortData.mapLabels.map(m => `<option${m === r.mapLabel ? ' selected' : ''}>${esc(m)}</option>`).join('');
   const set = (id, v) => { $(id).value = v ?? ''; };

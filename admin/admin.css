@@ -215,6 +215,8 @@ label.check input { width: 16px; height: 16px; accent-color: var(--brand); }
 .r-thumb { display: block; width: 60px; height: 42px; border-radius: 6px; background: var(--surface-3) center / cover no-repeat; }
 .r-thumb.none { display: flex; align-items: center; justify-content: center; color: var(--text-3); }
 .r-thumb.none .ms { font-size: 20px; }
+.r-thumb { position: relative; }
+.r-thumb em { position: absolute; right: 3px; bottom: 3px; min-width: 18px; height: 16px; padding: 0 4px; border-radius: 8px; background: rgba(15, 23, 42, .7); color: #fff; font-size: 10px; font-style: normal; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .chip.type-regular { background: var(--brand-50); color: var(--brand); }
 .chip.type-summer { background: #E0F2FE; color: #0369A1; }
 .chip.type-winter { background: #EDE9FE; color: #6D28D9; }
