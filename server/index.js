@@ -236,6 +236,14 @@ function resortNames(name) {
   return [r.name, ...aliases];
 }
 
+// 상세 화면 사진 목록 — photos 칸이 비어 있으면(예전 데이터) 대표 사진 한 장
+function resortPhotos(r) {
+  let list = [];
+  try { list = JSON.parse(r.photos || '[]'); } catch (e) { list = []; }
+  if (!Array.isArray(list) || !list.length) list = r.photo ? [r.photo] : [];
+  return list;
+}
+
 // 휴양소 목록 — 평점 · 후기 수는 후기 테이블에서 계산한다 (후기가 없으면 rating null, reviews 0)
 app.get('/api/resorts', (_req, res) => {
   try {
@@ -265,7 +273,7 @@ app.get('/api/resorts', (_req, res) => {
           id: r.id, name: r.name, type: r.type, loc: r.loc, address: r.address, img: r.img,
           roomType: r.room_type, capacity: r.capacity, capacityBase: r.capacity_base,
           facilityName: r.facility_name, summary: r.summary, season: r.season,
-          phone: r.phone, website: r.website, photo: r.photo,
+          phone: r.phone, website: r.website, photo: r.photo, photos: resortPhotos(r),
           details: r.details ? JSON.parse(r.details) : [],
           nearby: r.nearby ? JSON.parse(r.nearby) : [],
           notices: r.notices ? JSON.parse(r.notices) : [],

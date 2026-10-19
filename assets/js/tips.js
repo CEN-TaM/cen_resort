@@ -259,10 +259,7 @@ function openResort(name, tab, reviewId) {
   const h2 = d.querySelector('#detail-resort-name'); if (h2) h2.textContent = r.name;
   const typeEl = d.querySelector('#detail-resort-type'); if (typeEl) typeEl.textContent = tag;
   const hero = d.querySelector('.hero');
-  if (hero) {
-    if (r.photo) setBg(hero, resortPhotoUrl(r)); else applyBg(hero, r.img);
-    hero.setAttribute('aria-label', `${r.name} 사진`);
-  }
+  if (hero) renderResortGallery(hero, r);
   renderResortInfo(r);
 
   // 헤더 별 버튼을 이 휴양소로 연결한다 (키는 휴양소 id — favorites.js)
@@ -291,6 +288,41 @@ function openResort(name, tab, reviewId) {
 }
 
 // '기준 4명 · 최대 8명' (아는 것만)
+// 상세 맨 위 사진 — 여러 장(r.photos)이면 밀어서 넘기기 + 좌우 버튼 + '1 / N'. 누르면 크게 보기 (lightbox.js)
+// 한 장이면 지금처럼 한 장, 없으면 사진 키(r.img)의 기본 그림
+function renderResortGallery(hero, r) {
+  const base = typeof API_BASE !== 'undefined' ? API_BASE : '';
+  const urls = ((r.photos && r.photos.length) ? r.photos : (r.photo ? [r.photo] : [])).map(u => base + u);
+  hero.innerHTML = '';
+  hero.style.backgroundImage = '';
+  hero.onclick = null;
+  hero.classList.toggle('multi', urls.length > 1);
+  hero.setAttribute('role', 'img');
+  hero.setAttribute('aria-label', `${r.name} 사진`);
+  if (!urls.length) { applyBg(hero, r.img); return; }
+  if (urls.length === 1) { setBg(hero, urls[0]); hero.onclick = () => openPhotoLightbox(urls, 0); return; }
+  hero.removeAttribute('role');
+  hero.innerHTML = `<div class="hero-track">${urls.map((u, i) =>
+    `<div class="hero-slide" style="background-image:url('${escapeHtml(u)}')" role="img" aria-label="${escapeHtml(r.name)} 사진 ${i + 1}"></div>`).join('')}</div>
+    <button type="button" class="hero-nav prev" aria-label="이전 사진"><i class="ti ti-chevron-left"></i></button>
+    <button type="button" class="hero-nav next" aria-label="다음 사진"><i class="ti ti-chevron-right"></i></button>
+    <span class="hero-count">1 / ${urls.length}</span>`;
+  const track = hero.querySelector('.hero-track');
+  const prev = hero.querySelector('.prev'), next = hero.querySelector('.next'), count = hero.querySelector('.hero-count');
+  const at = () => Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+  const sync = () => {
+    const i = at();
+    count.textContent = `${i + 1} / ${urls.length}`;
+    prev.disabled = i === 0; next.disabled = i === urls.length - 1;
+  };
+  const go = d => track.scrollTo({ left: (at() + d) * track.clientWidth, behavior: 'smooth' });
+  track.addEventListener('scroll', sync, { passive: true });
+  prev.onclick = e => { e.stopPropagation(); go(-1); };
+  next.onclick = e => { e.stopPropagation(); go(1); };
+  track.onclick = () => openPhotoLightbox(urls, at());
+  sync();
+}
+
 function capacityText(r) {
   if (r.capacityBase && r.capacity) return `기준 ${r.capacityBase}명 · 최대 ${r.capacity}명`;
   if (r.capacity) return `최대 ${r.capacity}명`;

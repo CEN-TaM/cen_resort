@@ -167,7 +167,8 @@ for (const [col, type] of [
   ['nearby', 'TEXT'],          // 주변 관광지 JSON [이름...]
   ['notices', 'TEXT'],         // 이용 수칙 JSON [문장...]
   ['season', 'TEXT'],          // 이벤트 휴양소 운영 시즌 (예: 2026 하계)
-  ['photo', 'TEXT'],           // 대표 사진 경로 (/uploads/resorts/...). 없으면 img 키의 기본 사진
+  ['photo', 'TEXT'],           // 대표 사진 경로 (/uploads/resorts/...). 없으면 img 키의 기본 사진. = photos 의 첫 장 (목록 · 지도 카드가 쓴다)
+  ['photos', 'TEXT'],          // 상세 화면 사진 JSON [경로...] — 순서대로 넘겨 본다. 비어 있으면 photo 한 장
 ]) {
   try { db.exec(`ALTER TABLE resorts ADD COLUMN ${col} ${type}`); } catch (e) { /* 이미 있음 */ }
 }

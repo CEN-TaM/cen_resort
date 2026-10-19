@@ -285,19 +285,14 @@
               <label>홈페이지<input id="r-website" maxlength="200" placeholder="https://"></label>
             </div>
 
-            <div class="form-sec">대표 사진</div>
-            <div class="photo-edit">
-              <div class="photo-box" id="r-photo-box"></div>
-              <div class="photo-side">
-                <label class="dropzone" id="r-photo-drop">
-                  <input type="file" id="r-photo-input" accept="image/jpeg,image/png,image/webp" hidden>
-                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-                  <span><b>사진 선택</b> 또는 여기로 끌어다 놓기</span>
-                </label>
-                <span class="hint">JPG · PNG · WEBP. 큰 사진은 올릴 때 알맞게 줄여요. 사람 얼굴 · 차 번호가 보이는 사진은 피해 주세요.</span>
-                <button type="button" class="link" id="r-photo-del" hidden>사진 빼기 (기본 그림으로)</button>
-              </div>
-            </div>
+            <div class="form-sec">사진 <span class="hint">앱 상세 화면에서 이 순서대로 넘겨 봐요 · <b>첫 장이 대표 사진</b>(목록 · 지도 카드) · 최대 10장</span></div>
+            <div class="photo-list" id="r-photos"></div>
+            <label class="dropzone" id="r-photo-drop">
+              <input type="file" id="r-photo-input" accept="image/jpeg,image/png,image/webp" multiple hidden>
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+              <span><b>사진 선택</b> 또는 여기로 끌어다 놓기 <span class="hint">· 여러 장 한 번에 · 외관 → 거실 → 침실 → 주방 → 욕실 순서 추천</span></span>
+            </label>
+            <span class="hint">JPG · PNG · WEBP. 큰 사진은 올릴 때 알맞게 줄여요. 사람 얼굴 · 차 번호가 보이는 사진은 피해 주세요. 사진이 없으면 앱은 기본 그림을 보여줘요.</span>
 
             <div class="form-sec">편의시설 <span class="hint">누르면 켜지고 꺼져요 · 상세 화면에 칩으로 나와요</span></div>
             <div id="r-features"></div>

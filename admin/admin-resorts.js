@@ -4,7 +4,8 @@
 
 let resortData = { resorts: [], featureChoices: {}, mapLabels: [] };
 let editingResort = null;     // 고치는 휴양소 id (새로 만들면 null)
-let rPhoto = '';              // 쓰기 화면의 대표 사진 주소 (저장할 때 보낸다)
+let rPhotos = [];             // 쓰기 화면의 사진 주소 목록 — 첫 장이 대표 사진 (저장할 때 photos 로 보낸다). 올리는 중이면 { uploading: true }
+const R_PHOTO_LIMIT = 10;
 let rFeatures = {};           // { 분류: Set(이름) }
 
 const RTYPE = { regular: '정기', summer: '하계', winter: '동계' };
@@ -83,7 +84,7 @@ async function renderResortEditor(id) {
   set('r-cap-base', r.capacityBase); set('r-cap', r.capacity); set('r-phone', r.phone); set('r-website', r.website);
   set('r-nearby', r.nearby.join(', ')); set('r-notices', r.notices.join('\n'));
   $('r-active').checked = r.active;
-  rPhoto = r.photo; renderResortPhoto();
+  rPhotos = [...(r.photos || (r.photo ? [r.photo] : []))]; renderResortPhotos();
   rFeatures = {};
   Object.entries(r.features).forEach(([k, v]) => { rFeatures[k] = new Set(v); });
   renderFeaturePick();
@@ -94,10 +95,31 @@ async function renderResortEditor(id) {
   $('r-name').focus();
 }
 
-function renderResortPhoto() {
-  $('r-photo-box').innerHTML = rPhoto ? `<img src="${esc(rPhoto)}" alt="대표 사진">` : '<div class="none"><i class="ms">image</i>사진 없음 — 앱은 기본 그림을 보여줘요</div>';
-  $('r-photo-del').hidden = !rPhoto;
+// 사진 목록 — 순서대로 카드. ◀ ▶ 로 순서 바꾸기, × 로 빼기. 첫 장에 '대표' 표시
+function renderResortPhotos() {
+  const n = rPhotos.length;
+  $('r-photos').innerHTML = n ? rPhotos.map((u, i) => u.uploading
+    ? '<div class="ph-card uploading"><div class="ph-img"><i class="ms">hourglass_top</i></div><div class="ph-bar">올리는 중…</div></div>'
+    : `<div class="ph-card">
+      <div class="ph-img" style="background-image:url('${esc(u)}')">${i === 0 ? '<span class="ph-main">대표</span>' : ''}<span class="ph-no">${i + 1}</span></div>
+      <div class="ph-bar">
+        <button type="button" class="ph-btn" data-pmove="${i}" data-dir="-1" title="앞으로" aria-label="${i + 1}번 사진 앞으로"${i === 0 ? ' disabled' : ''}><i class="ms">chevron_left</i></button>
+        <button type="button" class="ph-btn" data-pmove="${i}" data-dir="1" title="뒤로" aria-label="${i + 1}번 사진 뒤로"${i === n - 1 ? ' disabled' : ''}><i class="ms">chevron_right</i></button>
+        <span style="flex:1"></span>
+        <button type="button" class="x-btn" data-pdel="${i}" title="빼기" aria-label="${i + 1}번 사진 빼기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div></div>`).join('')
+    : '<div class="ph-empty"><i class="ms">image</i>사진 없음 — 앱은 기본 그림을 보여줘요</div>';
+  $('r-photo-drop').hidden = n >= R_PHOTO_LIMIT;
 }
+$('r-photos').addEventListener('click', e => {
+  const mv = e.target.closest('[data-pmove]'), del = e.target.closest('[data-pdel]');
+  if (mv && !mv.disabled) {
+    const i = Number(mv.dataset.pmove), j = i + Number(mv.dataset.dir);
+    [rPhotos[i], rPhotos[j]] = [rPhotos[j], rPhotos[i]];
+  } else if (del) rPhotos.splice(Number(del.dataset.pdel), 1);
+  else return;
+  dirty = true; renderResortPhotos();
+});
 // 편의시설 — 분류별 칩. 고른 것은 진하게
 function renderFeaturePick() {
   $('r-features').innerHTML = Object.entries(resortData.featureChoices).map(([cat, names]) => `
@@ -129,7 +151,7 @@ $('r-details').addEventListener('click', e => {
   if (b) { b.closest('.kv-row').remove(); dirty = true; }
 });
 
-// 대표 사진 — 긴 쪽 1600px 가 넘으면 줄여서 JPG 로 올린다 (폰 원본 사진도 수백 KB 로)
+// 사진 — 긴 쪽 1600px 가 넘으면 줄여서 JPG 로 올린다 (폰 원본 사진도 수백 KB 로)
 const PHOTO_EDGE = 1600;
 function shrinkPhoto(file) {
   return new Promise((ok, fail) => {
@@ -146,22 +168,31 @@ function shrinkPhoto(file) {
     img.src = URL.createObjectURL(file);
   });
 }
-async function uploadResortPhoto(file) {
-  if (!file) return;
+// 여러 장 — 고른 순서대로 한 장씩 올려서 목록 끝에 붙인다
+async function uploadResortPhotos(list) {
+  const files = [...list];
   $('resort-err').textContent = '';
-  $('r-photo-box').classList.add('uploading');
-  try {
-    const { url } = await api('/api/admin/resort-photos', { method: 'POST', body: JSON.stringify({ data: await shrinkPhoto(file) }) });
-    rPhoto = url; dirty = true; renderResortPhoto();
-  } catch (err) { $('resort-err').textContent = err.message; if (err.status === 401 || err.status === 403) handleErr(err); }
-  finally { $('r-photo-box').classList.remove('uploading'); }
+  const room = R_PHOTO_LIMIT - rPhotos.length;
+  if (files.length > room) { $('resort-err').textContent = `사진은 ${R_PHOTO_LIMIT}장까지예요. ${room}장만 올렸어요.`; files.length = Math.max(0, room); }
+  for (const file of files) {
+    const slot = { uploading: true };
+    rPhotos.push(slot); renderResortPhotos();
+    try {
+      const { url } = await api('/api/admin/resort-photos', { method: 'POST', body: JSON.stringify({ data: await shrinkPhoto(file) }) });
+      rPhotos[rPhotos.indexOf(slot)] = url; dirty = true;
+    } catch (err) {
+      rPhotos.splice(rPhotos.indexOf(slot), 1);
+      $('resort-err').textContent = err.message;
+      if (err.status === 401 || err.status === 403) { handleErr(err); break; }
+    }
+    renderResortPhotos();
+  }
 }
-$('r-photo-input').addEventListener('change', e => { uploadResortPhoto(e.target.files[0]); e.target.value = ''; });
+$('r-photo-input').addEventListener('change', e => { uploadResortPhotos(e.target.files); e.target.value = ''; });
 const rDrop = $('r-photo-drop');
 ['dragenter', 'dragover'].forEach(t => rDrop.addEventListener(t, e => { e.preventDefault(); rDrop.classList.add('over'); }));
 ['dragleave', 'drop'].forEach(t => rDrop.addEventListener(t, e => { e.preventDefault(); rDrop.classList.remove('over'); }));
-rDrop.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files.length) uploadResortPhoto(e.dataTransfer.files[0]); });
-$('r-photo-del').addEventListener('click', () => { rPhoto = ''; dirty = true; renderResortPhoto(); });
+rDrop.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files.length) uploadResortPhotos(e.dataTransfer.files); });
 
 function resortFormValue() {
   const features = {};
@@ -170,7 +201,7 @@ function resortFormValue() {
     name: $('r-name').value.trim(), type: $('r-type').value, loc: $('r-loc').value, address: $('r-address').value,
     mapLabel: $('r-map').value, facilityName: $('r-facility').value, season: $('r-season').value, summary: $('r-summary').value,
     roomType: $('r-room').value, capacityBase: $('r-cap-base').value, capacity: $('r-cap').value,
-    phone: $('r-phone').value, website: $('r-website').value.trim(), photo: rPhoto, features,
+    phone: $('r-phone').value, website: $('r-website').value.trim(), photos: rPhotos.filter(u => typeof u === 'string'), features,
     details: [...document.querySelectorAll('#r-details .kv-row')].map(row => ({ label: row.querySelector('.kv-k').value, value: row.querySelector('.kv-v').value })),
     nearby: $('r-nearby').value.split(/[,，\n]/).map(s => s.trim()).filter(Boolean),
     notices: $('r-notices').value.split('\n').map(s => s.trim()).filter(Boolean),
@@ -184,6 +215,7 @@ $('resort-save').addEventListener('click', async () => {
   const v = resortFormValue();
   $('resort-err').textContent = '';
   if (!v.name) { $('resort-err').textContent = '이름은 꼭 입력해야 합니다.'; return; }
+  if (rPhotos.some(u => typeof u !== 'string')) { $('resort-err').textContent = '사진을 올리는 중이에요. 다 올라간 뒤 저장해 주세요.'; return; }
   const cur = editingResort && resortData.resorts.find(x => x.id === editingResort);
   if (cur && cur.name !== v.name && !confirm(`이름을 '${cur.name}' → '${v.name}' 로 바꿀까요?\n\n'${cur.name}' 으로 쓴 후기도 계속 이 휴양소 후기로 셉니다.`)) return;
   $('resort-save').disabled = true;

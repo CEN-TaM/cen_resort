@@ -57,6 +57,14 @@ function openReviewLightbox(el, ev) {
   renderLightbox();
   document.getElementById('rv-lightbox').style.display = 'flex';
 }
+// 휴양소 사진 크게 보기 — 주소 목록과 시작 번호 (tips.js renderResortGallery)
+function openPhotoLightbox(urls, idx) {
+  ensureLightbox();
+  lbImages = urls.slice();
+  lbIdx = idx || 0;
+  renderLightbox();
+  document.getElementById('rv-lightbox').style.display = 'flex';
+}
 function fmtDate(iso) {
   // 2026-08-12T... → 2026.08.12
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
