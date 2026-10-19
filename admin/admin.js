@@ -172,12 +172,12 @@ function renderNotices() {
   if (!list.length) paged('notices', list, 'notice-pager', renderNotices);   // 비면 쪽 번호도 지운다
   $('notice-rows').innerHTML = list.length ? paged('notices', list, 'notice-pager', renderNotices).map(n => `
     <tr class="${n.active ? '' : 'off'}">
-      <td><button class="pin-btn${n.pinned ? ' on' : ''}" title="${n.pinned ? '고정 풀기' : '맨 위에 고정'}" data-pin="${esc(n.id)}">📌</button></td>
-      <td><span class="chip">${esc(n.category)}</span></td>
+      <td class="c"><button class="pin-btn${n.pinned ? ' on' : ''}" title="${n.pinned ? '고정 풀기' : '맨 위에 고정'}" data-pin="${esc(n.id)}">📌</button></td>
+      <td class="c"><span class="chip">${esc(n.category)}</span></td>
       <td class="title" data-edit="${esc(n.id)}">${esc(n.title)}</td>
-      <td><span class="chip ${n.active ? 'on' : 'off'}">${n.active ? '보임' : '숨김'}</span></td>
+      <td class="c"><span class="chip ${n.active ? 'on' : 'off'}">${n.active ? '보임' : '숨김'}</span></td>
       <td class="num">${Number(n.views || 0).toLocaleString('ko-KR')}</td>
-      <td>${fmtDate(n.createdAt)}</td>
+      <td class="c">${fmtDate(n.createdAt)}</td>
       <td><div class="acts">
         <button class="btn sm" data-edit="${esc(n.id)}">수정</button>
         <button class="btn sm" data-toggle="${esc(n.id)}">${n.active ? '숨기기' : '보이기'}</button>

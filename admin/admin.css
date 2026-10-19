@@ -75,6 +75,9 @@ table.grid { width: 100%; border-collapse: collapse; background: #fff; border: 1
 .grid tr:last-child td { border-bottom: 0; }
 .grid tbody tr:hover { background: #FAFBFD; }
 .grid .num { text-align: right; font-variant-numeric: tabular-nums; }
+/* 상태 · 분류 같은 칩, 날짜, 아이콘 · 사진처럼 폭이 고정된 칸은 가운데 */
+.grid .c { text-align: center; }
+.grid td.c .r-thumb, .grid td.c .b-ico { margin: 0 auto; }
 .grid td.title { font-weight: 700; cursor: pointer; }
 .grid td.title:hover { color: var(--brand); }
 .grid tr.off td { color: var(--text-3); }
