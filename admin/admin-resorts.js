@@ -37,13 +37,13 @@ function renderResortRows() {
   if (!list.length) paged('resorts', list, 'resort-pager', renderResortRows);   // 비면 쪽 번호도 지운다
   $('resort-rows').innerHTML = list.length ? paged('resorts', list, 'resort-pager', renderResortRows).map(r => `
     <tr class="${r.active ? '' : 'off'}">
-      <td>${thumbHtml(r)}</td>
+      <td class="c">${thumbHtml(r)}</td>
       <td class="title" data-redit="${esc(r.id)}">${esc(r.name)}${r.facilityName ? `<div class="muted">${esc(r.facilityName)}</div>` : ''}</td>
-      <td><span class="chip type-${esc(r.type)}">${RTYPE[r.type] || esc(r.type)}</span></td>
+      <td class="c"><span class="chip type-${esc(r.type)}">${RTYPE[r.type] || esc(r.type)}</span></td>
       <td>${esc(r.loc)}</td>
       <td class="num">${r.reviews.toLocaleString('ko-KR')}</td>
       <td class="num">${r.rating != null ? r.rating.toFixed(1) : '-'}</td>
-      <td><span class="chip ${r.active ? 'on' : 'off'}">${r.active ? '보임' : '숨김'}</span></td>
+      <td class="c"><span class="chip ${r.active ? 'on' : 'off'}">${r.active ? '보임' : '숨김'}</span></td>
       <td><div class="acts">
         <button class="btn sm" data-redit="${esc(r.id)}">수정</button>
         <button class="btn sm" data-rtoggle="${esc(r.id)}">${r.active ? '숨기기' : '보이기'}</button>

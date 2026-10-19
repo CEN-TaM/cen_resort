@@ -48,26 +48,26 @@ function renderContent() {
       <button class="btn sm danger" data-cdel="${esc(x.id)}">삭제</button></div>`;
   const state = x => `<span class="chip ${x.hidden ? 'off' : 'on'}">${x.hidden ? '숨김' : '보임'}</span>`;
   if (ctab === 'reviews') {
-    $('content-head').innerHTML = `<tr><th style="width:96px">작성일</th><th style="width:130px">휴양소</th><th style="width:170px">작성자</th><th>내용</th>
+    $('content-head').innerHTML = `<tr><th style="width:96px" class="c">작성일</th><th style="width:130px">휴양소</th><th style="width:170px">작성자</th><th>내용</th>
       <th style="width:52px" class="num">평점</th><th style="width:52px" class="num">사진</th><th style="width:52px" class="num">댓글</th><th style="width:64px" class="num">좋아요</th>
-      <th style="width:64px">상태</th><th style="width:190px"></th></tr>`;
+      <th style="width:64px" class="c">상태</th><th style="width:190px"></th></tr>`;
     if (!list.length) paged('content-' + ctab, list, 'content-pager', renderContent);   // 비면 쪽 번호도 지운다
   $('content-rows').innerHTML = list.length ? paged('content-' + ctab, list, 'content-pager', renderContent).map(x => `
       <tr class="${x.hidden ? 'off' : ''}">
-        <td>${fmtDate(x.createdAt)}</td><td>${esc(x.resortName)}</td><td>${whoHtml(x)}</td>
+        <td class="c">${fmtDate(x.createdAt)}</td><td>${esc(x.resortName)}</td><td>${whoHtml(x)}</td>
         <td class="snip" data-cview="${esc(x.id)}"><span>${esc(oneLine(x.content))}</span></td>
         <td class="num">${x.rating != null ? Number(x.rating).toFixed(1) : '-'}</td><td class="num">${x.photos}</td><td class="num">${x.comments}</td><td class="num">${x.likes}</td>
-        <td>${state(x)}</td><td>${actions(x)}</td>
+        <td class="c">${state(x)}</td><td>${actions(x)}</td>
       </tr>`).join('') : emptyRow(10);
   } else {
-    $('content-head').innerHTML = `<tr><th style="width:96px">작성일</th><th style="width:130px">휴양소</th><th style="width:170px">작성자</th><th>제목 · 내용</th>
-      <th style="width:64px">상태</th><th style="width:190px"></th></tr>`;
+    $('content-head').innerHTML = `<tr><th style="width:96px" class="c">작성일</th><th style="width:130px">휴양소</th><th style="width:170px">작성자</th><th>제목 · 내용</th>
+      <th style="width:64px" class="c">상태</th><th style="width:190px"></th></tr>`;
     if (!list.length) paged('content-' + ctab, list, 'content-pager', renderContent);   // 비면 쪽 번호도 지운다
   $('content-rows').innerHTML = list.length ? paged('content-' + ctab, list, 'content-pager', renderContent).map(x => `
       <tr class="${x.hidden ? 'off' : ''}">
-        <td>${fmtDate(x.createdAt)}</td><td>${esc(x.resortName)}</td><td>${whoHtml(x)}</td>
+        <td class="c">${fmtDate(x.createdAt)}</td><td>${esc(x.resortName)}</td><td>${whoHtml(x)}</td>
         <td class="snip" data-cview="${esc(x.id)}"><b>${esc(x.title)}</b><span>${esc(x.content)}</span></td>
-        <td>${state(x)}</td><td>${actions(x)}</td>
+        <td class="c">${state(x)}</td><td>${actions(x)}</td>
       </tr>`).join('') : emptyRow(6);
   }
 }

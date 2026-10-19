@@ -32,11 +32,11 @@ function renderBadgeRows() {
   if (!list.length) paged('badges', list, 'badge-pager', renderBadgeRows);   // 비면 쪽 번호도 지운다
   $('badge-rows').innerHTML = list.length ? paged('badges', list, 'badge-pager', renderBadgeRows).map(b => `
     <tr class="${b.active ? '' : 'off'}">
-      <td>${iconHtml(b)}</td>
+      <td class="c">${iconHtml(b)}</td>
       <td><b>${esc(b.name)}</b><div class="muted">${esc(b.description)}</div></td>
       <td>${esc(ruleText(b))}</td>
       <td class="num">${b.awarded.toLocaleString('ko-KR')}명</td>
-      <td><span class="chip ${b.active ? 'on' : 'off'}">${b.active ? '보임' : '숨김'}</span></td>
+      <td class="c"><span class="chip ${b.active ? 'on' : 'off'}">${b.active ? '보임' : '숨김'}</span></td>
       <td><div class="acts">
         <button class="btn sm" data-bedit="${esc(b.id)}">수정</button>
         <button class="btn sm" data-btoggle="${esc(b.id)}">${b.active ? '숨기기' : '보이기'}</button>

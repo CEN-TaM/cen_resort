@@ -30,10 +30,10 @@ function renderUsers() {
       <td>${esc(u.position) || '<span class="muted">-</span>'}</td>
       <td>${esc(u.company)}${u.company && u.department ? ' · ' : ''}<span class="muted">${esc(u.department)}</span></td>
       <td class="mail">${esc(u.email)}</td>
-      <td><span class="chip ${u.role === 'admin' ? 'admin' : ''}">${u.role === 'admin' ? '관리자' : '직원'}</span></td>
-      <td><span class="chip ${u.status === 'ready' ? 'on' : u.status}">${USER_STATUS[u.status]}</span></td>
+      <td class="c"><span class="chip ${u.role === 'admin' ? 'admin' : ''}">${u.role === 'admin' ? '관리자' : '직원'}</span></td>
+      <td class="c"><span class="chip ${u.status === 'ready' ? 'on' : u.status}">${USER_STATUS[u.status]}</span></td>
       <td class="num"><button type="button" class="link pt-link" data-upoint="${esc(u.empno)}" title="포인트 내역 · 조정">${Number(u.points || 0).toLocaleString('ko-KR')}P</button></td>
-      <td>${u.lastLogin ? fmtDate(u.lastLogin) : '<span class="muted">-</span>'}</td>
+      <td class="c">${u.lastLogin ? fmtDate(u.lastLogin) : '<span class="muted">-</span>'}</td>
       <td><div class="acts">
         <button class="btn sm" data-uedit="${esc(u.empno)}">수정</button>
         ${me ? '' : `<button class="btn sm" data-ureset="${esc(u.empno)}"${u.status === 'pending' ? ' disabled title="아직 비밀번호를 정하지 않았습니다"' : ''}>비밀번호 초기화</button>
