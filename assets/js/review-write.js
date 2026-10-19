@@ -53,6 +53,7 @@ async function submitReview(deviceId) {
 
   // 클라이언트 1차 검증
   if (!data.resortName) { if (typeof showToast === 'function') showToast('휴양소를 선택해주세요'); return; }
+  if (photosPending > 0) { if (typeof showToast === 'function') showToast('사진을 준비하는 중이에요. 잠시 뒤 다시 눌러 주세요'); return; }
   if (data.photos.length < 1) { if (typeof showToast === 'function') showToast('사진을 최소 1장 첨부해주세요'); return; }
 
   submittingReview = true;
@@ -168,7 +169,36 @@ function toggleChip(el) {
 const PHOTO_MAX = 10;
 // 서버(server/index.js decodePhoto)와 같은 규칙 — 다른 형식은 서버가 후기 전체를 거절하므로 고를 때 미리 걸러 준다
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const PHOTO_MAX_BYTES = 10 * 1024 * 1024;
+// 고르는 사진은 30MB 까지 받는다 — 올리기 전에 아래 shrinkPhoto 가 줄이므로 서버 한도(장당 10MB)는 넘지 않는다
+const PHOTO_MAX_BYTES = 30 * 1024 * 1024;
+
+// 폰 원본(장당 3~4MB)을 그대로 보내면 느리고, 여러 장이면 서버 요청 한도(30MB)를 넘어 등록이 실패한다.
+// 긴 변 1600px · JPEG 품질 0.82 로 줄여 보낸다 (tools/resize_photos.py 와 같은 기준, 장당 300KB 안팎).
+// 이미 작은 JPEG 은 그대로 둔다. 사진 방향(EXIF 회전)은 브라우저가 그릴 때 맞춘다.
+const PHOTO_EDGE = 1600, PHOTO_QUALITY = 0.82, PHOTO_KEEP_BYTES = 500 * 1024;
+const readDataUrl = file => new Promise((ok, fail) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => fail(r.error); r.readAsDataURL(file); });
+function shrinkPhoto(file) {
+  return new Promise((ok, fail) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const k = Math.min(1, PHOTO_EDGE / Math.max(w, h));
+      if (k === 1 && file.type === 'image/jpeg' && file.size <= PHOTO_KEEP_BYTES) return readDataUrl(file).then(ok, fail);
+      const c = document.createElement('canvas');
+      c.width = Math.round(w * k); c.height = Math.round(h * k);
+      const g = c.getContext('2d');
+      g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);   // 투명한 PNG 는 흰 바탕으로
+      g.drawImage(img, 0, 0, c.width, c.height);
+      ok(c.toDataURL('image/jpeg', PHOTO_QUALITY));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); fail(new Error('사진을 열 수 없어요')); };
+    img.src = url;
+  });
+}
+let photosPending = 0;   // 줄이는 중인 사진 수 — 0 이 될 때까지 등록을 막는다
+
 function addPhotos(input) {
   const grid = document.getElementById('photo-grid');
   const addCell = document.getElementById('photo-add');
@@ -184,18 +214,19 @@ function addPhotos(input) {
   if (files.length > remaining && typeof showToast === 'function') {
     showToast(`사진은 최대 ${PHOTO_MAX}장까지 첨부할 수 있어요`);
   }
+  // 고른 순서대로 자리를 먼저 만들고(줄이는 중엔 흐리게), 다 줄이면 사진을 넣는다
   files.slice(0, Math.max(0, remaining)).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const cell = document.createElement('div');
-      cell.className = 'pcell photo-thumb';
-      cell.style.backgroundImage = `url("${e.target.result}")`;
-      cell.innerHTML = '<button type="button" class="photo-del" onclick="removePhoto(this)" aria-label="사진 삭제"><i class="ti ti-x"></i></button>';
-      grid.insertBefore(cell, addCell);
-      updatePhotoCount();
-    };
-    reader.readAsDataURL(file);
+    const cell = document.createElement('div');
+    cell.className = 'pcell photo-thumb loading';
+    cell.innerHTML = '<button type="button" class="photo-del" onclick="removePhoto(this)" aria-label="사진 삭제"><i class="ti ti-x"></i></button>';
+    grid.insertBefore(cell, addCell);
+    photosPending++;
+    shrinkPhoto(file)
+      .then(dataUrl => { cell.style.backgroundImage = `url("${dataUrl}")`; cell.classList.remove('loading'); })
+      .catch(() => { cell.remove(); if (typeof showToast === 'function') showToast('열 수 없는 사진은 뺐어요'); })
+      .finally(() => { photosPending--; updatePhotoCount(); });
   });
+  updatePhotoCount();
   input.value = '';
 }
 function removePhoto(btn) {

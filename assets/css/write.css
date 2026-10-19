@@ -225,6 +225,13 @@
   position: relative;
 }
 
+/* 사진을 줄이는 동안 (review-write.js shrinkPhoto) — 회색 칸이 깜빡인다 */
+.photo-grid .pcell.photo-thumb.loading {
+  background-color: var(--surface-3);
+  animation: photo-loading 1s ease-in-out infinite alternate;
+}
+@keyframes photo-loading { from { opacity: 1; } to { opacity: .45; } }
+
 .photo-del {
   position: absolute;
   top: 3px;

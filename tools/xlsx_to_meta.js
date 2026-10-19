@@ -9,7 +9,7 @@
 //
 // 사람이(또는 Claude 가) 채워야 하는 것 — DATA_IMPORT.md '순서' 참고
 //   - author_name 에 직급 붙이기 ('홍길동' → '홍길동 수석', PDF 게시자 줄)
-//   - companions: 본문에 드러난 동행만 (엑셀 recommended_for 는 쓰지 않는다)
+//   (companions 동행은 앱에 보이지 않아 채우지 않는다 — [] 그대로)
 //   - contents.txt 의 작성일시(PDF 제목 옆 '2026-08-31 17:02' → 2026-08-31T17:02:00)와 본문
 
 const fs = require('fs');
@@ -78,7 +78,7 @@ const meta = records.map(r => ({
   department: r.department || '',
   company: r.company || '',
   ai_recommend_score: r.ai_recommend_score,
-  companions: [],                      // ← 본문에 드러난 동행만
+  companions: [],                      // 동행 — 앱에 안 보임, 채우지 않음
   image_count: r.image_count || '0',
   image_files: (r.image_files || '').split('|').map(s => s.trim()).filter(Boolean),
   source_pdf: r.source_pdf || '',
@@ -94,4 +94,4 @@ else fs.writeFileSync(cPath, contents);
 
 console.log(`후기 ${meta.length}건 → ${path.join(OUT, 'meta.json')}`);
 meta.forEach(m => console.log(`  ${m.review_id}  ${m.resort_name}  ${m.author_name}  점수 ${m.ai_recommend_score}  사진 ${m.image_files.length}장  ${m.source_pdf}`));
-console.log('\n다음: ① author_name 에 직급 ② companions ③ contents.txt 본문 · 작성일시 — 모두 원본 PDF 를 보고 채운다');
+console.log('\n다음: ① author_name 에 직급 ② contents.txt 본문 · 작성일시 — 모두 원본 PDF 를 보고 채운다');

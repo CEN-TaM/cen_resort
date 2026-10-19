@@ -8,7 +8,7 @@
 //
 // 휴양소는 DB resorts 테이블(정식명 · 옛 표기)에서 찾는다. 띄어쓰기는 무시한다 ('경주 휴양소' = '경주휴양소').
 // 못 찾으면 멈추고 알려준다 → 아래 RESORT_MAP 에 '엑셀 표기': 'DB 정식명' 을 적거나, DB 에 옛 표기를 추가한다.
-// 동행은 meta.json 의 companions 배열로 준다 (본문에 드러난 것만 — DATA_IMPORT.md '동행' 참고).
+// 동행(companions)은 2026-10 부터 앱에 보이지 않는다. meta.json 에 있으면 그대로 저장하고, 없으면 빈 배열. 새로 채우지 않는다.
 const { DatabaseSync } = require('node:sqlite');
 const fs = require('fs');
 const path = require('path');
@@ -25,9 +25,7 @@ const RESORT_MAP = {
   '제주 애월 2호점': '애월 2호점',
 };
 
-// ── 동행: 본문에 실제로 드러난 경우만 채운다 (meta.json 의 companions).
-//    엑셀의 recommended_for 는 "누구에게 추천하는 여행인가"(추천 대상)라서
-//    작성자가 누구와 갔는지와는 다른 축이다. 그대로 쓰면 가족+연인처럼 모순된 값이 된다.
+// ── 동행(companions): 앱에 보이지 않으므로 채우지 않는다. (엑셀 recommended_for 는 추천 대상이라 동행으로 쓰면 안 된다)
 
 // ── AI 추천점수(0~100) → 위치/시설/청결 각 1~5점
 function toRatings(score) {

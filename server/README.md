@@ -57,7 +57,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | PUT  | `/api/auth/me` | 연락처·메일·비밀번호 수정 🔒 |
 | POST | `/api/auth/verify/code` · `/verify/check` · `/api/auth/activate` | 사번인증 및 비밀번호 설정 (코드 발급 → 확인 → 설정) |
 | GET  | `/api/resorts` | 휴양소 목록 (평점·후기 수는 후기에서 계산) |
-| POST | `/api/reviews` | 후기 등록 (사진 base64 — JPG·PNG·WEBP, 최대 10장, 장당 10MB) → 작성자에게 **+10P** |
+| POST | `/api/reviews` | 후기 등록 (사진 base64 — JPG·PNG·WEBP, 최대 10장, 장당 10MB. 앱은 긴 변 1600px JPEG 으로 줄여 보낸다 — `assets/js/review-write.js`) → 작성자에게 **+10P** |
 | GET  | `/api/notices` · `/api/notices/:id` | 공지 목록 · 상세 (상세를 열면 조회수에 기록) |
 | GET  | `/api/tips?resort=` · `/api/tips/mine` | 휴양소 꿀팁 · 내 꿀팁 |
 | POST | `/api/tips` · PUT · DELETE `/api/tips/:id` · POST `/api/tips/:id/like` | 꿀팁 쓰기 · 고치기 · 지우기(본인·관리자) · 좋아요 `{ liked }` |
