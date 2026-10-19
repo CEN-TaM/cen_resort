@@ -3,7 +3,8 @@
 //   GET  /api/admin/resorts          전체 (숨긴 휴양소 포함) + 후기 수 · 평점 · 편의시설 고르기 목록 · 지도 지역 목록
 //   POST /api/admin/resorts          새 휴양소 { name, type, ... } — id 는 서버가 만든다
 //   PUT  /api/admin/resorts/:id      고치기 (보낸 칸만 바뀐다)
-//   POST /api/admin/resort-photos    대표 사진 올리기 { data(data URL) } → { url } — 휴양소에 붙는 건 저장할 때 (photo)
+//   POST /api/admin/resort-photos    사진 올리기 { data(data URL) } → { url } — 휴양소에 붙는 건 저장할 때 (photos)
+//   사진은 photos [경로...] 로 받는다. 첫 장이 대표 사진(photo — 목록 · 지도 카드). 최대 10장
 //
 // 지우기는 없다 — 후기가 휴양소 이름으로 이어져 있어서. 운영이 끝나면 '앱에 보이기' 를 끈다 (active = 0).
 // 이름을 바꾸면 옛 이름을 resort_aliases 에 남긴다 — 옛 이름으로 저장된 후기도 계속 이 휴양소 후기로 센다.
@@ -23,6 +24,13 @@ const FEATURE_CHOICES = {
   '편의시설': ['와이파이', '주방', '바베큐', '주차', '세탁기', '에어컨', 'TV', '렌터카', '수영장', '스파', '히노끼탕', '온천', '워터파크', '캠핑장', '불멍'],
   '주변 활동': ['해수욕', '트레킹', '일출', '전통시장', '바다낚시', '해루질', '스키'],
 };
+const PHOTO_LIMIT = 10;
+// 사진 목록 — photos 칸이 비어 있으면(예전 데이터) 대표 사진 한 장
+function photosOf(r) {
+  let list = [];
+  try { list = JSON.parse(r.photos || '[]'); } catch (e) { list = []; }
+  return Array.isArray(list) && list.length ? list : (r.photo ? [r.photo] : []);
+}
 const isResortPhoto = u => /^\/uploads\/resorts\/[a-z0-9-]+\.(jpg|png|webp)$/.test(String(u || ''));
 
 function sniffImage(buf) {
@@ -41,7 +49,7 @@ function register(app, db, auth) {
     id: r.id, name: r.name, type: r.type, loc: r.loc || '', address: r.address || '',
     facilityName: r.facility_name || '', summary: r.summary || '', season: r.season || '',
     roomType: r.room_type || '', capacity: r.capacity, capacityBase: r.capacity_base,
-    phone: r.phone || '', website: r.website || '', photo: r.photo || '', img: r.img || '',
+    phone: r.phone || '', website: r.website || '', photo: r.photo || '', photos: photosOf(r), img: r.img || '',
     details: json(r.details) || [], nearby: json(r.nearby) || [], notices: json(r.notices) || [],
     features: json(r.features) || {}, mapLabel: r.map_label || '',
     active: !!r.active, aliases: aliases || [],
@@ -128,9 +136,17 @@ function register(app, db, auth) {
       }
       cols.features = Object.keys(f).length ? JSON.stringify(f) : null;
     }
-    if ('photo' in b) {
+    if ('photos' in b) {
+      if (!Array.isArray(b.photos)) return { error: '사진 목록 형식이 올바르지 않습니다.' };
+      const list = [...new Set(b.photos.map(String))];
+      if (list.length > PHOTO_LIMIT) return { error: `사진은 ${PHOTO_LIMIT}장까지입니다.` };
+      if (list.some(u => !isResortPhoto(u))) return { error: '사진은 여기서 올린 사진만 쓸 수 있습니다.' };
+      cols.photos = list.length ? JSON.stringify(list) : null;
+      cols.photo = list[0] || null;   // 첫 장 = 대표 사진
+    } else if ('photo' in b) {
       if (b.photo && !isResortPhoto(b.photo)) return { error: '대표 사진은 여기서 올린 사진만 쓸 수 있습니다.' };
       cols.photo = b.photo || null;
+      cols.photos = b.photo ? JSON.stringify([b.photo]) : null;
     }
     if ('active' in b) cols.active = b.active ? 1 : 0;
     if ('mapLabel' in b) {
@@ -146,7 +162,7 @@ function register(app, db, auth) {
   // 바뀐 대표 사진 — 다른 휴양소가 안 쓰면 파일을 지운다 (/uploads/resorts/ 안만)
   function dropPhoto(url) {
     if (!isResortPhoto(url)) return;
-    if (db.prepare('SELECT 1 FROM resorts WHERE photo = ?').get(url)) return;
+    if (db.prepare('SELECT 1 FROM resorts WHERE photo = ? OR photos LIKE ?').get(url, `%"${url}"%`)) return;
     try { fs.unlinkSync(path.join(PHOTO_DIR, path.basename(url))); } catch (e) { /* 이미 없음 */ }
   }
 
@@ -183,7 +199,11 @@ function register(app, db, auth) {
       }
       db.exec('COMMIT');
     } catch (e) { db.exec('ROLLBACK'); throw e; }
-    if ('photo' in cols && before.photo !== cols.photo) dropPhoto(before.photo);
+    // 빠진 사진 파일은 지운다 (다른 휴양소가 쓰면 남긴다)
+    if ('photo' in cols) {
+      const now = new Set(cols.photos ? JSON.parse(cols.photos) : []);
+      photosOf(before).filter(u => !now.has(u)).forEach(dropPhoto);
+    }
     console.log(`[admin] 휴양소 고침 ${before.id} (${keys.join(',')}) by ${req.user.empno}`);
     res.json({ resort: listAll().find(r => r.id === before.id) });
   });

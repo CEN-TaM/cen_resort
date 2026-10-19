@@ -10,7 +10,9 @@
 //   roomType      객실 구성           capacity  최대 인원       capacityBase  기준 인원
 //   details       [{ label, value }]  상세 표 (가전 · 가구 · 부대시설 · 냉난방 · 교통 · 입퇴실 ...)
 //   features      { 환경, 숙소 유형, 편의시설, 주변 활동 }   — 칩으로 보이는 편의시설
-//   phone, website, nearby [이름...], notices [이용 수칙 문장...], photo (/uploads/resorts/파일)
+//   phone, website, nearby [이름...], notices [이용 수칙 문장...]
+//   photos        [/uploads/resorts/파일...] 상세 화면에서 넘겨 보는 사진 (첫 장이 대표 사진 — photo 도 같이 바뀐다)
+//   photo         대표 사진 한 장만 바꿀 때 (/uploads/resorts/파일)
 //   map           { label, x, y }
 //
 // 회사 안내 PDF 에서 옮길 때: 개인 연락처(담당자 휴대폰 · 메일), 와이파이 비밀번호는 넣지 않는다.
@@ -35,7 +37,7 @@ const COLS = {
   details: { col: 'details', json: true }, features: { col: 'features', json: true },
   phone: { col: 'phone' }, website: { col: 'website' },
   nearby: { col: 'nearby', json: true }, notices: { col: 'notices', json: true },
-  photo: { col: 'photo' },
+  photo: { col: 'photo' }, photos: { col: 'photos', json: true },
 };
 
 const rows = JSON.parse(fs.readFileSync(FILE, 'utf8'));
@@ -56,6 +58,8 @@ try {
       sets.push([c.col, c.json ? JSON.stringify(v) : v]);
     }
     if (r.map) sets.push(['map_label', r.map.label], ['map_x', r.map.x], ['map_y', r.map.y]);
+    // photos 를 주면 첫 장을 대표 사진(photo)으로 맞춘다 (목록 · 지도 카드가 photo 를 쓴다)
+    if (Array.isArray(r.photos) && !('photo' in r)) sets.push(['photo', r.photos[0] || null]);
 
     if (!before) {
       if (!r.name || !r.type) throw new Error(`${r.id}: 새 휴양소는 name · type 이 필요합니다`);
