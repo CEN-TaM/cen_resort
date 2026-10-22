@@ -9,7 +9,7 @@ const fmtDate = iso => { const d = new Date(iso); return isNaN(d) ? '' : `${d.ge
 // paged('users', list) → 이번 쪽 줄만 돌려주고 표 아래 <nav class="pager" id="users-pager 같은 곳"> 에 쪽 번호를 그린다.
 // 검색 · 필터가 바뀌면 resetPage(key) 로 1쪽부터. 쪽 수가 줄면 마지막 쪽으로 맞춘다
 // 한 쪽에 보는 개수 — 도구줄의 '10 · 20 · 50개씩 보기' (select.page-size[data-size-for]). 고른 값은 브라우저에 기억한다.
-// 후기 · 꿀팁 두 탭은 같은 선택을 쓴다 (쪽 번호 key 'content-reviews' · 'content-tips' → 개수 key 'content')
+// 후기 · 꿀팁 두 메뉴는 같은 선택을 쓴다 (쪽 번호 key 'content-reviews' · 'content-tips' → 개수 key 'content')
 const PAGE_SIZE_DEFAULT = 10;   // 처음엔 모든 목록 10개씩 (도구줄에서 20 · 50 으로 바꿀 수 있다)
 const pageNow = {};
 const sizeKeyOf = key => key.split('-')[0];
@@ -85,12 +85,14 @@ async function start() {
 }
 
 // ───────── 메뉴 · 화면 주소 ─────────
-// 화면마다 주소가 있다: #notices · #notices/new · #notices/<공지 번호> · #users · #content · #badges · #resorts · #resorts/<id>
+// 화면마다 주소가 있다: #notices · #notices/new · #notices/<공지 번호> · #users · #reviews · #tips · #badges · #resorts · #resorts/<id> · #faq
 // 화면을 바꿀 때 브라우저 기록을 남겨서 뒤로가기 · 앞으로가기 · 새로고침이 그 화면으로 동작한다 (앱 core.js 와 같은 방식)
-// 메뉴마다 첫 화면(목록)을 여는 함수. 직원 명단은 admin-users.js, 후기 · 꿀팁은 admin-content.js 가 MENUS 를 채운다
+// 메뉴마다 첫 화면(목록)을 여는 함수. 직원 명단은 admin-users.js, 후기 · 꿀팁은 admin-content.js, FAQ 는 admin-faq.js 가 MENUS 를 채운다
 let ME = null;
 const MENUS = { notices: () => loadNotices() };
-const FIRST_VIEW = { notices: 'notice-list-view', users: 'user-list-view', content: 'content-view' };
+const FIRST_VIEW = { notices: 'notice-list-view', users: 'user-list-view', reviews: 'content-view', tips: 'content-view', faq: 'faq-view' };
+// 옛 주소 → 새 주소 (2026-10 '후기 · 꿀팁' 한 메뉴를 '후기' · '꿀팁' 둘로 나눴다)
+const OLD_MENU = { content: 'reviews' };
 // 메뉴 안의 쓰기 · 고치기 화면 (#메뉴/new · #메뉴/<id>) — { view: 화면 id, render(sub) }. 휴양소는 admin-resorts.js 가 더한다
 const SUB_VIEWS = { notices: { view: 'notice-edit-view', render: sub => renderEditor(sub === 'new' ? null : sub) } };
 let currentRoute = '';
@@ -113,6 +115,7 @@ function route() {
     if (!confirm('저장하지 않은 내용이 있습니다. 나갈까요?')) { history.pushState({ fromApp: true }, '', '#' + currentRoute); return; }
   }
   dirty = false;
+  if (OLD_MENU[menu]) { history.replaceState(null, '', '#' + OLD_MENU[menu]); return route(); }
   if (!(menu in MENUS)) { history.replaceState(null, '', '#notices'); return route(); }
   currentRoute = h;
   document.querySelectorAll('.side-nav a[data-menu]').forEach(a => a.classList.toggle('on', a.dataset.menu === menu));

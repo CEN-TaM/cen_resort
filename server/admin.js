@@ -26,10 +26,26 @@
 //   PUT    /api/admin/tips/:id         { hidden }
 //   지우기는 앱과 같은 DELETE /api/reviews/:id · /api/tips/:id 를 쓴다 (관리자는 남의 글도 지울 수 있다.
 //   후기를 지우면 그 후기로 받은 포인트 차감 · 사진 파일 · 알림까지 같이 정리된다 — server/index.js)
+//
+//   후기 댓글 (관리자 페이지 '후기' → 보기 → 댓글 옆 버튼)
+//   PUT    /api/admin/comments/:id     { hidden } — 숨기면 앱에 안 보인다 (그 댓글의 답글도 같이). 다시 보이게 할 수 있다
+//   DELETE /api/admin/comments/:id     삭제 — 본문을 지우고 앱 · 관리자 모두 '관리자에 의해 삭제되었습니다.' 로 보인다.
+//                                      답글이 이어져 있어 자리는 남긴다. 되돌릴 수 없다
+//
+//   고객센터 / FAQ (앱 '나의 페이지 → 고객센터 / FAQ')
+//   GET    /api/admin/faqs             전체 (숨긴 것 포함) + 분류 목록 + 고객센터 안내
+//   POST   /api/admin/faqs             추가 { category, question, answer, sortOrder, active }
+//   PUT    /api/admin/faqs/:id         고치기 (보낸 칸만)
+//   DELETE /api/admin/faqs/:id         지우기
+//   PUT    /api/admin/support          고객센터 안내 { team, phone, email, hours, note }
 
 // 화면 분류 칩과 같아야 한다 (screens/tips.html · tools/notices.js 도 이 목록을 쓴다)
 // 2026-10 이벤트 · 시설은 뺐다 (쓰는 공지가 없거나 이용수칙과 겹쳐서). 다시 쓰려면 여기와 screens/tips.html 칩을 같이 더한다
-const NOTICE_CATEGORIES = ['이용수칙', '예약', '포인트'];
+// 2026-10 '이용수칙' → '이용가이드' (이미 쓴 공지는 server/db.js 가 서버 시작 때 바꾼다)
+const NOTICE_CATEGORIES = ['이용가이드', '예약', '포인트'];
+// FAQ 분류 — 앱 고객센터 / FAQ 화면의 칩 순서
+const FAQ_CATEGORIES = ['예약 · 이용', '포인트', '후기 · 꿀팁', '계정', '기타'];
+const SUPPORT_FIELDS = { team: 40, phone: 40, email: 80, hours: 120, note: 300 };
 
 // 공지 첨부 파일 — server/uploads/notices/<무작위>/<원래 이름> 에 저장 (받을 때 원래 이름 그대로 내려받아진다)
 // 웹페이지 · 스크립트처럼 열면 실행될 수 있는 종류는 받지 않는다. /uploads/notices 는 늘 '내려받기' 로 보낸다 (server/index.js)
@@ -371,7 +387,7 @@ function register(app, db, auth, { loadReview } = {}) {
   app.get('/api/admin/reviews/:id', requireAdmin, (req, res) => {
     const r = db.prepare('SELECT * FROM reviews WHERE id = ?').get(Number(req.params.id));
     if (!r) return res.status(404).json({ error: '후기를 찾을 수 없습니다.' });
-    res.json({ review: { ...loadReview(r, null), id: String(r.id), hidden: !!r.hidden, imported: imported(r.empno) } });
+    res.json({ review: { ...loadReview(r, null, { allComments: true }), id: String(r.id), hidden: !!r.hidden, imported: imported(r.empno) } });
   });
 
   app.put('/api/admin/reviews/:id', requireAdmin, (req, res) => {
@@ -404,6 +420,103 @@ function register(app, db, auth, { loadReview } = {}) {
     console.log(`[admin] 꿀팁 #${id} ${req.body.hidden ? '숨김' : '보이기'} by ${req.user.empno}`);
     res.json({ ok: true, hidden: !!req.body.hidden });
   });
+
+  // ───────── 후기 댓글 숨기기 · 삭제 ─────────
+  const findComment = id => db.prepare('SELECT id, review_id, deleted FROM review_comments WHERE id = ?').get(Number(id));
+  app.put('/api/admin/comments/:id', requireAdmin, (req, res) => {
+    const c = findComment(req.params.id);
+    if (!c) return res.status(404).json({ error: '댓글을 찾을 수 없습니다.' });
+    if ((req.body || {}).hidden === undefined) return bad(res, '바꿀 내용이 없습니다.');
+    if (c.deleted) return bad(res, '삭제된 댓글입니다.');
+    db.prepare('UPDATE review_comments SET hidden = ? WHERE id = ?').run(req.body.hidden ? 1 : 0, c.id);
+    console.log(`[admin] 댓글 #${c.id} (후기 #${c.review_id}) ${req.body.hidden ? '숨김' : '보이기'} by ${req.user.empno}`);
+    res.json({ ok: true, hidden: !!req.body.hidden });
+  });
+  // 지우지 않고 본문만 비운다 — 답글이 이 댓글에 이어져 있고, 앱 · 관리자 모두 그 자리에 '관리자에 의해 삭제되었습니다.' 가 보인다
+  app.delete('/api/admin/comments/:id', requireAdmin, (req, res) => {
+    const c = findComment(req.params.id);
+    if (!c) return res.status(404).json({ error: '댓글을 찾을 수 없습니다.' });
+    db.prepare("UPDATE review_comments SET deleted = 1, hidden = 0, text = '' WHERE id = ?").run(c.id);
+    console.log(`[admin] 댓글 #${c.id} (후기 #${c.review_id}) 삭제 by ${req.user.empno}`);
+    res.json({ ok: true });
+  });
+
+  // ───────── 고객센터 / FAQ ─────────
+  const faqOut = f => ({
+    id: String(f.id), category: f.category, question: f.question, answer: f.answer,
+    sortOrder: f.sort_order, active: !!f.active, createdAt: f.created_at, updatedAt: f.updated_at,
+  });
+  const supportGet = () => { const s = db.prepare("SELECT value FROM settings WHERE key = 'support'").get(); return s ? JSON.parse(s.value) : {}; };
+  function cleanFaq(b, partial) {
+    const out = {};
+    const has = k => b[k] !== undefined;
+    if (!partial || has('category')) {
+      if (!FAQ_CATEGORIES.includes(b.category)) return { error: `분류는 ${FAQ_CATEGORIES.join(' / ')} 중 하나여야 합니다.` };
+      out.category = b.category;
+    }
+    for (const [k, label, max] of [['question', '질문', 200], ['answer', '답변', 3000]]) {
+      if (!partial || has(k)) {
+        const v = String(b[k] ?? '').trim();
+        if (!v) return { error: `${label}을 입력해주세요.` };
+        if (v.length > max) return { error: `${label}이 너무 깁니다 (${max}자 이내).` };
+        out[k] = v;
+      }
+    }
+    if (has('sortOrder')) {
+      const n = Number(b.sortOrder);
+      if (!Number.isInteger(n) || n < 0 || n > 99999) return { error: '순서는 0 ~ 99999 사이 숫자입니다.' };
+      out.sort_order = n;
+    }
+    if (has('active')) out.active = b.active ? 1 : 0;
+    return { out };
+  }
+  const findFaq = id => db.prepare('SELECT * FROM faqs WHERE id = ?').get(Number(id));
+
+  app.get('/api/admin/faqs', requireAdmin, (_req, res) => {
+    const rows = db.prepare('SELECT * FROM faqs ORDER BY sort_order, id').all();
+    res.json({ faqs: rows.map(faqOut), categories: FAQ_CATEGORIES, support: supportGet() });
+  });
+  app.post('/api/admin/faqs', requireAdmin, (req, res) => {
+    const { out, error } = cleanFaq(req.body || {}, false);
+    if (error) return bad(res, error);
+    // 순서를 안 정하면 맨 아래
+    const sort = out.sort_order ?? (db.prepare('SELECT COALESCE(MAX(sort_order), 0) AS m FROM faqs').get().m + 10);
+    const info = db.prepare('INSERT INTO faqs (category, question, answer, sort_order, active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run(out.category, out.question, out.answer, sort, out.active === undefined ? 1 : out.active, now(), now());
+    console.log(`[admin] FAQ 추가 #${info.lastInsertRowid} by ${req.user.empno}`);
+    res.status(201).json({ faq: faqOut(findFaq(info.lastInsertRowid)) });
+  });
+  app.put('/api/admin/faqs/:id', requireAdmin, (req, res) => {
+    const f = findFaq(req.params.id);
+    if (!f) return res.status(404).json({ error: 'FAQ 를 찾을 수 없습니다.' });
+    const { out, error } = cleanFaq(req.body || {}, true);
+    if (error) return bad(res, error);
+    const cols = Object.keys(out);
+    if (!cols.length) return bad(res, '바꿀 내용이 없습니다.');
+    db.prepare(`UPDATE faqs SET ${cols.map(c => c + ' = ?').join(', ')}, updated_at = ? WHERE id = ?`).run(...cols.map(c => out[c]), now(), f.id);
+    console.log(`[admin] FAQ 수정 #${f.id} (${cols.join(',')}) by ${req.user.empno}`);
+    res.json({ faq: faqOut(findFaq(f.id)) });
+  });
+  app.delete('/api/admin/faqs/:id', requireAdmin, (req, res) => {
+    const n = db.prepare('DELETE FROM faqs WHERE id = ?').run(Number(req.params.id)).changes;
+    if (!n) return res.status(404).json({ error: 'FAQ 를 찾을 수 없습니다.' });
+    console.log(`[admin] FAQ 삭제 #${req.params.id} by ${req.user.empno}`);
+    res.json({ ok: true });
+  });
+  app.put('/api/admin/support', requireAdmin, (req, res) => {
+    const b = req.body || {};
+    const v = {};
+    for (const [k, max] of Object.entries(SUPPORT_FIELDS)) {
+      const s = String(b[k] ?? '').trim();
+      if (s.length > max) return bad(res, `고객센터 안내의 글이 너무 깁니다 (${max}자 이내).`);
+      v[k] = s;
+    }
+    if (v.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) return bad(res, '메일 주소를 확인해주세요.');
+    db.prepare("INSERT INTO settings (key, value, updated_at) VALUES ('support', ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at")
+      .run(JSON.stringify(v), now());
+    console.log(`[admin] 고객센터 안내 수정 by ${req.user.empno}`);
+    res.json({ support: v });
+  });
 }
 
-module.exports = { register, NOTICE_CATEGORIES, parseUserCsv, isCompanyMail };
+module.exports = { register, NOTICE_CATEGORIES, FAQ_CATEGORIES, parseUserCsv, isCompanyMail };

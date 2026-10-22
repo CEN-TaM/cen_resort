@@ -33,6 +33,14 @@ function reviewCommentsHtml(rv) {
 }
 
 function rcOne(c, isReply) {
+  // 관리자가 삭제한 댓글 — 서버가 본문 대신 '관리자에 의해 삭제되었습니다.' 를 보낸다. 답글이 이어져 있어 자리는 남긴다
+  if (c.deleted) {
+    return `
+  <div class="rc-item${isReply ? ' reply' : ''} deleted">
+    <div class="rc-avatar"><span class="ms outline">block</span></div>
+    <div class="rc-body"><div class="rc-text">${escapeHtml(c.text)}</div></div>
+  </div>`;
+  }
   const name = c.author || '익명';
   return `
   <div class="rc-item${isReply ? ' reply' : ''}">

@@ -89,6 +89,9 @@ for (const [table, col, type] of [
   ['reviews', 'hidden', 'INTEGER NOT NULL DEFAULT 0'],   // 1 = 관리자가 숨김 (앱 어디에도 안 보임 · 평점 · 배지에서도 빠짐. 지우지는 않음)
   ['review_comments', 'parent_id', 'INTEGER'],
   ['review_comments', 'empno', 'TEXT'],
+  // 관리자 페이지 '후기' → 댓글 옆 숨기기 · 삭제 (server/admin.js)
+  ['review_comments', 'hidden', 'INTEGER NOT NULL DEFAULT 0'],    // 1 = 숨김 (앱에 안 보임. 답글도 같이 안 보임)
+  ['review_comments', 'deleted', 'INTEGER NOT NULL DEFAULT 0'],   // 1 = 관리자가 삭제 (본문을 비우고 '관리자에 의해 삭제되었습니다.' 로 보인다)
 ]) {
   try { db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${type}`); } catch (e) { /* 이미 존재 */ }
 }
@@ -204,7 +207,7 @@ seedResorts();
 db.exec(`
   CREATE TABLE IF NOT EXISTS notices (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    category    TEXT NOT NULL,          -- 이용수칙 | 예약 | 포인트 (화면의 분류 칩 · server/admin.js NOTICE_CATEGORIES)
+    category    TEXT NOT NULL,          -- 이용가이드 | 예약 | 포인트 (화면의 분류 칩 · server/admin.js NOTICE_CATEGORIES)
     title       TEXT NOT NULL,
     body        TEXT NOT NULL,
     author      TEXT NOT NULL,          -- 부서 이름 (예: 인사복지팀)
@@ -246,6 +249,8 @@ db.exec(`
 `);
 // 공지 분류 '복지포인트' → '포인트' (2026-10 이름 바꿈. 이미 쓴 공지도 맞춘다)
 db.exec(`UPDATE notices SET category = '포인트' WHERE category = '복지포인트'`);
+// 공지 분류 '이용수칙' → '이용가이드' (2026-10 이름 바꿈. 이미 쓴 공지도 맞춘다)
+db.exec(`UPDATE notices SET category = '이용가이드' WHERE category = '이용수칙'`);
 
 // 꿀팁 작성자의 회사 · 부서 (후기 카드처럼 이름 아래 보여준다). 앱에서 쓰면 로그인한 직원 정보로 채운다
 for (const col of ['department', 'company']) {
@@ -264,5 +269,46 @@ db.exec(`
     FOREIGN KEY (resort_id) REFERENCES resorts(id) ON DELETE CASCADE
   );
 `);
+
+// 고객센터 / FAQ — 앱 '나의 페이지 → 고객센터 / FAQ' 화면. 관리자 페이지 '고객센터 · FAQ' 에서 고친다 (server/admin.js)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS faqs (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    category    TEXT NOT NULL,          -- server/admin.js FAQ_CATEGORIES
+    question    TEXT NOT NULL,
+    answer      TEXT NOT NULL,          -- 글자 그대로 (줄바꿈 유지)
+    sort_order  INTEGER NOT NULL DEFAULT 0,   -- 작은 숫자가 위
+    active      INTEGER NOT NULL DEFAULT 1,
+    created_at  TEXT NOT NULL,
+    updated_at  TEXT NOT NULL
+  );
+  -- 한 줄짜리 설정 (key → JSON). 'support' = 고객센터 안내 { team, phone, email, hours, note }
+  CREATE TABLE IF NOT EXISTS settings (
+    key         TEXT PRIMARY KEY,
+    value       TEXT NOT NULL,
+    updated_at  TEXT NOT NULL
+  );
+`);
+// 처음 한 번만 예시 FAQ · 고객센터 안내로 채운다 (assets/js/data/faqs.js). 관리자가 다 지워도 다시 채우지 않는다
+function seedFaqs() {
+  if (db.prepare("SELECT 1 FROM settings WHERE key = 'faq_seeded'").get()) return;
+  const { FAQ_SEED, SUPPORT_SEED } = require(path.join(__dirname, '..', 'assets', 'js', 'data', 'faqs.js'));
+  const at = new Date().toISOString();
+  db.exec('BEGIN');
+  try {
+    if (!db.prepare('SELECT COUNT(*) AS n FROM faqs').get().n) {
+      const ins = db.prepare('INSERT INTO faqs (category, question, answer, sort_order, active, created_at, updated_at) VALUES (?, ?, ?, ?, 1, ?, ?)');
+      FAQ_SEED.forEach((f, i) => ins.run(f.category, f.question, f.answer, (i + 1) * 10, at, at));
+    }
+    db.prepare("INSERT OR IGNORE INTO settings (key, value, updated_at) VALUES ('support', ?, ?)").run(JSON.stringify(SUPPORT_SEED), at);
+    db.prepare("INSERT INTO settings (key, value, updated_at) VALUES ('faq_seeded', '1', ?)").run(at);
+    db.exec('COMMIT');
+    console.log(`FAQ 예시 ${FAQ_SEED.length}개 · 고객센터 안내를 넣었습니다.`);
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+}
+seedFaqs();
 
 module.exports = db;

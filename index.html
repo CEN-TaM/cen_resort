@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="assets/css/review.css">
   <link rel="stylesheet" href="assets/css/write.css">
   <link rel="stylesheet" href="assets/css/mypage.css">
+  <link rel="stylesheet" href="assets/css/faq.css">
   <link rel="stylesheet" href="assets/css/tips.css">
   <link rel="stylesheet" href="assets/css/list.css">
   <link rel="stylesheet" href="assets/css/modal.css">
@@ -379,9 +380,9 @@
                   <div class="pager"><b>2</b> / 3</div>
                 </div>
 
-                <div class="event-banner" data-img="banner-third" onclick="showScreen('device1','tips')">
+                <div class="event-banner" data-img="banner-third" onclick="openNoticeCategory('이용가이드')">
                   <div class="ev-text">
-                    <div class="label">이용수칙</div>
+                    <div class="label">이용가이드</div>
                     <div class="title">휴양소 이용 전<br>꼭 확인하세요</div>
                     <div class="sub">직계가족만 · 실내 금연 · 노쇼 시 1년 제한</div>
                     <span class="cta">바로가기</span>
@@ -763,7 +764,7 @@
           </div>
           <div class="notice-cats">
             <span class="notice-cat active" onclick="selectNoticeCat(this)">전체</span>
-            <span class="notice-cat" onclick="selectNoticeCat(this)">이용수칙</span>
+            <span class="notice-cat" onclick="selectNoticeCat(this)">이용가이드</span>
             <span class="notice-cat" onclick="selectNoticeCat(this)">예약</span>
             <span class="notice-cat" onclick="selectNoticeCat(this)">포인트</span>
           </div>
@@ -828,8 +829,8 @@
             <div id="nd-att-list"></div>
           </div>
 
+          <!-- 받을 수 있는 첨부가 있을 때만 보인다 (notice.js). 인쇄 버튼은 뺐다 (2026-10) -->
           <div class="nd-action-bar">
-            <button onclick="printNotice()"><i class="ti ti-printer"></i> 인쇄</button>
             <button class="primary" onclick="downloadAllFiles()"><i class="ti ti-download"></i> 전체 다운로드</button>
           </div>
         </div>
@@ -952,7 +953,7 @@
               <div class="mext" id="font-size-current">보통</div>
               <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
             </div>
-            <div class="menu-row">
+            <div class="menu-row" onclick="showScreen('device1','faq')">
               <div class="micon"><i class="ti ti-help"></i></div>
               <div class="mlabel">고객센터 / FAQ</div>
               <i class="ti ti-chevron-right" style="color:#94A3B8"></i>
@@ -1067,6 +1068,30 @@
           <div class="fs-options" id="fs-options"></div>
 
           <p class="fs-help">고른 크기는 이 기기에 저장되어 다음에 접속할 때도 그대로 적용됩니다.</p>
+          <div style="height:30px"></div>
+        </div>
+      </div>
+
+      <!-- FAQ : 고객센터 / FAQ (나의 페이지 → 설정). 내용은 assets/js/faq.js 가 그린다 — 서버 DB faqs · settings('support'), 서버가 없으면 data/faqs.js 예시 -->
+      <div class="screen" data-screen="faq">
+        <div class="app-header">
+          <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','faq','my')">
+          <div class="title">고객센터 / FAQ</div>
+          <div class="actions" style="width:22px"></div>
+        </div>
+        <div class="content">
+          <!-- 고객센터 안내 (관리자 페이지 '고객센터 · FAQ' 에서 고친다) -->
+          <div class="faq-support" id="faq-support"></div>
+
+          <div class="section-head">
+            <div class="title">자주 묻는 질문</div>
+          </div>
+          <div class="faq-search">
+            <i class="ti ti-search"></i>
+            <input id="faq-search-input" type="search" autocomplete="off" placeholder="궁금한 내용을 검색해 보세요" oninput="filterFaqs()">
+          </div>
+          <div class="notice-cats" id="faq-cats"></div>
+          <div class="faq-list" id="faq-list"></div>
           <div style="height:30px"></div>
         </div>
       </div>
@@ -1370,6 +1395,7 @@
   <!-- 데이터 -->
   <script src="assets/js/data/icon-map.js"></script>
   <script src="assets/js/data/notices.js"></script>
+  <script src="assets/js/data/faqs.js"></script>
   <script src="assets/js/data/images.js"></script>
   <script src="assets/js/data/resorts.js"></script>
   <script src="assets/js/data/map-markers.js"></script>
@@ -1389,6 +1415,7 @@
   <script src="assets/js/filters.js"></script>
   <script src="assets/js/notice-format.js"></script>
   <script src="assets/js/notice.js"></script>
+  <script src="assets/js/faq.js"></script>
   <script src="assets/js/notification.js"></script>
   <script src="assets/js/detail.js"></script>
   <script src="assets/js/favorites.js"></script>

@@ -32,9 +32,11 @@
       <nav class="side-nav">
         <a class="on" data-menu="notices">공지사항</a>
         <a data-menu="users">직원 명단 · 권한</a>
-        <a data-menu="content">후기 · 꿀팁</a>
+        <a data-menu="reviews">후기</a>
+        <a data-menu="tips">꿀팁</a>
         <a data-menu="badges">배지</a>
         <a data-menu="resorts">휴양소 정보</a>
+        <a data-menu="faq">고객센터 · FAQ</a>
       </nav>
       <div class="side-foot">
         <div id="me-name"></div>
@@ -153,19 +155,14 @@
         </table>
         <nav class="pager" id="user-pager" aria-label="쪽 넘기기"></nav>
       </section>
-      <!-- 후기 · 꿀팁 (admin-content.js) -->
+      <!-- 후기 · 꿀팁 — 메뉴는 따로, 화면은 하나를 같이 쓴다 (admin-content.js) -->
       <section id="content-view" data-view="content" hidden>
         <header class="page-head">
           <div>
-            <h1>후기 · 꿀팁</h1>
-            <p class="sub">숨기면 앱 어디에도 안 보이고 평점 · 후기 수 · 배지에서도 빠집니다 (지우지는 않아 언제든 다시 보이게 할 수 있어요).
-              삭제는 되돌릴 수 없습니다.</p>
+            <h1 id="content-title">후기</h1>
+            <p class="sub" id="content-sub"></p>
           </div>
         </header>
-        <div class="tabs">
-          <button type="button" class="tab on" data-ctab="reviews">후기 <em id="ctab-reviews-n"></em></button>
-          <button type="button" class="tab" data-ctab="tips">꿀팁 <em id="ctab-tips-n"></em></button>
-        </div>
         <div class="toolbar">
           <input type="search" id="content-q" placeholder="작성자 · 본문 · 회사 · 휴양소 검색">
           <select id="content-resort"><option value="">휴양소 전체</option></select>
@@ -315,6 +312,54 @@
           </form>
         </div>
       </section>
+
+      <!-- 고객센터 · FAQ (admin-faq.js) -->
+      <section id="faq-view" data-view="faq" hidden>
+        <header class="page-head">
+          <div>
+            <h1>고객센터 · FAQ</h1>
+            <p class="sub">앱 '나의 페이지 → 고객센터 / FAQ' 화면에 나오는 내용입니다. 숨긴 질문은 앱에 보이지 않습니다.</p>
+          </div>
+          <button type="button" class="btn primary" id="faq-new-btn">+ 질문 추가</button>
+        </header>
+
+        <form class="form support-form" id="support-form" onsubmit="return false">
+          <div class="form-sec">고객센터 안내 <span class="hint">화면 맨 위 카드 · 비운 칸은 앱에 안 나와요 · 담당자 개인 연락처는 적지 않아요</span></div>
+          <div class="row2">
+            <label>담당 부서<input id="s-team" maxlength="40" placeholder="예: 인사복지팀 휴양소 담당"></label>
+            <label>운영시간<input id="s-hours" maxlength="120" placeholder="예: 평일 09:00 ~ 18:00"></label>
+          </div>
+          <div class="row2">
+            <label>전화<input id="s-phone" maxlength="40" placeholder="부서 대표 번호"></label>
+            <label>메일<input id="s-email" type="email" maxlength="80" placeholder="부서 공용 메일"></label>
+          </div>
+          <label>안내 문구<textarea id="s-note" rows="2" maxlength="300"></textarea></label>
+          <div class="support-actions">
+            <p class="form-err" id="support-err"></p>
+            <button type="submit" class="btn primary" id="support-save">안내 저장</button>
+          </div>
+        </form>
+
+        <div class="toolbar">
+          <input type="search" id="faq-q" placeholder="질문 · 답변 검색">
+          <select id="faq-cat"><option value="">분류 전체</option></select>
+          <select id="faq-filter">
+            <option value="">전체</option>
+            <option value="active">보이는 질문</option>
+            <option value="hidden">숨긴 질문</option>
+          </select>
+          <span class="count" id="faq-count"></span>
+          <select class="page-size" data-size-for="faq" aria-label="한 쪽에 보는 개수"><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option><option value="50">50개씩 보기</option></select>
+        </div>
+        <table class="grid">
+          <thead>
+            <tr><th style="width:64px" class="num">순서</th><th style="width:110px" class="c">분류</th><th>질문 · 답변</th>
+              <th style="width:76px" class="c">상태</th><th style="width:104px" class="c">수정일</th><th style="width:190px"></th></tr>
+          </thead>
+          <tbody id="faq-rows"></tbody>
+        </table>
+        <nav class="pager" id="faq-pager" aria-label="쪽 넘기기"></nav>
+      </section>
     </main>
   </div>
 
@@ -437,6 +482,25 @@
     </form>
   </div>
 
+  <!-- FAQ 추가 · 고치기 -->
+  <div class="modal" id="faq-modal" hidden>
+    <form class="modal-box" id="faq-form" onsubmit="return false">
+      <h2 id="faq-modal-title">질문 추가</h2>
+      <div class="row2">
+        <label>분류<select id="q-category"></select></label>
+        <label><span>순서 <span class="hint">작은 숫자가 위 · 비우면 맨 아래</span></span><input id="q-sort" type="number" min="0" max="99999"></label>
+      </div>
+      <label>질문<input id="q-question" maxlength="200" placeholder="예: 휴양소 예약은 어디서 하나요?"></label>
+      <label><span>답변 <span class="hint">줄바꿈은 앱에서도 그대로 보여요</span></span><textarea id="q-answer" rows="8" maxlength="3000"></textarea></label>
+      <label class="check"><input type="checkbox" id="q-active" checked> 앱에 보이기</label>
+      <p class="form-err" id="faq-err"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-close>취소</button>
+        <button type="submit" class="btn primary" id="faq-save">저장</button>
+      </div>
+    </form>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script src="admin.js"></script>
@@ -444,5 +508,6 @@
   <script src="admin-content.js"></script>
   <script src="admin-badges.js"></script>
   <script src="admin-resorts.js"></script>
+  <script src="admin-faq.js"></script>
 </body>
 </html>

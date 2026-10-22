@@ -19,7 +19,7 @@ npm start        # = node index.js
 
 - DB: `server/data/reviews.db`
   - WAL 모드라 최근 쓰기가 `reviews.db-wal`에 있습니다. 켜진 채로 `.db`만 복사하면 누락·손상될 수 있으니 **백업은 `node backup.js`** 로 하세요.
-- 사진 · 첨부: `server/uploads/` (후기 사진) · `server/uploads/resorts/` (휴양소 대표 사진) · `server/uploads/notices/` (공지 첨부). `/uploads/...` 로 제공 (공지 첨부는 늘 내려받기)
+- 사진 · 첨부: `server/uploads/` (후기 사진) · `server/uploads/resorts/` (휴양소 대표 사진) · `server/uploads/notices/` (공지 첨부). `/uploads/...` 로 제공 (공지 첨부는 늘 내려받기 — PDF 만 브라우저에서 바로 열림)
 - 두 폴더는 `.gitignore` 처리되어 저장소에 올라가지 않습니다.
 
 DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`, `server/auth.js`)
@@ -28,7 +28,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 |---|---|---|
 | `resorts` · `resort_aliases` | 휴양소 정보 · 옛 이름 | 처음엔 자동, 이후 관리자 페이지 → 휴양소 정보 (여러 곳 한꺼번에는 `tools/import_resorts.js`) |
 | `reviews` · `review_photos` | 후기 · 후기 사진 (`hidden` = 관리자가 숨김) | 앱에서 작성, 또는 `tools/import_reviews.js` (`DATA_IMPORT.md`) |
-| `review_comments` · `review_likes` | 댓글 · 좋아요(1인 1회) | 앱 |
+| `review_comments` · `review_likes` | 댓글 · 좋아요(1인 1회). 댓글 `hidden`(관리자 숨김) · `deleted`(관리자 삭제 — 본문을 비우고 '관리자에 의해 삭제되었습니다.' 로 보임) | 앱 · 관리자 페이지 → 후기 → 보기 |
 | `notifications` · `notification_reads` | 알림 · 읽음 | 앱 |
 | `favorites` | 즐겨찾기 (사번 × 휴양소) | 앱 |
 | `notices` · `notice_views` | 공지사항 · 본 사람(조회수) | 관리자 페이지 → 공지사항 (여러 개 한꺼번에는 `tools/notices.js`) |
@@ -36,6 +36,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | `point_history` | 휴양소 포인트 내역 (후기 1건 +10P · 관리자 조정은 reason=adjust + note 이유 · by_empno) | 앱 · 관리자 페이지 → 직원 명단 |
 | `badges` · `badge_awards` | 배지 기준 · 받은 기록 (한 번 받으면 유지) | 처음엔 자동(기본 13개), 이후 관리자 페이지 → 배지 |
 | `users` · `sessions` · `verify_codes` | 직원 명단 · 로그인 · 사번인증 코드 | 관리자 페이지 → 직원 명단 · 권한 (서버에서는 `tools/users.js`) |
+| `faqs` · `settings` | 고객센터 / FAQ 질문 · 고객센터 안내(`settings` key `support`). 처음 켤 때 `assets/js/data/faqs.js` 예시로 한 번 채움 | 관리자 페이지 → 고객센터 · FAQ |
 
 ## 휴양소 데이터
 
@@ -70,6 +71,9 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | DELETE | `/api/reviews/:id` | 후기 지우기 (본인 또는 관리자). 그 후기로 받은 포인트 차감 · 사진 파일 · 알림 정리 |
 | POST | `/api/reviews/:id/like` | 좋아요 `{ liked }` — 1인 1회 (`review_likes`) |
 | POST | `/api/reviews/:id/comments` | 댓글 등록 |
+| GET  | `/api/faqs` | 고객센터 / FAQ (보이는 질문 + 고객센터 안내) |
+| PUT · DELETE | `/api/admin/comments/:id` | 관리자: 댓글 숨기기 `{ hidden }` · 삭제 (앱 · 관리자 모두 '관리자에 의해 삭제되었습니다.') |
+| GET · POST · PUT · DELETE | `/api/admin/faqs[/:id]` · PUT `/api/admin/support` | 관리자: FAQ · 고객센터 안내 |
 | GET  | `/api/notifications` | 내 알림 (내 후기에 달린 댓글 · 답글) + 읽은 알림 목록. 공지 알림은 화면이 공지 목록으로 만든다 |
 | POST | `/api/notifications/read` | 읽음 처리 `{ keys: [...] }` |
 | GET  | `/api/health` | 헬스체크 |
@@ -80,17 +84,19 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 ## 관리자 페이지 (PC)
 
 **http://localhost:8999/admin** (개발서버는 http://192.168.64.57:8999/admin). 앱과 같은 계정으로 로그인하고, **관리자(`role = admin`)만** 들어갑니다.
-화면은 `admin/` — index.html · admin.css · admin.js(로그인 · 메뉴 · 쪽 나누기 · 공지) + 메뉴별 admin-users.js · admin-content.js · admin-badges.js · admin-resorts.js.
-API 는 `server/admin.js`(공지 · 직원 · 포인트 · 후기 · 꿀팁) · `server/badges.js`(배지) · `server/admin-resorts.js`(휴양소).
+화면은 `admin/` — index.html · admin.css · admin.js(로그인 · 메뉴 · 쪽 나누기 · 공지) + 메뉴별 admin-users.js · admin-content.js(후기 · 꿀팁) · admin-badges.js · admin-resorts.js · admin-faq.js.
+API 는 `server/admin.js`(공지 · 직원 · 포인트 · 후기 · 꿀팁 · 댓글 · FAQ) · `server/badges.js`(배지) · `server/admin-resorts.js`(휴양소).
 앱 로그인 화면 아래 '관리자 바로가기' 로도 열 수 있습니다 (새 탭). 권한은 화면이 아니라 서버가 세션으로 판단합니다(`requireAdmin`).
 
 | 메뉴 | 할 수 있는 것 |
 |---|---|
 | 공지사항 | 목록(숨긴 공지 · 조회수 포함) · 쓰기 · 고치기 · 숨기기/보이기 · 맨 위 고정 · 삭제 · 첨부 |
 | 직원 명단 · 권한 | 목록(상태 · 휴양소 포인트 · 마지막 로그인) · 포인트 칸을 누르면 내역 · 조정(더하기/빼기 + 이유, 직원 앱 적립내역에 '포인트 조정 · 이유') · 한 명 추가 · 엑셀로 여러 명 추가(양식 받기 → CSV 로 저장해 올리기 → 결과 확인 → 넣기, 엑셀 EUC-KR 도 읽음) · 고치기 · 관리자 지정 · 비밀번호 초기화 · 로그인 막기/풀기 |
-| 후기 · 꿀팁 | 전체 목록(숨긴 글 · 옮겨 온 글 표시) · 휴양소 · 상태 필터 · 본문 검색 · 자세히 보기(본문 · 사진 · 댓글) · 숨기기/보이기 · 삭제 |
+| 후기 | 전체 목록(숨긴 글 · 옮겨 온 글 표시) · 휴양소 · 상태 필터 · 본문 검색 · 자세히 보기(본문 · 사진 · 댓글) · 숨기기/보이기 · 삭제. 자세히 보기의 **댓글마다 숨기기/보이기 · 삭제** (숨기면 그 댓글의 답글도 앱에서 같이 안 보임, 삭제하면 앱 · 관리자 모두 '관리자에 의해 삭제되었습니다.') |
+| 꿀팁 | 전체 목록 · 휴양소 · 상태 필터 · 검색 · 자세히 보기 · 숨기기/보이기 · 삭제 (2026-10 '후기 · 꿀팁' 한 메뉴에서 나눔. 옛 주소 `#content` 는 `#reviews` 로) |
 | 배지 | 목록(검색 · 보이는/숨긴 필터) · 기준(무엇을 셀지 · 기준 숫자) · 이름 · 설명 · 아이콘 · 색 · 보이기/숨기기 · 새 배지, 받은 사람 수 |
 | 휴양소 정보 | 목록(사진 · 장 수 · 후기 수 · 평점 · 종류 · 사진 필터 · 검색) · 고치기(기본 정보 · 객실 · 문의 · 사진 여러 장(순서 · 첫 장이 대표) · 편의시설 칩 · 상세 표 · 주변 관광지 · 이용 수칙) · 숨기기/보이기 · 새 휴양소. 여러 곳을 한꺼번에 넣을 때는 `tools/import_resorts.js` |
+| 고객센터 · FAQ | 앱 '나의 페이지 → 고객센터 / FAQ' 의 고객센터 안내(담당 부서 · 전화 · 메일 · 운영시간 · 안내 문구) 고치기 · 질문 목록(분류 · 상태 필터 · 검색) · 추가 · 고치기 · 순서 · 숨기기/보이기 · 삭제. 처음엔 예시 9개 · 예시 연락처가 들어 있으니 실제 값으로 바꾼다 |
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
@@ -98,7 +104,7 @@ API 는 `server/admin.js`(공지 · 직원 · 포인트 · 후기 · 꿀팁) · 
 | POST | `/api/admin/notices` | 새 공지 `{ category, title, body, pinned, active, files, createdAt } (author 작성 부서는 선택 · 화면에 안 보임)` |
 | PUT | `/api/admin/notices/:id` | 고치기 (보낸 칸만) |
 | DELETE | `/api/admin/notices/:id` | 지우기 (조회 기록 · 첨부 파일도 지움 · 되돌릴 수 없음) |
-| POST | `/api/admin/notice-files` | 공지 첨부 올리기 `{ name, data(base64) }` → `{ name, url, size }` — PDF · 한글 · 오피스 · JPG · PNG · ZIP · TXT · CSV, 20MB 까지. `server/uploads/notices/<무작위>/<원래 이름>` 에 저장, 받을 때 원래 이름으로 내려받음. 공지에서 빼거나 공지를 지우면 파일도 지움 |
+| POST | `/api/admin/notice-files` | 공지 첨부 올리기 `{ name, data(base64) }` → `{ name, url, size }` — PDF · 한글 · 오피스 · JPG · PNG · ZIP · TXT · CSV, 20MB 까지. `server/uploads/notices/<무작위>/<원래 이름>` 에 저장, 받을 때 원래 이름으로 내려받음 (PDF 는 앱 공지 상세의 '보기' 로 바로 열림). 공지에서 빼거나 공지를 지우면 파일도 지움 |
 | GET · POST | `/api/admin/users` | 직원 명단 (비밀번호 해시 · 연락처는 보내지 않음) · 한 명 추가 |
 | PUT | `/api/admin/users/:empno` | 고치기 · 역할 · 로그인 막기 `{ active }` (막으면 지금 로그인도 끊음) |
 | POST | `/api/admin/users/:empno/reset` | 비밀번호 초기화 (로그인도 끊음 → 사번인증부터 다시) |

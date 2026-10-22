@@ -43,7 +43,7 @@ const NOTICES = {
     ]
   },
   n3: {
-    pinned: false, category: '이용수칙', categoryTone: 'peach',
+    pinned: false, category: '이용가이드', categoryTone: 'peach',
     title: '휴양소 이용 수칙 개정 안내 (5/15 시행)',
     author: '총무팀', authorInitial: '총', date: '2026.05.15', views: '982',
     body: `<p>휴양소 이용 수칙이 5/15부로 개정됩니다. 주요 변경 사항은 아래와 같습니다.</p>
@@ -79,7 +79,7 @@ const NOTICES = {
     ]
   },
   n5: {
-    pinned: false, category: '이용수칙', categoryTone: 'peach',
+    pinned: false, category: '이용가이드', categoryTone: 'peach',
     title: '조천 휴양소 정기 시설 점검 (5/22 ~ 5/24)',
     author: '시설관리팀', authorInitial: '시', date: '2026.05.13', views: '614',
     body: `<p>조천 휴양소 1호점이 정기 시설 점검을 위해 일시 이용이 중단됩니다.</p>

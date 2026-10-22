@@ -16,9 +16,9 @@ function applyNoticeFilter() {
   let shown = 0;
   cards.forEach(card => {
     const catOk = noticeCat === '전체' || card.dataset.category === noticeCat;
+    // 카드에는 제목만 보이지만 검색은 본문 앞부분(data-summary)까지 찾는다
     const titleEl = card.querySelector('.notice-title');
-    const bodyEl = card.querySelector('.notice-body');
-    const text = ((titleEl ? titleEl.textContent : '') + ' ' + (bodyEl ? bodyEl.textContent : '')).toLowerCase();
+    const text = ((titleEl ? titleEl.textContent : '') + ' ' + (card.dataset.summary || '')).toLowerCase();
     const qOk = !q || text.includes(q);
     const show = catOk && qOk;
     card.style.display = show ? '' : 'none';
@@ -38,6 +38,13 @@ function selectNoticeCat(el) {
   el.classList.add('active');
   noticeCat = el.textContent.trim();
   applyNoticeFilter();
+}
+
+// 공지 탭을 그 분류가 골라진 채로 연다 (홈 배너 '이용가이드' 등)
+function openNoticeCategory(cat) {
+  const chip = [...document.querySelectorAll('.screen[data-screen="tips"] .notice-cat')].find(c => c.textContent.trim() === cat);
+  if (chip) selectNoticeCat(chip);
+  showScreen('device1', 'tips');
 }
 
 function searchNotices(q) {

@@ -173,10 +173,16 @@ label.check input { width: 16px; height: 16px; accent-color: var(--brand); }
 .cm-photos { display: flex; flex-wrap: wrap; gap: 6px; }
 .cm-photos img { width: 96px; height: 96px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); cursor: zoom-in; }
 .cm-comments { font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
-.cm-comments .c { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
+.cm-comments .c { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; gap: 10px; }
 .cm-comments .c.reply { margin-left: 22px; }
 .cm-comments .c b { margin-right: 6px; }
 .cm-comments .c em { font-style: normal; color: var(--text-3); font-size: 12px; }
+.cm-comments .c-main { flex: 1; min-width: 0; line-height: 1.6; }
+.cm-comments .c-main .chip { font-size: 11px; padding: 1px 7px; margin-left: 4px; }
+.cm-comments .c-acts { flex-shrink: 0; display: flex; gap: 6px; }   /* 댓글 옆 숨기기 · 삭제 */
+.cm-comments .c.off { background: var(--surface-2); }
+.cm-comments .c.off .c-text { color: var(--text-3); }
+.cm-comments .c.deleted .c-text { color: var(--text-3); font-style: italic; }
 #content-modal .modal-box { gap: 18px; padding: 26px 28px 24px; }
 .cm-photos:empty, .cm-comments:empty { display: none; }   /* 꿀팁 · 사진 없는 후기는 빈 자리 없이 */
 
@@ -248,6 +254,11 @@ label.check input { width: 16px; height: 16px; accent-color: var(--brand); }
 .kv-list { display: flex; flex-direction: column; gap: 6px; }
 .kv-row { display: grid; grid-template-columns: 180px 1fr 28px; gap: 8px; align-items: center; }
 .add-row { align-self: flex-start; }
+
+/* 고객센터 · FAQ (admin-faq.js) — 고객센터 안내 카드는 목록 위에 */
+.support-form { margin-bottom: 22px; }
+.support-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+.support-actions .form-err { flex: 1; }
 
 /* 휴양소 포인트 (직원 명단 → 포인트 칸) */
 .pt-link { font-variant-numeric: tabular-nums; }

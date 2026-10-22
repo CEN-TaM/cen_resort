@@ -391,7 +391,7 @@ node tools/notices.js off 3                    # 숨기기 (on 으로 다시 보
 
 화면 확인용 예시 공지 6개는 `tools/examples/notices.sample.json` 에 있습니다 (`node tools/notices.js add tools/examples/notices.sample.json --commit`). 실제 운영 서버에는 넣지 않습니다.
 `공지.json` 모양과 본문 쓰는 법(`### 소제목`, `- 목록`, `> 강조`, `**굵게**`)은 `tools/notices.js` 맨 위 주석에 있습니다.
-- 분류는 화면 칩과 같아야 합니다: 이용수칙 · 예약 · 포인트
+- 분류는 화면 칩과 같아야 합니다: 이용가이드 · 예약 · 포인트
 - 본문에 HTML 은 쓰지 않습니다 (글자로 보입니다).
 - 첨부는 사내에서 열리는 주소(`url`)가 있을 때만 받기 버튼이 생깁니다.
 - 조회수는 공지를 연 **사람 수**입니다 (한 사람이 여러 번 열어도 1).

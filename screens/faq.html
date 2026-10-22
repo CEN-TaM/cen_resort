@@ -1,0 +1,23 @@
+<!-- FAQ : 고객센터 / FAQ (나의 페이지 → 설정). 내용은 assets/js/faq.js 가 그린다 — 서버 DB faqs · settings('support'), 서버가 없으면 data/faqs.js 예시 -->
+<div class="screen" data-screen="faq">
+  <div class="app-header">
+    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="goBack('device1','faq','my')">
+    <div class="title">고객센터 / FAQ</div>
+    <div class="actions" style="width:22px"></div>
+  </div>
+  <div class="content">
+    <!-- 고객센터 안내 (관리자 페이지 '고객센터 · FAQ' 에서 고친다) -->
+    <div class="faq-support" id="faq-support"></div>
+
+    <div class="section-head">
+      <div class="title">자주 묻는 질문</div>
+    </div>
+    <div class="faq-search">
+      <i class="ti ti-search"></i>
+      <input id="faq-search-input" type="search" autocomplete="off" placeholder="궁금한 내용을 검색해 보세요" oninput="filterFaqs()">
+    </div>
+    <div class="notice-cats" id="faq-cats"></div>
+    <div class="faq-list" id="faq-list"></div>
+    <div style="height:30px"></div>
+  </div>
+</div>
