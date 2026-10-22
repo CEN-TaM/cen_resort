@@ -67,7 +67,7 @@ npm start            # http://localhost:8999 에서 실행
 | 파일 | 내용 |
 |---|---|
 | `screens/_layout.html` | 뼈대 (head, 스타일·스크립트 연결, 화면이 들어갈 자리) |
-| `screens/home.html`, `detail.html`, `map.html` … | 화면 하나씩 (19개) |
+| `screens/home.html`, `detail.html`, `map.html` … | 화면 하나씩 (20개) |
 | `screens/_popups.html` | 여러 화면이 같이 쓰는 팝업 · 바텀시트 · 토스트 |
 
 - 화면을 고칠 때는 **`screens/<화면>.html` 만** 고칩니다.
@@ -284,6 +284,6 @@ ssh -i ~/.ssh/cen_resort_deploy -p 7722 devadm01@192.168.64.57
 | 로컬 개발 | http://localhost:8999 | 로컬에서 `npm start` |
 | 개발서버(팀 공유) | http://192.168.64.57:8999 | **VPN 연결** |
 | 관리자 페이지 | http://192.168.64.57:8999/admin (로컬은 localhost:8999/admin) · 앱 로그인 화면의 '관리자 바로가기' | 관리자 계정 |
-| 테스트서버 | http://192.168.64.58:8999 | 앱은 아직 미배포 — 지금은 개발서버 백업 보관용 (`~/backups_from_dev/`) |
+| 테스트서버 | http://192.168.64.58:8999 | 앱도 돌아간다 (배포는 개발서버와 같이 `./deploy.sh`, DB 는 따로) · 개발서버 백업 보관 (`~/backups_from_dev/`) |
 
 문제가 생기면 가장 먼저 **① VPN 연결 ② `pm2 status`** 를 확인하세요.
