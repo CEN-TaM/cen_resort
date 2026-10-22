@@ -241,6 +241,22 @@
   word-break: break-word;
 }
 
+/* 관리자가 삭제한 댓글 — 회색 안내 한 줄 */
+.rc-item.deleted .rc-avatar {
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+
+.rc-item.deleted .rc-avatar .ms {
+  font-size: 15px;
+}
+
+.rc-item.deleted .rc-text {
+  margin-top: 4px;
+  color: var(--text-3);
+  font-style: italic;
+}
+
 .rc-reply-btn {
   margin-top: 4px;
   padding: 0;

@@ -26,7 +26,7 @@ const METRICS = {
   region_reviews: { label: '지역별 후기 수', unit: '편', param: '지역 — 지도 이름, 여러 개는 쉼표 (예: 제주,서귀포)',
                     sql: null },   // 지역 목록이 바뀌므로 아래에서 만든다
   tips:           { label: '꿀팁 수', unit: '개', sql: 'SELECT COUNT(*) AS c FROM tips WHERE empno = ? AND hidden = 0' },
-  comments:       { label: '댓글 수', unit: '개', sql: 'SELECT COUNT(*) AS c FROM review_comments c JOIN reviews v ON v.id = c.review_id WHERE c.empno = ? AND v.hidden = 0' },
+  comments:       { label: '댓글 수', unit: '개', sql: 'SELECT COUNT(*) AS c FROM review_comments c JOIN reviews v ON v.id = c.review_id WHERE c.empno = ? AND v.hidden = 0 AND c.hidden = 0 AND c.deleted = 0' },
   likes_received: { label: '내 후기가 받은 좋아요', unit: '개', sql: 'SELECT COUNT(*) AS c FROM review_likes l JOIN reviews v ON v.id = l.review_id WHERE v.empno = ? AND v.hidden = 0' },
   likes_given:    { label: '다른 사람 후기에 누른 좋아요', unit: '번', sql: 'SELECT COUNT(*) AS c FROM review_likes l JOIN reviews v ON v.id = l.review_id WHERE l.empno = ? AND v.hidden = 0 AND (v.empno IS NULL OR v.empno <> l.empno)' },
 };

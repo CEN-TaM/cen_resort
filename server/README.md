@@ -28,7 +28,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 |---|---|---|
 | `resorts` · `resort_aliases` | 휴양소 정보 · 옛 이름 | 처음엔 자동, 이후 관리자 페이지 → 휴양소 정보 (여러 곳 한꺼번에는 `tools/import_resorts.js`) |
 | `reviews` · `review_photos` | 후기 · 후기 사진 (`hidden` = 관리자가 숨김) | 앱에서 작성, 또는 `tools/import_reviews.js` (`DATA_IMPORT.md`) |
-| `review_comments` · `review_likes` | 댓글 · 좋아요(1인 1회) | 앱 |
+| `review_comments` · `review_likes` | 댓글 · 좋아요(1인 1회). 댓글 `hidden`(관리자 숨김) · `deleted`(관리자 삭제 — 본문을 비우고 '관리자에 의해 삭제되었습니다.' 로 보임) | 앱 · 관리자 페이지 → 후기 → 보기 |
 | `notifications` · `notification_reads` | 알림 · 읽음 | 앱 |
 | `favorites` | 즐겨찾기 (사번 × 휴양소) | 앱 |
 | `notices` · `notice_views` | 공지사항 · 본 사람(조회수) | 관리자 페이지 → 공지사항 (여러 개 한꺼번에는 `tools/notices.js`) |
@@ -36,6 +36,7 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | `point_history` | 휴양소 포인트 내역 (후기 1건 +10P · 관리자 조정은 reason=adjust + note 이유 · by_empno) | 앱 · 관리자 페이지 → 직원 명단 |
 | `badges` · `badge_awards` | 배지 기준 · 받은 기록 (한 번 받으면 유지) | 처음엔 자동(기본 13개), 이후 관리자 페이지 → 배지 |
 | `users` · `sessions` · `verify_codes` | 직원 명단 · 로그인 · 사번인증 코드 | 관리자 페이지 → 직원 명단 · 권한 (서버에서는 `tools/users.js`) |
+| `faqs` · `settings` | 고객센터 / FAQ 질문 · 고객센터 안내(`settings` key `support`). 처음 켤 때 `assets/js/data/faqs.js` 예시로 한 번 채움 | 관리자 페이지 → 고객센터 · FAQ |
 
 ## 휴양소 데이터
 
@@ -70,6 +71,9 @@ DB 안의 테이블 (서버가 켜질 때 없으면 만든다 — `server/db.js`
 | DELETE | `/api/reviews/:id` | 후기 지우기 (본인 또는 관리자). 그 후기로 받은 포인트 차감 · 사진 파일 · 알림 정리 |
 | POST | `/api/reviews/:id/like` | 좋아요 `{ liked }` — 1인 1회 (`review_likes`) |
 | POST | `/api/reviews/:id/comments` | 댓글 등록 |
+| GET  | `/api/faqs` | 고객센터 / FAQ (보이는 질문 + 고객센터 안내) |
+| PUT · DELETE | `/api/admin/comments/:id` | 관리자: 댓글 숨기기 `{ hidden }` · 삭제 (앱 · 관리자 모두 '관리자에 의해 삭제되었습니다.') |
+| GET · POST · PUT · DELETE | `/api/admin/faqs[/:id]` · PUT `/api/admin/support` | 관리자: FAQ · 고객센터 안내 |
 | GET  | `/api/notifications` | 내 알림 (내 후기에 달린 댓글 · 답글) + 읽은 알림 목록. 공지 알림은 화면이 공지 목록으로 만든다 |
 | POST | `/api/notifications/read` | 읽음 처리 `{ keys: [...] }` |
 | GET  | `/api/health` | 헬스체크 |

@@ -60,9 +60,10 @@ require('./badges').register(app, db, auth);
 app.use('/uploads', express.static(UPLOADS_DIR, {
   // 브라우저가 파일 내용을 보고 형식을 추측하지 않게 한다 (확장자대로만 이미지로 보여준다)
   // 공지 첨부(uploads/notices/)는 열지 말고 늘 내려받게 한다 (이름은 주소 끝의 원래 파일 이름)
+  // PDF 만은 브라우저에서 바로 열어 보게 한다 (앱 공지 상세의 '보기' — 이용가이드 PDF 등)
   setHeaders: (res, filePath) => {
     res.set('X-Content-Type-Options', 'nosniff');
-    if (filePath.split(path.sep).includes('notices')) res.set('Content-Disposition', 'attachment');
+    if (filePath.split(path.sep).includes('notices')) res.set('Content-Disposition', /\.pdf$/i.test(filePath) ? 'inline' : 'attachment');
   },
 }));
 
@@ -101,16 +102,30 @@ function clampScore(v) {
   return Math.max(1, Math.min(5, Math.round(n)));
 }
 
+// 후기의 댓글 · 답글. 관리자가 숨긴 댓글(과 그 답글)은 앱에 보내지 않는다 — withHidden 이면(관리자 페이지) 전부.
+// 관리자가 삭제한 댓글은 자리를 남기고(답글이 이어져 있다) 본문 대신 DELETED_COMMENT_TEXT 를 보낸다
+const DELETED_COMMENT_TEXT = '관리자에 의해 삭제되었습니다.';
+function loadComments(reviewId, withHidden) {
+  const rows = db.prepare(
+    'SELECT id, parent_id, empno, author, color, text, created_at, hidden, deleted FROM review_comments WHERE review_id = ? ORDER BY id'
+  ).all(reviewId);
+  const hiddenIds = new Set(rows.filter(c => c.hidden).map(c => c.id));
+  return rows
+    .filter(c => withHidden || !(hiddenIds.has(c.id) || hiddenIds.has(c.parent_id)))
+    .map(c => ({
+      id: c.id, parentId: c.parent_id, empno: c.deleted ? null : c.empno,
+      author: c.deleted ? '' : c.author, color: c.color, text: c.deleted ? DELETED_COMMENT_TEXT : c.text, created_at: c.created_at,
+      ...(c.deleted ? { deleted: true } : {}),
+      ...(withHidden ? { hidden: !!c.hidden } : {}),
+    }));
+}
+
 // 후기 1건을 프론트에서 쓰기 좋은 형태로 조립. viewerEmpno 가 있으면 그 사람이 좋아요를 눌렀는지(liked)도 담는다
-function loadReview(row, viewerEmpno) {
+// opts.allComments — 관리자 페이지: 숨긴 댓글도 담는다
+function loadReview(row, viewerEmpno, opts = {}) {
   const photos = db.prepare('SELECT path FROM review_photos WHERE review_id = ? ORDER BY id')
     .all(row.id).map(p => p.path);
-  const comments = db.prepare(
-    'SELECT id, parent_id, empno, author, color, text, created_at FROM review_comments WHERE review_id = ? ORDER BY id'
-  ).all(row.id).map(c => ({
-    id: c.id, parentId: c.parent_id, empno: c.empno,
-    author: c.author, color: c.color, text: c.text, created_at: c.created_at,
-  }));
+  const comments = loadComments(row.id, !!opts.allComments);
   let companions = [];
   try { companions = JSON.parse(row.companions || '[]'); } catch { companions = []; }
   return {
@@ -395,8 +410,9 @@ app.post('/api/reviews/:id/comments', requireUser, (req, res) => {
     const parentId = req.body?.parentId ? Number(req.body.parentId) : null;
     let parent = null;
     if (parentId) {
-      parent = db.prepare('SELECT id, review_id, empno, parent_id FROM review_comments WHERE id = ?').get(parentId);
-      if (!parent || parent.review_id !== id) return res.status(400).json({ error: '원 댓글을 찾을 수 없습니다.' });
+      parent = db.prepare('SELECT id, review_id, empno, parent_id, hidden, deleted FROM review_comments WHERE id = ?').get(parentId);
+      if (!parent || parent.review_id !== id || parent.hidden) return res.status(400).json({ error: '원 댓글을 찾을 수 없습니다.' });
+      if (parent.deleted) return res.status(400).json({ error: '삭제된 댓글에는 답글을 달 수 없습니다.' });
       if (parent.parent_id) return res.status(400).json({ error: '답글에는 다시 답글을 달 수 없습니다.' });
     }
 
@@ -419,13 +435,7 @@ app.post('/api/reviews/:id/comments', requireUser, (req, res) => {
     if (parent) notify(parent.empno, 'reply');       // 내 댓글에 답글
     else notify(review.empno, 'comment');            // 내 글에 댓글
 
-    const comments = db.prepare(
-      'SELECT id, parent_id, empno, author, color, text, created_at FROM review_comments WHERE review_id = ? ORDER BY id'
-    ).all(id).map(c => ({
-      id: c.id, parentId: c.parent_id, empno: c.empno,
-      author: c.author, color: c.color, text: c.text, created_at: c.created_at,
-    }));
-    res.status(201).json({ comments });
+    res.status(201).json({ comments: loadComments(id, false) });
   } catch (err) {
     console.error('POST comment 실패:', err);
     res.status(500).json({ error: '댓글 등록 실패' });
@@ -465,6 +475,20 @@ app.get('/api/notices/:id', requireUser, (req, res) => {
   } catch (err) {
     console.error('GET /api/notices/:id 실패:', err);
     res.status(500).json({ error: '공지 조회 실패' });
+  }
+});
+
+// ───────────────────────── 고객센터 / FAQ ─────────────────────────
+// 앱 '나의 페이지 → 고객센터 / FAQ'. 고치기는 관리자 페이지 (server/admin.js /api/admin/faqs · /api/admin/support)
+app.get('/api/faqs', requireUser, (_req, res) => {
+  try {
+    const faqs = db.prepare('SELECT id, category, question, answer FROM faqs WHERE active = 1 ORDER BY sort_order, id').all()
+      .map(f => ({ id: String(f.id), category: f.category, question: f.question, answer: f.answer }));
+    const s = db.prepare("SELECT value FROM settings WHERE key = 'support'").get();
+    res.json({ faqs, support: s ? JSON.parse(s.value) : {} });
+  } catch (err) {
+    console.error('GET /api/faqs 실패:', err);
+    res.status(500).json({ error: 'FAQ 조회 실패' });
   }
 });
 

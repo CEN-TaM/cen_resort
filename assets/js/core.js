@@ -125,6 +125,7 @@ function showScreen(deviceId, screenName, opts) {
   if (screenName === 'my' && typeof updateMyReviewsCount === 'function') updateMyReviewsCount();
   if (screenName === 'my' && typeof refreshMyPoints === 'function') refreshMyPoints();
   if (screenName === 'tips' && typeof renderNotices === 'function') renderNotices();
+  if (screenName === 'faq' && typeof renderFaq === 'function') renderFaq();
   if (screenName === 'my' && typeof updateMyTipsCount === 'function') updateMyTipsCount();
   if (screenName === 'my' && typeof refreshBadgeCount === 'function') refreshBadgeCount();
   if (screenName === 'badges' && typeof renderBadges === 'function') renderBadges();
