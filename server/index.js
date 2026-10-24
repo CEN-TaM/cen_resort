@@ -446,13 +446,16 @@ app.post('/api/reviews/:id/comments', requireUser, (req, res) => {
 // 쓰기는 관리자 도구(tools/notices.js). 앱은 읽기만 한다. 조회수 = 본 사람 수
 function noticeRow(n, withBody) {
   const views = db.prepare('SELECT COUNT(*) AS c FROM notice_views WHERE notice_id = ?').get(n.id).c;
+  const files = n.files ? JSON.parse(n.files) : [];
   return {
     id: String(n.id), category: n.category, title: n.title, author: n.author, pinned: !!n.pinned,
     createdAt: n.created_at, views,
+    // 목록 카드의 첨부 형식 태그(Pdf · Excel · Hwp)용 — 확장자만, 겹치지 않게
+    fileTypes: [...new Set(files.map(f => String(f.name || '').split('.').pop().toLowerCase()).filter(Boolean))],
     // 목록 카드 미리보기 = 본문 첫 문단 (소제목 · 목록 · 강조 상자 줄은 건너뛴다)
     summary: (n.body.split(/\r?\n\s*\r?\n/).map(b => b.trim()).find(b => b && !/^(###|- |> )/.test(b)) || n.body)
       .replace(/^[#>\-\s]+/gm, '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim().slice(0, 120),
-    ...(withBody ? { body: n.body, files: n.files ? JSON.parse(n.files) : [] } : {}),
+    ...(withBody ? { body: n.body, files } : {}),
   };
 }
 app.get('/api/notices', requireUser, (_req, res) => {

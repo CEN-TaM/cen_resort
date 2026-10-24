@@ -11,114 +11,42 @@
   transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
+/* 배너 한 장 = 글자까지 들어간 통이미지 (972×450). 이미지 비율 그대로 보여 잘리지 않는다 */
 .event-banner {
   margin: 0;
   border-radius: var(--r-xl);
   overflow: hidden;
   position: relative;
-  aspect-ratio: 340 / 160;
+  aspect-ratio: 972 / 450;
   background: #cfe0f5 center / cover no-repeat;
-  color: var(--text-1);
   flex-shrink: 0;
   width: 100%;
   cursor: pointer;
 }
 
-/* 텍스트 가독성용 좌측 흰색 그라데이션 오버레이 */
-.event-banner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(100deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, .38) 36%, rgba(255, 255, 255, 0) 68%);
-}
-
-/* 3번째 배너(이용수칙)는 밝은 배경이라 흰색 오버레이 제거 */
-.event-banner[data-img="banner-third"]::after {
-  display: none;
-}
-
-.event-banner .ev-text,
-.event-banner .pager {
-  z-index: 2;
-}
-
-.event-banner .ev-text {
-  position: absolute;
-  top: 14px;
-  left: 20px;
-  max-width: 60%;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.event-banner .label {
-  align-self: flex-start;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--brand-dark);
-  padding: 4px 10px;
-  border-radius: var(--pill);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.event-banner .cta {
-  align-self: flex-start;
-  margin-top: 2px;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: var(--pill);
-  background: #2c84f2;
-}
-
-.event-banner .title {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: var(--text-1);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.event-banner .sub {
-  font-size: 12px;
-  line-height: 1.3;
-  color: var(--text-2);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.event-banner .seni-img {
-  display: none;
-}
-
+/* 왼쪽 아래 페이지 표시 (1 / 3) */
 .event-banner .pager {
   position: absolute;
   left: 20px;
   bottom: 14px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 9px;
+  height: 18px;   /* 오른쪽 점 줄(.banner-controls)과 같은 높이 → 가운데가 맞는다 */
+  padding: 0 9px;
   border-radius: var(--pill);
   background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   color: #fff;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.02em;
 }
 
 .event-banner .pager b {
-  font-weight: 800;
+  font-weight: 400;
 }
 
 /* 배너 캐로셀 컨트롤 */
@@ -127,7 +55,9 @@
   bottom: 14px;
   right: 20px;
   z-index: 10;
+  height: 18px;   /* 왼쪽 숫자 표시와 같은 높이로 두고 점을 그 가운데에 */
   display: flex;
+  align-items: center;
   gap: 6px;
 }
 
@@ -140,6 +70,8 @@
   cursor: pointer;
   transition: all 0.2s;
   padding: 0;
+  /* 밝은 배너(크림색 등)에서도 흰 점이 보이게 옅은 그림자 */
+  box-shadow: 0 0 0 0.5px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.3);
 }
 
 .banner-dot.active {

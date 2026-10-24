@@ -95,31 +95,20 @@
 
       <div class="banner-carousel" id="eventCarousel">
         <div class="banner-slides">
-          <div class="event-banner" data-img="banner-second" onclick="openEventResorts('winter')">
-            <div class="ev-text">
-              <div class="label">WINTER EVENT</div>
-              <div class="title">동계 이벤트 휴양소<br>둘러보기</div>
-              <div class="sub">평창 · 고성 · 무주 외 3곳</div>
-            </div>
+          <!-- 배너는 글자까지 들어간 통이미지 (assets/images/banner-*.png, 972×450). 바꿀 때는 같은 이름으로 파일만 갈아 끼운다.
+               이미지 속 글자는 화면 낭독기가 못 읽으니 aria-label 에 같은 문구를 적는다 -->
+          <div class="event-banner" data-img="banner-second" role="img"
+            aria-label="하계 휴양소 2차 예약 접수기간 2026.06.08(월)~2026.06.17(수)" onclick="openNoticeCategory('예약')">
             <div class="pager"><b>1</b> / 3</div>
           </div>
 
-          <div class="event-banner" data-img="banner-summer" onclick="openEventResorts('summer')">
-            <div class="ev-text">
-              <div class="label">SUMMER EVENT</div>
-              <div class="title">하계 이벤트 휴양소<br>둘러보기</div>
-              <div class="sub">태안 · 송도 · 서귀포 외 5곳</div>
-            </div>
+          <div class="event-banner" data-img="banner-summer" role="img"
+            aria-label="하계 휴양소 신청이 시작됐어요 — 강릉 태안 통영 외 7곳" onclick="openEventResorts('summer')">
             <div class="pager"><b>2</b> / 3</div>
           </div>
 
-          <div class="event-banner" data-img="banner-third" onclick="openNoticeCategory('이용가이드')">
-            <div class="ev-text">
-              <div class="label">이용가이드</div>
-              <div class="title">휴양소 이용 전<br>꼭 확인하세요</div>
-              <div class="sub">직계가족만 · 실내 금연 · 노쇼 시 1년 제한</div>
-              <span class="cta">바로가기</span>
-            </div>
+          <div class="event-banner" data-img="banner-third" role="img"
+            aria-label="휴양소 이용수칙 개정안내 (26.05.15)" onclick="openNoticeCategory('이용가이드')">
             <div class="pager"><b>3</b> / 3</div>
           </div>
         </div>

@@ -9,13 +9,14 @@ function selectRegion(el) {
 // ===== 공지사항 카테고리 + 검색 필터 =====
 let noticeCat = '전체';
 let noticeQuery = '';
+let noticeSearching = false;   // 검색 모드 — 분류 칩이 숨고, 전체 분류에서 찾는다
 
 function applyNoticeFilter() {
   const q = noticeQuery.trim().toLowerCase();
   const cards = document.querySelectorAll('.screen[data-screen="tips"] .notice-card');
   let shown = 0;
   cards.forEach(card => {
-    const catOk = noticeCat === '전체' || card.dataset.category === noticeCat;
+    const catOk = noticeSearching || noticeCat === '전체' || card.dataset.category === noticeCat;
     // 카드에는 제목만 보이지만 검색은 본문 앞부분(data-summary)까지 찾는다
     const titleEl = card.querySelector('.notice-title');
     const text = ((titleEl ? titleEl.textContent : '') + ' ' + (card.dataset.summary || '')).toLowerCase();
@@ -29,7 +30,14 @@ function applyNoticeFilter() {
   if (empty) {
     const filteredOut = cards.length > 0 && shown === 0;
     empty.style.display = filteredOut ? '' : 'none';
-    if (filteredOut) empty.textContent = q ? '🔍 검색 결과가 없습니다.' : `'${noticeCat}' 공지사항이 없어요.`;
+    if (filteredOut) empty.textContent = q ? '검색 결과가 없습니다.' : `'${noticeCat}' 공지사항이 없어요.`;
+  }
+  // 검색 중이고 검색어가 있으면 '검색결과 N 건'
+  const result = document.getElementById('notice-result');
+  if (result) {
+    result.hidden = !(noticeSearching && q);
+    const cnt = document.getElementById('notice-result-count');
+    if (cnt) cnt.textContent = shown;
   }
 }
 
@@ -47,26 +55,30 @@ function openNoticeCategory(cat) {
   showScreen('device1', 'tips');
 }
 
+// 글자를 칠 때마다 거른다. 검색창을 누르기만 해서는 바뀌지 않는다.
+// 검색 모드: 헤더 뒤로가기 · '취소' 가 보이고 분류 칩 대신 '검색결과 N 건' (notice-list.css .notice-searching)
 function searchNotices(q) {
-  noticeQuery = q || '';
+  noticeQuery = String(q || '').trim();
+  noticeSearching = !!noticeQuery;          // 글자를 다 지우면 원래 목록 (골라 둔 분류)
+  const screen = document.querySelector('.screen[data-screen="tips"]');
+  if (screen) screen.classList.toggle('notice-searching', noticeSearching);
   applyNoticeFilter();
 }
 
-function toggleNoticeSearch() {
-  const box = document.getElementById('notice-search');
-  if (!box) return;
-  box.classList.toggle('open');
-  if (box.classList.contains('open')) {
-    const inp = document.getElementById('notice-search-input');
-    if (inp) setTimeout(() => inp.focus(), 50);
-  } else {
-    clearNoticeSearch();
-  }
+// 엔터(키보드 '검색')는 휴대폰 키보드만 내린다 — 결과는 이미 걸러져 있다
+function submitNoticeSearch(event) {
+  if (event) event.preventDefault();
+  const inp = document.getElementById('notice-search-input');
+  if (inp) inp.blur();
 }
 
-function clearNoticeSearch() {
+// 뒤로가기 · 취소 → 검색어를 지우고 원래 목록(골라 둔 분류)으로
+function exitNoticeSearch() {
+  const screen = document.querySelector('.screen[data-screen="tips"]');
   const inp = document.getElementById('notice-search-input');
-  if (inp) inp.value = '';
+  if (inp) { inp.value = ''; inp.blur(); }
   noticeQuery = '';
+  noticeSearching = false;
+  if (screen) screen.classList.remove('notice-searching');
   applyNoticeFilter();
 }
