@@ -1,5 +1,12 @@
 /* 공지사항 상세 */
 /* === Notice Detail === */
+
+/* 바탕 · 헤더는 공지 목록과 같은 흰색 (.app-header 는 여러 화면 공용이라 이 화면으로만 범위를 좁힌다) */
+.screen[data-screen="notice-detail"],
+.screen[data-screen="notice-detail"] .app-header {
+  background: var(--surface);
+}
+
 .notice-detail-hero {
   margin: 4px 18px 16px;
   padding: 4px 0 16px;
@@ -28,8 +35,8 @@
   align-items: center;
   margin-top: 12px;
   font-size: 12px;
-  font-weight: 600;
-  color: var(--text-2);
+  font-weight: 400;
+  color: var(--text-3);   /* 목록의 '게시일 · 조회' 줄과 같은 색 */
 }
 
 .notice-detail-hero .nd-stats {

@@ -1,25 +1,52 @@
 /* 공지사항 목록 */
-/* === 공지사항 === */
+/* === 공지사항 (2026-10 시안: 흰 바탕 · 회색 검색창 · 줄로 나뉜 목록) === */
+
+/* 화면 바탕 · 헤더 — 이 화면만 흰색 (.app-header 는 여러 화면 공용이라 범위를 좁힌다).
+   목록이 짧아도 아래까지 흰색이 되게 화면 자체에 칠한다 */
+.screen[data-screen="tips"],
+.screen[data-screen="tips"] .content {
+  background: var(--surface);
+}
+
+.screen[data-screen="tips"] .app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* 뒤로가기는 검색 중에만 */
+.screen[data-screen="tips"] .app-header .back {
+  visibility: hidden;
+}
+
+.screen[data-screen="tips"].notice-searching .app-header .back {
+  visibility: visible;
+}
+
+/* 검색창 + 취소 */
+.notice-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px 0;
+}
+
 .notice-search {
-  display: none;
+  flex: 1;
+  min-width: 0;
+  display: flex;
   align-items: center;
   gap: 8px;
-  margin: 10px 18px 2px;
-  padding: 9px 14px;
-  background: #fff;
-  border: 1px solid var(--border);
+  height: 32px;
+  padding: 0 14px;
+  background: var(--surface-3);
   border-radius: var(--pill);
+  cursor: text;
 }
 
-.notice-search.open {
-  display: flex;
-}
-
-.notice-search>i {
-  font-size: 18px;
-  color: var(--text-2);
-  cursor: pointer;
-  flex-shrink: 0;
+.notice-search-ico {
+  flex: none;
+  width: 22px;
+  height: 22px;
 }
 
 .notice-search input {
@@ -29,8 +56,54 @@
   outline: none;
   background: transparent;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-1);
+}
+
+.notice-search input::placeholder {
+  color: var(--text-3);
+}
+
+/* 브라우저 기본 지우기(x) 버튼은 숨긴다 — '취소' 로 지운다 */
+.notice-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.notice-search-cancel {
+  display: none;
+  flex: none;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.notice-searching .notice-search-cancel {
+  display: block;
+}
+
+/* 검색 중에는 분류 칩 대신 '검색결과 N 건' */
+.notice-searching .notice-cats {
+  display: none;
+}
+
+.notice-result {
+  padding: 16px 18px 6px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.notice-result[hidden] {
+  display: none;
+}
+
+.notice-result b {
+  margin-left: 4px;
+  font-weight: 700;
+  color: var(--brand);
 }
 
 .notice-cats {
@@ -70,83 +143,95 @@
   font-weight: 700;
 }
 
+/* 목록 한 줄 (카드 대신 아래 구분선) */
 .notice-card {
-  margin: 0 18px 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 16px;
   cursor: pointer;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition: background 0.15s;
 }
 
 .notice-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  background: var(--surface-2);
 }
 
 .notice-card .notice-meta {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-.notice-card .pin,
-.notice-detail-hero .nd-meta .pin {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--brand-dark);
+/* 분류 · 첨부 형식 태그 */
+.ntag {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
-  background: var(--brand-50);
-  border-radius: var(--pill);
-  letter-spacing: -0.01em;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
-.notice-card .pin i,
-.notice-detail-hero .nd-meta .pin i {
-  font-size: 13px;
+.ntag.cat {
+  background: var(--brand-50);
+  color: var(--brand);
+}
+
+.ntag.file-pdf {
+  background: #FFEDEB;
+  color: #E5484D;
+}
+
+.ntag.file-xls {
+  background: #E6F6EC;
+  color: #18A058;
+}
+
+.ntag.file-hwp,
+.ntag.file-doc {
+  background: var(--surface-3);
+  color: var(--text-2);
 }
 
 .notice-card .notice-title {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
+  line-height: 1.4;
   color: var(--text-1);
-  margin-bottom: 6px;
-  line-height: 1.35;
 }
 
+/* 고정 공지 표시 (관리자가 고정한 공지 — 누르는 기능은 없다). ico_pin.png 36×36 → 18px */
+/* 제목이 두 줄이 돼도 첫 줄 앞에 붙도록 글자 줄 안에 둔다 */
+.notice-card .notice-pin,
+.notice-detail-hero .notice-pin {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  vertical-align: -3px;
+}
 
 .notice-card .notice-foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--border);
+  margin-top: 4px;
   font-size: 11px;
   color: var(--text-3);
 }
 
-.notice-card .notice-foot .views {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.notice-card .notice-foot .views i {
+.notice-empty {
+  padding: 40px 20px;
+  text-align: center;
   font-size: 13px;
+  color: var(--text-3);
 }
 
 /* 공지 분류 칩: 스크롤해도 헤더 바로 아래에 붙어 있게 (휴양소 탭과 같은 방식 — top 은 헤더 높이 48px, base.css)
-   배경은 화면 바탕색으로 채워 아래 카드가 비치지 않게 */
+   배경은 화면 바탕색으로 채워 아래 목록이 비치지 않게 */
 .screen[data-screen="tips"] .notice-cats {
   position: sticky;
   top: 48px;
   z-index: 5;
-  background: var(--surface-2);
+  background: var(--surface);
 }

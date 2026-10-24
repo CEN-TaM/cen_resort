@@ -1,17 +1,23 @@
 <!-- NOTICE -->
 <div class="screen" data-screen="tips">
   <div class="app-header">
-    <img class="back" src="assets/images/ico_back.png" alt="뒤로가기" onclick="showScreen('device1','home')" style="visibility:hidden">
+    <!-- 뒤로가기는 검색 중에만 보인다 (검색을 끝내고 목록으로) -->
+    <img class="back" src="assets/images/ico_back.png" alt="검색 닫기" onclick="exitNoticeSearch()">
     <div class="title">공지사항</div>
     <div class="actions"></div>
   </div>
   <div class="content">
-    <div class="notice-search" id="notice-search">
-      <i class="ti ti-search"></i>
-      <input id="notice-search-input" type="search" autocomplete="off" placeholder="제목·내용 검색"
-        oninput="searchNotices(this.value)">
-      <i class="ti ti-x" onclick="clearNoticeSearch()"></i>
+    <!-- 검색창을 누르기만 해서는 그대로. 글자를 치면 바로 검색 모드(.notice-searching):
+         목록이 걸러지고, 분류 칩 대신 '검색결과 N 건', 헤더 뒤로가기 · 오른쪽 '취소' 가 보인다. 글자를 다 지우면 원래 목록 -->
+    <div class="notice-search-row">
+      <form class="notice-search" id="notice-search" role="search" onsubmit="submitNoticeSearch(event)">
+        <img class="notice-search-ico" src="assets/images/ico_search.svg" alt="">
+        <input id="notice-search-input" type="search" enterkeyhint="search" autocomplete="off" placeholder="게시물을 검색해 보세요"
+          oninput="searchNotices(this.value)">
+      </form>
+      <button type="button" class="notice-search-cancel" onclick="exitNoticeSearch()">취소</button>
     </div>
+    <div class="notice-result" id="notice-result" hidden>검색결과 <b id="notice-result-count">0</b> 건</div>
     <div class="notice-cats">
       <span class="notice-cat active" onclick="selectNoticeCat(this)">전체</span>
       <span class="notice-cat" onclick="selectNoticeCat(this)">이용가이드</span>
@@ -22,9 +28,7 @@
     <!-- 공지 카드는 notice.js renderNotices() 가 그린다 (서버 DB 공지, 서버가 없으면 예시 공지) -->
     <div id="notice-list"></div>
 
-    <div id="notice-empty" style="display:none;text-align:center;padding:40px 20px;color:#94A3B8;font-size:13px">
-      🔍 검색 결과가 없습니다.
-    </div>
+    <div id="notice-empty" class="notice-empty" style="display:none">검색 결과가 없습니다.</div>
   </div>
 
   <div class="tabbar">
