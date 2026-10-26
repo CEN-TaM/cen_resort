@@ -450,8 +450,8 @@ function noticeRow(n, withBody) {
   return {
     id: String(n.id), category: n.category, title: n.title, author: n.author, pinned: !!n.pinned,
     createdAt: n.created_at, views,
-    // 목록 카드의 첨부 형식 태그(Pdf · Excel · Hwp)용 — 확장자만, 겹치지 않게
-    fileTypes: [...new Set(files.map(f => String(f.name || '').split('.').pop().toLowerCase()).filter(Boolean))],
+    // 목록 카드 '첨부파일 n' 용
+    fileCount: files.length,
     // 목록 카드 미리보기 = 본문 첫 문단 (소제목 · 목록 · 강조 상자 줄은 건너뛴다)
     summary: (n.body.split(/\r?\n\s*\r?\n/).map(b => b.trim()).find(b => b && !/^(###|- |> )/.test(b)) || n.body)
       .replace(/^[#>\-\s]+/gm, '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim().slice(0, 120),

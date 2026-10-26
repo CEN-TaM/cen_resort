@@ -15,7 +15,7 @@ function sampleNotices() {
     createdAt: iso(n.date), views: Number(String(n.views || 0).replace(/,/g, '')) || 0,
     summary: String(n.body || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120),
     html: n.body, files: (n.files || []).map(f => ({ name: f.name, size: f.size })),
-    fileTypes: [...new Set((n.files || []).map(f => String(f.name || '').split('.').pop().toLowerCase()).filter(Boolean))],
+    fileCount: (n.files || []).length,
   })).sort((a, b) => (b.pinned - a.pinned) || (Date.parse(b.createdAt) - Date.parse(a.createdAt)));
 }
 
@@ -34,36 +34,18 @@ const NoticeAPI = {
 
 // 본문 표기 → HTML 은 notice-format.js noticeBodyHtml()
 
-// 목록 한 줄: [분류][첨부 형식] 태그 · (고정이면 핀) 제목 · 게시일 · 조회
+// 목록 한 줄: [분류] 태그 · (고정이면 핀) 제목 · 게시일 · 조회 · 첨부파일 n (첨부가 있을 때만)
 // 본문 앞부분은 검색용으로만 data-summary 에 둔다 (filters.js applyNoticeFilter)
-const NOTICE_FILE_TAG = {
-  pdf: ['Pdf', 'pdf'], hwp: ['Hwp', 'hwp'], hwpx: ['Hwp', 'hwp'],
-  xls: ['Excel', 'xls'], xlsx: ['Excel', 'xls'], csv: ['Excel', 'xls'],
-  doc: ['Word', 'doc'], docx: ['Word', 'doc'],
-};
-
-// 첨부 확장자 목록 → 형식 태그 (같은 형식은 한 번만). 순서는 항상 Pdf → Excel → 그 외.
-// 표에 없는 확장자(png · jpg · jpeg 등)는 그 확장자 이름 그대로 회색 태그로 (png → Png)
-const NOTICE_FILE_FIRST = ['Pdf', 'Excel'];
-function noticeFileTagsHtml(types) {
-  const seen = new Set();
-  const rank = label => { const i = NOTICE_FILE_FIRST.indexOf(label); return i < 0 ? NOTICE_FILE_FIRST.length : i; };
-  return (types || [])
-    .map(t => NOTICE_FILE_TAG[t] || [t.charAt(0).toUpperCase() + t.slice(1), 'doc'])
-    .filter(([label]) => !seen.has(label) && seen.add(label))
-    .sort((a, b) => rank(a[0]) - rank(b[0]))
-    .map(([label, cls]) => `<span class="ntag file-${cls}">${escapeHtml(label)}</span>`).join('');
-}
-
 function noticeCardHtml(n) {
   const date = (typeof fmtDate === 'function' ? fmtDate(n.createdAt) : '') || '';
+  const files = Number(n.fileCount || 0);
   return `
     <div class="notice-card" data-category="${escapeHtml(n.category)}" data-summary="${escapeHtml(n.summary || '')}" onclick="openNoticeDetail('${escapeHtml(n.id)}')">
       <div class="notice-meta">
-        <span class="ntag cat">${escapeHtml(n.category)}</span>${noticeFileTagsHtml(n.fileTypes)}
+        <span class="ntag cat">${escapeHtml(n.category)}</span>
       </div>
       <div class="notice-title">${n.pinned ? '<img class="notice-pin" src="assets/images/ico_pin.png" alt="고정">' : ''}${escapeHtml(n.title)}</div>
-      <div class="notice-foot">게시일 ${escapeHtml(date)} · 조회 ${Number(n.views || 0).toLocaleString('ko-KR')}</div>
+      <div class="notice-foot">게시일 ${escapeHtml(date)} · 조회 ${Number(n.views || 0).toLocaleString('ko-KR')}${files ? ` · <span class="notice-att"><i class="ms" aria-hidden="true">attach_file</i>첨부파일 ${files}</span>` : ''}</div>
     </div>`;
 }
 
@@ -87,9 +69,8 @@ async function openNoticeDetail(id) {
     return;
   }
   currentNotice = n;
-  // 배지 · 고정 표시는 목록 한 줄(noticeCardHtml)과 같은 모양: [분류][첨부 형식] · 제목 앞 핀
-  document.getElementById('nd-meta').innerHTML =
-    `<span class="ntag cat">${escapeHtml(n.category)}</span>${noticeFileTagsHtml(n.fileTypes)}`;
+  // 배지 · 고정 표시는 목록 한 줄(noticeCardHtml)과 같은 모양: [분류] · 제목 앞 핀
+  document.getElementById('nd-meta').innerHTML = `<span class="ntag cat">${escapeHtml(n.category)}</span>`;
   document.getElementById('nd-title').innerHTML =
     (n.pinned ? '<img class="notice-pin" src="assets/images/ico_pin.png" alt="고정">' : '') + escapeHtml(n.title);
   document.getElementById('nd-date').textContent = ' ' + ((typeof fmtDate === 'function' && fmtDate(n.createdAt)) || '');
