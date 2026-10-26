@@ -163,7 +163,7 @@
   margin-bottom: 6px;
 }
 
-/* 분류 · 첨부 형식 태그 */
+/* 분류 태그 */
 .ntag {
   display: inline-flex;
   align-items: center;
@@ -177,22 +177,6 @@
 .ntag.cat {
   background: var(--brand-50);
   color: var(--brand);
-}
-
-.ntag.file-pdf {
-  background: #FFEDEB;
-  color: #E5484D;
-}
-
-.ntag.file-xls {
-  background: #E6F6EC;
-  color: #18A058;
-}
-
-.ntag.file-hwp,
-.ntag.file-doc {
-  background: var(--surface-3);
-  color: var(--text-2);
 }
 
 .notice-card .notice-title {
@@ -218,6 +202,19 @@
   margin-top: 4px;
   font-size: 11px;
   color: var(--text-3);
+}
+
+/* 첨부파일 n — 앞에 클립 아이콘 */
+.notice-card .notice-att {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  vertical-align: bottom;
+}
+
+.notice-card .notice-att .ms {
+  font-size: 13px;
+  transform: rotate(45deg);   /* 세로 클립을 대각선으로 */
 }
 
 .notice-empty {
